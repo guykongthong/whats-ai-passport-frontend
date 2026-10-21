@@ -1,0 +1,17 @@
+---
+name: Chore
+about: Maintenance task, cleanup, or non-feature work
+title: "[Chore] "
+labels: chore
+---
+
+## Description
+What needs to be done?
+
+## Acceptance Criteria
+- [ ]
+- [ ]
+
+## Notes
+Anything else to add?
+
