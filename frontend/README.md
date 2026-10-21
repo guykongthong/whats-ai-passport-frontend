@@ -1,48 +1,67 @@
-# frontend
+# AIPass - Frontend Application
 
-This template should help get you started developing with Vue 3 in Vite.
+This directory contains the Vue 3 + TypeScript frontend application for **AIPass (What's AI Passport)**, developed for **953331 Component-Based Software Development (Project 2 - Group 14)** at CAMT, Chiang Mai University.
+
+For the full project overview, features, team information, and architecture, please refer to the main [Root README.md](../README.md).
+
+---
+
+## Tech Stack
+
+- **Framework:** [Vue 3](https://vuejs.org/) (Composition API with `<script setup lang="ts">`)
+- **Build Tool:** [Vite](https://vite.dev/)
+- **Type Checker:** [TypeScript](https://www.typescriptlang.org/) & `vue-tsc`
+- **Routing:** [Vue Router](https://router.vuejs.org/)
+- **State Management:** [Pinia](https://pinia.vuejs.org/)
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) with `@tailwindcss/vite`
+- **Linters & Formatters:** ESLint, Oxlint, Prettier
+
+---
 
 ## Recommended IDE Setup
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- [VS Code](https://code.visualstudio.com/)
+- [Vue (Official) Extension (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
+- Disable Vetur if previously installed
 
-## Recommended Browser Setup
+---
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Quick Start
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+### 1. Install Dependencies
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
+### 2. Run Development Server
+```bash
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
+### 3. Build for Production
+```bash
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+### 4. Type-Check
+```bash
+npm run type-check
 ```
+
+### 5. Lint & Format
+```bash
+npm run lint
+npm run format
+```
+
+---
+
+## Demo Test Accounts
+
+| Role | Username / Email | Default Level |
+| :--- | :--- | :---: |
+| Admin | `admin@example.com` or `admin` | Level 4 |
+| User (Level 1) | `user1@example.com` or `user1` | Level 1 |
+| User (Level 2) | `user2@example.com` or `user2` | Level 2 |
+| User (Level 3) | `user3@example.com` or `user3` | Level 3 |
+| User (Level 4) | `user4@example.com` or `user4` | Level 4 |
