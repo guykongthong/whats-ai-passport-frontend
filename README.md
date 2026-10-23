@@ -12,17 +12,11 @@
 > **Academic Year:** 2026  
 > **Institution:** College of Arts, Media and Technology (CAMT), Chiang Mai University
 
----
-
 ## Team Members
-
-| Student ID | Full Name | Primary Roles & Responsibilities |
-| :---: | :--- | :--- |
 | **** | Contributor | Frontend Architecture, Admin Portal, Exam & Criteria Management |
 | **** | Contributor | User Dashboard, E-Learning, Examination & Level Progression |
 | **** | Contributor | Auth System, Shared Components, Global Styling & Responsive UI |
 
----
 
 ## Project Overview
 
@@ -34,7 +28,6 @@ The platform is structured around a **4-Tier Skill Progression System**:
 3. **Level 3 - Innovator:** Advanced tier for students creating innovative tech solutions with potential for national competitions and startup incubation (Passing score: 80%).
 4. **Level 4 - Master:** Highest tier of CAMT Passport, recognizing outstanding academic, professional, and international expertise (Passing score: 85%).
 
----
 
 ## Key Features & Modules
 
@@ -61,7 +54,7 @@ The platform is structured around a **4-Tier Skill Progression System**:
 * **Badges & Achievements (`/dashboard/badges`):**
   * Visual gallery of earned digital stamps and certification badges.
 
-### 🛠️ 2. Admin Portal
+### 2. Admin Portal
 * **Admin Dashboard (`/admin`):**
   * Executive KPI metric cards (Total Users, Active/Inactive Ratio, Level distribution counts).
   * Paginated user directory with real-time search and multi-filtering by Level and Province.
@@ -88,44 +81,7 @@ The platform is structured around a **4-Tier Skill Progression System**:
 * **Institutional Pages:**
   * Dedicated pages for Privacy Policy, Terms of Service, and Help & Support.
 
----
-
-## System Workflow
-
-```mermaid
-flowchart TD
-    Start([Start / Landing]) --> Login[Login Page /login]
-    Login -->|No account?| Register[Registration Page /register]
-    Register --> Login
-    
-    Login -->|Verify Credentials & Role| RoleCheck{Role Check}
-    
-    %% User Flow
-    RoleCheck -->|User| UserHome[User Dashboard /dashboard]
-    UserHome --> ELearning[Watch Learning Modules /elearning]
-    UserHome --> Exam[Take Level-Up Examination /exam]
-    Exam --> Eval{Score >= Passing Threshold?}
-    Eval -->|Pass| LevelUp[Automatic Level-Up & Privilege Unlock]
-    Eval -->|Fail| ExamHistory[Record Attempt & Review /exam-history]
-    LevelUp --> ExamHistory
-    UserHome --> Services[View Campus Services & Perks /services]
-    UserHome --> Badges[View Digital Stamps & Badges /badges]
-    UserHome --> ProfileEdit[Edit Personal Details /profile/edit]
-    
-    %% Admin Flow
-    RoleCheck -->|Admin| AdminHome[Admin Dashboard /admin]
-    AdminHome --> UserMgmt[User Directory Table /admin/users/:id]
-    UserMgmt --> UserTabs[Sub-tabs: Info / History / Edit Profile]
-    AdminHome --> LevelMgmt[Level Criteria & Thresholds /admin/levels]
-    AdminHome --> ExamMgmt[Question Bank & Exam Editor /admin/exams]
-```
-
----
-
 ## Tech Stack & Architecture
-
-| Category | Technology | Description |
-| :--- | :--- | :--- |
 | **Core Framework** | [Vue 3](https://vuejs.org/) (v3.5+) | Reactive component model using Composition API (`<script setup lang="ts">`) |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) (v6.0+) | Strict static type checking across all data contracts and component props |
 | **Build Tool** | [Vite](https://vite.dev/) (v8.1+) | High-performance build tool with instant Hot Module Replacement (HMR) |
@@ -136,11 +92,8 @@ flowchart TD
 | **Code Quality** | ESLint, Oxlint, Prettier | Code quality enforcement, automated linting, and standard formatting |
 | **Deployment** | [Vercel](https://vercel.com/) | Continuous deployment with branch-level build rules configured in `vercel.json` |
 
----
 
 ## Project Directory Structure
-
-```text
 .
 ├── .github/                 # GitHub Issue templates and repository configurations
 ├── README.md                # Primary project documentation (English)
@@ -172,9 +125,6 @@ flowchart TD
     ├── tsconfig.json        # TypeScript configuration
     ├── vercel.json          # Deployment rules for Vercel
     └── vite.config.ts       # Vite bundler configuration
-```
-
----
 
 ## Getting Started & Installation
 
@@ -220,8 +170,6 @@ flowchart TD
      npm run format
      ```
 
----
-
 ## Demo Test Accounts
 
 The platform is pre-loaded with mock data. You can log in using either the **Full Email** or the **Username prefix** (the portion before `@`):
@@ -236,14 +184,8 @@ The platform is pre-loaded with mock data. You can log in using either the **Ful
 
 > **Tip:** You can also register a brand new account via the **Register** page. Newly created users start at Level 1 by default.
 
----
-
 ## Deployment
 
 The repository is configured for automatic deployment on **Vercel** with build suppression rules defined in `vercel.json`:
 * **Preview/Production URLs:** Accessible through the Vercel project deployment dashboard.
 * **Offline Handling:** Includes a dedicated offline fallback page to handle connectivity issues gracefully.
-
----
-
-© 2026 Group 14 - 953331 Component-Based Software Development, CAMT, Chiang Mai University. All Rights Reserved.
