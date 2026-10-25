@@ -13,6 +13,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-ADMIN-01 | 1-fe-admin-01-define-typescript-interfaces-and-dtos-for-admin-features | Completed | frontend/src/types/admin.ts, frontend/src/types/index.ts | vue-tsc --build, vite build |
 | FE-ADMIN-02 | feat/2-fe-admin-02-implement-admin-api-services-with-axios-client | Completed | frontend/src/services/apiClient.ts, AdminUserService.ts, AdminLevelService.ts, AdminQuestionService.ts, index.ts | vue-tsc --build, vite build, eslint |
 | FE-ADMIN-03 | 3-fe-admin-03-build-admin-dashboard-shell-and-responsive-sidebar | Pending | frontend/src/components/admin/AdminSidebar.vue, frontend/src/views/admin/AdminLayoutView.vue | - |
+| FE-USER-02 | feat/28-fe-user-02-implement-user-api-services-with-axios-client | In Review (PR #49) | frontend/src/services/apiClient.ts, UserService.ts, ELearningService.ts, ExamService.ts, index.ts | vue-tsc --build, vite build |
 
 ---
 
@@ -65,3 +66,23 @@ Implemented Axios API client and dedicated service modules for admin operations 
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`).
 - Ran `npm run build-only` and `npm run lint`. All passed with 0 warnings and 0 errors.
+
+### FE-USER-02: Implement User API Services with Axios Client
+
+- Date: 2026-10-24
+- Branch: `feat/28-fe-user-02-implement-user-api-services-with-axios-client`
+- Status: In Review (PR #49)
+
+Summary:
+Created API services for user-facing features using a shared Axios client:
+- `apiClient.ts`: Axios instance with `baseURL` from `VITE_API_URL` and a request interceptor that attaches `Authorization: Bearer <token>` from `localStorage`.
+- `UserService.ts`: `getUserProfile()` (GET `/api/v1/user/me`), `updateUserProfile()` (PUT `/api/v1/user/me`), `getUserLevelDetails()` (GET `/api/v1/user/me/level-details`).
+- `ELearningService.ts`: `getCurrentLevelVideos()` (GET `/api/v1/elearning/current-level`).
+- `ExamService.ts`: `getExamQuestions()` (GET `/api/v1/exam/questions`), `submitExam()` (POST `/api/v1/exam/submit`).
+- `index.ts`: barrel export for all services.
+
+Known Follow-up:
+- Some types are declared locally in services (`UserProfile`, `UserLevelDetails`, `ExamSubmissionPayload`, `ExamAnswer`) because FE-USER-01 (#27) is not yet merged into `dev`. After #27 is merged, switch to importing from `@/types` and update return types to `ExamResultResponse` / `ELearningContent`.
+
+Testing:
+- Checked types with `npx vue-tsc --build` and ran `npm run build`. Build passed with 0 errors.
