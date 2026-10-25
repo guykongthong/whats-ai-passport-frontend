@@ -11,7 +11,7 @@ export default {
     return apiClient.get(`/admin/levels/${levelNumber}`)
   },
 
-  updateLevel(levelNumber: number, data: object): Promise<AxiosResponse<LevelAdmin>> {
+  updateLevel(levelNumber: number, data: Partial<LevelAdmin>): Promise<AxiosResponse<LevelAdmin>> {
     return apiClient.put(`/admin/levels/${levelNumber}`, data)
   },
 }

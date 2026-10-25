@@ -2,11 +2,18 @@ import type { AxiosResponse } from 'axios'
 import apiClient from './apiClient'
 import type { AdminUser } from '@/types/admin'
 
+export interface AdminUserFilters {
+  name?: string
+  level?: number
+  province?: string
+  [key: string]: unknown
+}
+
 export default {
   getUsers(
     page: number = 1,
     pageSize: number = 10,
-    filters?: object,
+    filters?: AdminUserFilters,
   ): Promise<AxiosResponse<AdminUser[]>> {
     return apiClient.get('/admin/users', {
       params: {
