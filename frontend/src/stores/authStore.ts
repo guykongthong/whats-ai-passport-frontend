@@ -21,8 +21,20 @@ interface UserFilters {
   name: string
 }
 
+function getInitialUser(): User | null {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('currentUser')
+      return saved ? JSON.parse(saved) : null
+    }
+  } catch {
+    // ignore
+  }
+  return null
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  const currentUser = ref<User | null>(null)
+  const currentUser = ref<User | null>(getInitialUser())
   const users = ref<User[]>(mockUsers)
 
   const filters = ref<UserFilters>({ level: null, province: null, name: '' })
@@ -57,16 +69,27 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (isDeactivated) {
         currentUser.value = null
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('currentUser')
+        }
         return 'deactivated'
       }
     }
 
     currentUser.value = found
+    if (found && typeof localStorage !== 'undefined') {
+      localStorage.setItem('currentUser', JSON.stringify(found))
+    }
     return found ? 'success' : 'not_found'
   }
 
   function logout() {
     currentUser.value = null
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('currentUser')
+      localStorage.removeItem('token')
+      localStorage.removeItem('access_token')
+    }
   }
 
   function register(fields: RegisterFields) {
