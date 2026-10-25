@@ -52,9 +52,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useLevelStore } from '@/stores/levelStore'
+import { useToast } from '@/composables/useToast'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import UserProfile from '@/shared/components/UserProfile.vue'
 import LevelBenefits from '@/shared/components/LevelBenefits.vue'
@@ -64,6 +66,14 @@ import UserCircleIcon from '@/shared/components/icons/UserCircleIcon.vue'
 
 const authStore = useAuthStore()
 const levelStore = useLevelStore()
+const route = useRoute()
+const { triggerToast } = useToast()
+
+onMounted(() => {
+  if (route.query.error === 'unauthorized') {
+    triggerToast('Access denied: Administrator privileges required.')
+  }
+})
 
 const currentUserLevel = computed(() => authStore.currentUser?.level ?? null)
 
