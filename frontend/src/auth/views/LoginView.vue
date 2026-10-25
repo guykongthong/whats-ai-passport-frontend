@@ -11,10 +11,23 @@ const loginError = ref('')
 
 const onLoginSubmit = (email: string) => {
   loginError.value = ''
-  authStore.login(email)
+  const result = authStore.login(email)
+
+  if (result === 'deactivated') {
+    loginError.value = 'This account has been deactivated. Please contact an administrator.'
+    return
+  }
 
   if (authStore.currentUser) {
-    if (authStore.currentUser.role === 'admin') {
+    const user = authStore.currentUser
+    const userRole = user.role as string
+    const userRoles = (user as unknown as { roles?: string[] })?.roles
+    const isAdmin =
+      userRole === 'admin' ||
+      userRole === 'ROLE_ADMIN' ||
+      (Array.isArray(userRoles) && userRoles.includes('ROLE_ADMIN'))
+
+    if (isAdmin) {
       router.push('/admin')
     } else {
       router.push('/dashboard')

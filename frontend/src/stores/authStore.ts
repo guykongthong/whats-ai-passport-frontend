@@ -39,16 +39,30 @@ export const useAuthStore = defineStore('auth', () => {
     level: '1'
   })
 
-  function login(identifier: string) {
+  function login(identifier: string): 'success' | 'deactivated' | 'not_found' {
     const isEmail = identifier.includes('@')
 
-    currentUser.value = ((users.value.find((u) => {
+    const found = ((users.value.find((u) => {
       if (isEmail) {
         return u.email === identifier
       } else {
         return u.email.split('@')[0] === identifier.split('@')[0]
       }
     }))) ?? null
+
+    if (found) {
+      const isDeactivated =
+        found.isActive === false ||
+        ('enabled' in found && (found as unknown as { enabled: boolean }).enabled === false)
+
+      if (isDeactivated) {
+        currentUser.value = null
+        return 'deactivated'
+      }
+    }
+
+    currentUser.value = found
+    return found ? 'success' : 'not_found'
   }
 
   function logout() {
