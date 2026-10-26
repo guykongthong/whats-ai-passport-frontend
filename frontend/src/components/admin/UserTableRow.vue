@@ -82,14 +82,10 @@
       <span
         :class="[
           'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold',
-          user.enabled
-            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-            : 'bg-rose-50 text-rose-700 border border-rose-200',
+          statusBadgeClasses,
         ]"
       >
-        <span
-          :class="['size-1.5 rounded-full', user.enabled ? 'bg-emerald-500' : 'bg-rose-500']"
-        />
+        <span :class="['size-1.5 rounded-full', statusDotClass]" />
         {{ user.enabled ? 'Active' : 'Deactivated' }}
       </span>
     </td>
@@ -129,7 +125,6 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import type { AdminUser } from '@/types/admin'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 
@@ -148,7 +143,6 @@ const emit = defineEmits<{
   (e: 'view-details', userId: number): void
 }>()
 
-const router = useRouter()
 const imageError = ref(false)
 
 // Reset error flag if user prop changes during component reuse
@@ -175,9 +169,26 @@ const userInitials = computed(() => {
 const levelName = computed(() => getLevelName(props.user.currentLevel))
 const levelBadgeClass = computed(() => getLevelClasses(props.user.currentLevel))
 
+const statusBadgeClasses = computed(() => {
+  if (props.theme === 'dark') {
+    return props.user.enabled
+      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+  }
+  return props.user.enabled
+    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+    : 'bg-rose-50 text-rose-700 border border-rose-200'
+})
+
+const statusDotClass = computed(() => {
+  if (props.theme === 'dark') {
+    return props.user.enabled ? 'bg-emerald-400' : 'bg-rose-400'
+  }
+  return props.user.enabled ? 'bg-emerald-500' : 'bg-rose-500'
+})
+
 function handleViewDetails() {
   emit('view-details', props.user.id)
-  router.push(`/admin/users/${props.user.id}/info`)
 }
 
 function handleToggleStatus() {

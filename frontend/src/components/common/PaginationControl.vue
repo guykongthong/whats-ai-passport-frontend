@@ -1,13 +1,13 @@
 <template>
   <nav
-    v-if="safeTotalPages > 0"
+    v-if="totalPages > 0"
     class="flex flex-col sm:flex-row items-center justify-between gap-3 px-2 py-3 w-full select-none"
     aria-label="Pagination Navigation"
   >
     <!-- Summary Text: e.g. "Page 1 of 5" -->
     <div class="text-xs sm:text-sm text-slate-600 font-medium">
       Page <span class="font-bold text-slate-800">{{ currentPage }}</span> of
-      <span class="font-bold text-slate-800">{{ safeTotalPages }}</span>
+      <span class="font-bold text-slate-800">{{ totalPages }}</span>
     </div>
 
     <!-- Navigation Buttons Group -->
@@ -68,42 +68,25 @@ import { computed } from 'vue'
 interface Props {
   currentPage: number
   totalPages: number
-  hasPrev?: boolean
-  hasNext?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  hasPrev: undefined,
-  hasNext: undefined,
-})
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'page-change', newPage: number): void
 }>()
 
-const safeTotalPages = computed(() => Math.max(1, props.totalPages))
+// Strict visibility: Hide Previous on page 1 (currentPage <= 1)
+const showPrev = computed(() => props.currentPage > 1)
 
-// Strict visibility: Hide Previous on page 1 (currentPage <= 1), respect hasPrev if provided
-const showPrev = computed(() => {
-  if (props.currentPage <= 1) return false
-  if (typeof props.hasPrev === 'boolean') {
-    return props.hasPrev
-  }
-  return true
-})
-
-// Strict visibility: Hide Next on last page (currentPage >= totalPages), respect hasNext if provided
-const showNext = computed(() => {
-  if (props.currentPage >= safeTotalPages.value) return false
-  if (typeof props.hasNext === 'boolean') {
-    return props.hasNext
-  }
-  return true
-})
+// Strict visibility: Hide Next on last page (currentPage >= totalPages)
+const showNext = computed(() => props.currentPage < props.totalPages)
 
 // Display up to 5 page numbers centered on current page
 const visiblePages = computed(() => {
-  const total = safeTotalPages.value
+  const total = props.totalPages
+  if (total <= 0) return []
+
   const current = Math.min(Math.max(1, props.currentPage), total)
   const windowSize = 5
 
@@ -130,7 +113,7 @@ const visiblePages = computed(() => {
 })
 
 function goToPage(page: number) {
-  if (page < 1 || page > safeTotalPages.value || page === props.currentPage) {
+  if (page < 1 || page > props.totalPages || page === props.currentPage) {
     return
   }
   emit('page-change', page)
