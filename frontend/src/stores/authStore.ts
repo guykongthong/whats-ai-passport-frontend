@@ -2,18 +2,9 @@ import { defineStore } from 'pinia'
 import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
-import type { User } from '@/types/User'
+import type { User, RegisterPayload } from '@/types'
 
 const MAX_LEVEL = levels.length
-
-interface RegisterFields {
-  nameTh: string,
-  surnameTh: string,
-  nameEn: string,
-  surnameEn: string,
-  province: string,
-  email: string,
-}
 
 interface UserFilters {
   level: string | null
@@ -55,15 +46,15 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser.value = null
   }
 
-  function register(fields: RegisterFields) {
+  function register(fields: RegisterPayload) {
     const newUser: User = {
       id: crypto.randomUUID(),
-      nameTh: fields.nameTh,
-      surnameTh: fields.surnameTh,
-      name: fields.nameEn,
-      surname: fields.surnameEn,
+      username: fields.username,
+      name: fields.firstname,
+      surname: fields.lastname,
       province: fields.province,
       email: fields.email,
+      profileImageUrl: fields.profileImageUrl,
       level: '1',
       role: 'user',
       isActive: true,
