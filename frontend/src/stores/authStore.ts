@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (isEmail) {
         return u.email === identifier
       } else {
-        return u.email.split('@')[0] === identifier.split('@')[0]
+        return u.username === identifier || u.email.split('@')[0] === identifier.split('@')[0]
       }
     }))) ?? null
   }
