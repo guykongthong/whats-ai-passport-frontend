@@ -56,10 +56,10 @@
         <ErrorMessage :message="errors.province" />
       </div>
 
-      <BaseInput
+      <!-- Profile Picture Upload -->
+      <ImageUpload
         v-model="profileImageUrl"
-        label="Profile image URL"
-        placeholder="https://example.com/avatar.png"
+        label="Profile image"
         :error-message="errors.profileImageUrl"
         required
       />
@@ -187,6 +187,7 @@ import EmailVerificationIllustration from '@/shared/components/icons/EmailVerifi
 import ErrorMessage from '@/shared/components/ErrorMessage.vue'
 import RequiredField from '@/shared/components/RequiredField.vue'
 import AlertBox from '@/shared/components/AlertBox.vue'
+import ImageUpload from '@/components/common/ImageUpload.vue'
 
 const emit = defineEmits<{
   'submit-register': [payload: RegisterPayload]
@@ -247,7 +248,7 @@ async function goNext() {
   if (currentStep.value === 1) {
     const result = await validate()
     if (!result.valid) {
-      alertMessage.value = 'Please fill in all required fields.'
+      alertMessage.value = 'Please fill in all required fields and upload a profile picture.'
       alertVariant.value = 'error'
       return
     }

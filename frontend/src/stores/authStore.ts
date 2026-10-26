@@ -7,6 +7,7 @@ import { isUserDeactivated } from '@/shared/utils/auth'
 
 const MAX_LEVEL = levels.length
 
+
 interface UserFilters {
   level: string | null
   province: string | null
