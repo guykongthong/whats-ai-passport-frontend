@@ -15,6 +15,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-ADMIN-03 | 3-fe-admin-03-build-admin-dashboard-shell-and-responsive-sidebar | In Review (PR #50) | frontend/src/components/admin/AdminSidebar.vue, frontend/src/views/admin/AdminLayoutView.vue | vue-tsc --build, vite build, eslint |
 | FE-ADMIN-04 | feat/4-fe-admin-04-setup-role-based-navigation-guard-for-admin-routes | Completed | frontend/src/router/index.ts, frontend/src/router.ts, frontend/src/composables/useToast.ts, frontend/src/shared/components/UserPageLayout.vue | vue-tsc --build, vite build, eslint |
 | FE-USER-02 | feat/28-fe-user-02-implement-user-api-services-with-axios-client | In Review (PR #49) | frontend/src/services/apiClient.ts, UserService.ts, ELearningService.ts, ExamService.ts, index.ts | vue-tsc --build, vite build |
+| FE-USER-04 | feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form | Completed | frontend/src/services/FileService.ts, frontend/src/components/common/ImageUpload.vue, frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, authStore.ts | vue-tsc --build, vite build, eslint |
 
 ---
 
@@ -106,3 +107,22 @@ Configured route-level metadata and global navigation guards in Vue Router to re
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`).
 - Ran `npm run build-only` and `npm run lint`. All passed with 0 warnings and 0 errors.
+
+### FE-USER-04: Integrate Cloud Storage Image Upload into Registration Form
+
+- Date: 2026-10-27
+- Branch: `feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form`
+- Status: Completed
+
+Summary:
+Integrated cloud image uploading into the user registration flow so profile pictures are uploaded directly to the backend storage endpoint prior to registration (Criteria #3):
+- `FileService.ts`: Added `uploadImage(file: File)` service executing `POST /files/upload` with `multipart/form-data` payload (`file` field), returning `{ url: string }`. Public endpoint accessible without authentication.
+- `ImageUpload.vue`: Built reusable upload component with file picker, drag-and-drop support, file format/size validation (PNG, JPG, WEBP up to 5MB), upload spinner, live preview thumbnail, and replace/remove actions.
+- Form Integration (`RegisterForm.vue` & `RegisterPage.vue`): Embedded `ImageUpload` component in Step 1 of the registration wizard, binding the uploaded public image URL to `profileImageUrl`. Updated step 1 validation to ensure profile picture upload.
+- State Persistence (`authStore.ts`): Stored `profileImageUrl` in the new user record upon successful registration.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`).
+- Built production bundle with `npm run build-only`.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 errors and 0 warnings.
+
