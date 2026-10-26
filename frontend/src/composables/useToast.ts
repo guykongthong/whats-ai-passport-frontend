@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 
-export function useToast() {
-  const showToast = ref(false)
-  const toastMessage = ref('')
+const showToast = ref(false)
+const toastMessage = ref('')
 
-  function triggerToast(message: string, duration = 1000): Promise<void> {
+export function useToast() {
+  function triggerToast(message: string, duration = 3000): Promise<void> {
     toastMessage.value = message
     showToast.value = true
     return new Promise((resolve) => {

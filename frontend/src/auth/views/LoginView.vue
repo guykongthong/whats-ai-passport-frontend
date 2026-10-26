@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { isUserAdmin } from '@/shared/utils/auth'
 import LoginForm from '@/auth/components/LoginForm.vue'
 import Footer from '@/shared/components/Footer.vue'
 
@@ -11,10 +12,15 @@ const loginError = ref('')
 
 const onLoginSubmit = (email: string) => {
   loginError.value = ''
-  authStore.login(email)
+  const result = authStore.login(email)
+
+  if (result === 'deactivated') {
+    loginError.value = 'This account has been deactivated. Please contact an administrator.'
+    return
+  }
 
   if (authStore.currentUser) {
-    if (authStore.currentUser.role === 'admin') {
+    if (isUserAdmin(authStore.currentUser)) {
       router.push('/admin')
     } else {
       router.push('/dashboard')

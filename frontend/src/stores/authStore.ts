@@ -3,6 +3,7 @@ import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
 import type { User } from '@/types/User'
+import { isUserDeactivated } from '@/shared/utils/auth'
 
 const MAX_LEVEL = levels.length
 
@@ -21,8 +22,20 @@ interface UserFilters {
   name: string
 }
 
+function getInitialUser(): User | null {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('currentUser')
+      return saved ? JSON.parse(saved) : null
+    }
+  } catch {
+    // ignore
+  }
+  return null
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  const currentUser = ref<User | null>(null)
+  const currentUser = ref<User | null>(getInitialUser())
   const users = ref<User[]>(mockUsers)
 
   const filters = ref<UserFilters>({ level: null, province: null, name: '' })
@@ -39,20 +52,39 @@ export const useAuthStore = defineStore('auth', () => {
     level: '1'
   })
 
-  function login(identifier: string) {
+  function login(identifier: string): 'success' | 'deactivated' | 'not_found' {
     const isEmail = identifier.includes('@')
 
-    currentUser.value = ((users.value.find((u) => {
+    const found = ((users.value.find((u) => {
       if (isEmail) {
         return u.email === identifier
       } else {
         return u.email.split('@')[0] === identifier.split('@')[0]
       }
     }))) ?? null
+
+    if (found && isUserDeactivated(found)) {
+      currentUser.value = null
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('currentUser')
+      }
+      return 'deactivated'
+    }
+
+    currentUser.value = found
+    if (found && typeof localStorage !== 'undefined') {
+      localStorage.setItem('currentUser', JSON.stringify(found))
+    }
+    return found ? 'success' : 'not_found'
   }
 
   function logout() {
     currentUser.value = null
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('currentUser')
+      localStorage.removeItem('token')
+      localStorage.removeItem('access_token')
+    }
   }
 
   function register(fields: RegisterFields) {
