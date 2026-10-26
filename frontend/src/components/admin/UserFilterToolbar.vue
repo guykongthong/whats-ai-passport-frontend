@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
 
 export interface UserFilters {
   name?: string
@@ -164,7 +164,14 @@ const provinces = [
   'Songkhla',
 ]
 
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
+
 function emitFilterChange() {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
+  }
+
   const trimmedName = search.value.trim()
   const parsedLevel = level.value ? Number(level.value) : undefined
   const selectedProv = province.value || undefined
@@ -177,8 +184,26 @@ function emitFilterChange() {
   })
 }
 
-watch([search, level, province], () => {
+// Debounce search input changes by 300ms to reduce unnecessary API requests
+watch(search, () => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+  }
+  debounceTimer = setTimeout(() => {
+    emitFilterChange()
+  }, 300)
+})
+
+// Dropdowns (Level & Province) emit immediately without debounce
+watch([level, province], () => {
   emitFilterChange()
+})
+
+onBeforeUnmount(() => {
+  if (debounceTimer) {
+    clearTimeout(debounceTimer)
+    debounceTimer = null
+  }
 })
 
 // Sync props if parent changes them
@@ -212,11 +237,13 @@ watch(
 
 function clearSearch() {
   search.value = ''
+  emitFilterChange()
 }
 
 function resetFilters() {
   search.value = ''
   level.value = ''
   province.value = ''
+  emitFilterChange()
 }
 </script>

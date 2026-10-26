@@ -78,7 +78,7 @@
       </div>
 
       <!-- Pagination Footer -->
-      <div class="border-t border-slate-200 px-4 py-2">
+      <div v-if="totalPages > 0" class="border-t border-slate-200 px-4 py-2">
         <PaginationControl
           :current-page="currentPage"
           :total-pages="totalPages"
