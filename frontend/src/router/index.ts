@@ -3,6 +3,7 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from '@/composables/useToast'
+import { isUserAdmin, isUserDeactivated } from '@/shared/utils/auth'
 import LoginView from '@/auth/views/LoginView.vue'
 import RegisterPage from '@/auth/views/RegisterPage.vue'
 import MyProfilePage from '@/user/views/MyProfilePage.vue'
@@ -204,28 +205,17 @@ router.beforeEach((to) => {
   const { triggerToast } = useToast()
 
   // 1. Check if user account is deactivated (enabled === false or isActive === false)
-  if (user) {
-    const isDeactivated =
-      user.isActive === false ||
-      ('enabled' in user && (user as unknown as { enabled: boolean }).enabled === false)
-
-    if (isDeactivated) {
-      authStore.logout()
-      triggerToast('Your account has been deactivated. Please contact an administrator.')
-      return { name: 'login', query: { error: 'account_deactivated' } }
-    }
+  if (user && isUserDeactivated(user)) {
+    authStore.logout()
+    triggerToast('Your account has been deactivated. Please contact an administrator.')
+    return { name: 'login', query: { error: 'account_deactivated' } }
   }
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
   const requiresGuest = to.matched.some((record) => record.meta.requiresGuest)
 
-  const userRole = user?.role as string | undefined
-  const userRoles = (user as unknown as { roles?: string[] })?.roles
-  const isAdmin =
-    userRole === 'admin' ||
-    userRole === 'ROLE_ADMIN' ||
-    (Array.isArray(userRoles) && userRoles.includes('ROLE_ADMIN'))
+  const isAdmin = isUserAdmin(user)
 
   // 2. Redirect authenticated users away from guest routes
   if (requiresGuest && user) {

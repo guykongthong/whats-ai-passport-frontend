@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { isUserAdmin } from '@/shared/utils/auth'
 import LoginForm from '@/auth/components/LoginForm.vue'
 import Footer from '@/shared/components/Footer.vue'
 
@@ -19,15 +20,7 @@ const onLoginSubmit = (email: string) => {
   }
 
   if (authStore.currentUser) {
-    const user = authStore.currentUser
-    const userRole = user.role as string
-    const userRoles = (user as unknown as { roles?: string[] })?.roles
-    const isAdmin =
-      userRole === 'admin' ||
-      userRole === 'ROLE_ADMIN' ||
-      (Array.isArray(userRoles) && userRoles.includes('ROLE_ADMIN'))
-
-    if (isAdmin) {
+    if (isUserAdmin(authStore.currentUser)) {
       router.push('/admin')
     } else {
       router.push('/dashboard')

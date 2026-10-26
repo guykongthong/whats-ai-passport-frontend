@@ -3,6 +3,7 @@ import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
 import type { User } from '@/types/User'
+import { isUserDeactivated } from '@/shared/utils/auth'
 
 const MAX_LEVEL = levels.length
 
@@ -62,18 +63,12 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }))) ?? null
 
-    if (found) {
-      const isDeactivated =
-        found.isActive === false ||
-        ('enabled' in found && (found as unknown as { enabled: boolean }).enabled === false)
-
-      if (isDeactivated) {
-        currentUser.value = null
-        if (typeof localStorage !== 'undefined') {
-          localStorage.removeItem('currentUser')
-        }
-        return 'deactivated'
+    if (found && isUserDeactivated(found)) {
+      currentUser.value = null
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('currentUser')
       }
+      return 'deactivated'
     }
 
     currentUser.value = found
