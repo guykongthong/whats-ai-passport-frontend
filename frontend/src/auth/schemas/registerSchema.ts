@@ -12,8 +12,8 @@ export const step1Schema = yup.object({
   profileImageUrl: yup
     .string()
     .trim()
-    .required('Profile image URL is required')
-    .url('Please enter a valid URL'),
+    .required('Profile image is required')
+    .url('Profile image must be a valid URL'),
   email: yup.string().optional(),
   password: yup.string().optional(),
   confirmPassword: yup.string().optional(),

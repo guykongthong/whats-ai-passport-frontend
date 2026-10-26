@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-[#00385e] to-[#4F6C83] flex flex-col relative font-display">
+  <div class="flex min-h-screen flex-col">
     <NavBar
-      theme="dark"
-      logo-text="The CA?T Passport"
       :links="navLinks"
+      :user-name="userName"
+      :user-role="userRole"
       @logout="handleLogout"
     />
 
@@ -13,15 +13,12 @@
 
     <slot />
 
-    <Footer
-      theme="dark"
-      logo-text="WHAT'S"
-      :links="footerLinks"
-    />
+    <Footer :links="footerLinks" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from '@/composables/useToast'
@@ -36,6 +33,15 @@ const { showToast, toastMessage } = useToast()
 
 const navLinks = userNavLinks
 const footerLinks = userFooterLinks
+
+const userName = computed(() => {
+  const u = authStore.currentUser
+  return u ? `${u.name} ${u.surname}` : null
+})
+
+const userRole = computed(() => {
+  return authStore.currentUser?.role === 'admin' ? 'Admin' : 'User'
+})
 
 function handleLogout() {
   authStore.logout()

@@ -42,10 +42,11 @@
 
       <!-- Province dropdown -->
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-semibold text-button-primary">
+        <label for="register-province" class="text-sm font-semibold text-button-primary">
           Province <RequiredField />
         </label>
         <select
+          id="register-province"
           v-model="province"
           class="w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-button-primary"
           :class="province === '' ? 'text-gray-400' : 'text-gray-900'"
@@ -82,11 +83,12 @@
 
       <!-- Password with show/hide toggle -->
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-semibold text-button-primary">
+        <label for="register-password" class="text-sm font-semibold text-button-primary">
           Create your own password <RequiredField />
         </label>
         <div class="relative">
           <input
+            id="register-password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
             placeholder="At least 6 characters"
@@ -94,6 +96,7 @@
           />
           <button
             type="button"
+            aria-label="Toggle password visibility"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             @click="showPassword = !showPassword"
           >
@@ -108,11 +111,12 @@
 
       <!-- Verify password with show/hide toggle -->
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-semibold text-button-primary">
+        <label for="register-confirm-password" class="text-sm font-semibold text-button-primary">
           Verify password <RequiredField />
         </label>
         <div class="relative">
           <input
+            id="register-confirm-password"
             v-model="confirmPassword"
             :type="showConfirmPassword ? 'text' : 'password'"
             placeholder="Re-enter your password"
@@ -120,10 +124,13 @@
           />
           <button
             type="button"
+            aria-label="Toggle confirm password visibility"
             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             @click="showConfirmPassword = !showConfirmPassword"
           >
+            <!-- Eye-slash (password hidden) -->
             <EyeOffIcon v-if="!showConfirmPassword" />
+            <!-- Eye (password visible) -->
             <EyeIcon v-else />
           </button>
         </div>
@@ -134,8 +141,13 @@
         <BaseButton type="button" variant="secondary" class="flex-1" @click="goBack">
           ← Back
         </BaseButton>
-        <BaseButton type="submit" variant="primary" class="flex-1">
-          Next →
+        <BaseButton
+          type="submit"
+          variant="primary"
+          class="flex-1"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? 'Registering...' : 'Register' }}
         </BaseButton>
       </div>
     </form>
@@ -143,7 +155,7 @@
     <!-- Step 3: Confirmation -->
     <div v-else class="flex flex-col items-center gap-6">
       <p class="text-center text-sm text-gray-600">
-        Please check and verify your email address
+        Registration completed successfully! Your account is ready.
       </p>
 
       <div class="flex w-full items-center justify-center rounded-xl bg-gray-50 py-10">
@@ -171,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/yup'
@@ -189,11 +201,31 @@ import RequiredField from '@/shared/components/RequiredField.vue'
 import AlertBox from '@/shared/components/AlertBox.vue'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 
+interface Props {
+  registerError?: string
+  isSubmitting?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  registerError: '',
+  isSubmitting: false,
+})
+
 const emit = defineEmits<{
   'submit-register': [payload: RegisterPayload]
 }>()
 
 const currentStep = ref(1)
+
+watch(
+  () => props.registerError,
+  (msg) => {
+    if (msg) {
+      alertMessage.value = msg
+      alertVariant.value = 'error'
+    }
+  }
+)
 
 const provinces = [
   'Amnat Charoen', 'Ang Thong', 'Bangkok', 'Bueng Kan', 'Buriram',
@@ -219,7 +251,7 @@ const showConfirmPassword = ref(false)
 const alertMessage = ref('')
 const alertVariant = ref<'error' | 'warning' | 'info' | 'success'>('error')
 
-const { errors, defineField, handleSubmit, validate } = useForm<RegisterFormValues>({
+const { errors, defineField, handleSubmit, validate, setErrors } = useForm<RegisterFormValues>({
   validationSchema: computed(() =>
     toTypedSchema(currentStep.value === 1 ? step1Schema : registerSchema)
   ),
@@ -261,22 +293,29 @@ function goBack() {
   if (currentStep.value > 1) {
     currentStep.value -= 1
     alertMessage.value = ''
+    setErrors({})
   }
 }
 
 const onSubmit = handleSubmit(
-  (formValues) => {
+  async (formValues) => {
     alertMessage.value = ''
-    emit('submit-register', {
-      username: formValues.username,
-      password: formValues.password,
-      firstname: formValues.firstname,
-      lastname: formValues.lastname,
-      email: formValues.email,
-      province: formValues.province,
-      profileImageUrl: formValues.profileImageUrl,
-    })
-    currentStep.value = 3
+    try {
+      await emit('submit-register', {
+        username: formValues.username,
+        password: formValues.password,
+        firstname: formValues.firstname,
+        lastname: formValues.lastname,
+        email: formValues.email,
+        province: formValues.province,
+        profileImageUrl: formValues.profileImageUrl,
+      })
+      currentStep.value = 3
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : (props.registerError || 'Registration failed.')
+      alertMessage.value = message
+      alertVariant.value = 'error'
+    }
   },
   () => {
     alertMessage.value = 'Please fill in all required fields.'
