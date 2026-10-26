@@ -25,7 +25,7 @@ const onLoginSubmit = (email: string) => {
   const result = authStore.login(email)
 
   if (result === 'deactivated') {
-    loginError.value = 'Your account has been deactivated. Please contact an administrator.'
+    loginError.value = 'This account has been deactivated. Please contact an administrator.'
     return
   }
 

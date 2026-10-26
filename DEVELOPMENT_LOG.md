@@ -107,7 +107,6 @@ Configured route-level metadata and global navigation guards in Vue Router to re
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`).
 - Ran `npm run build-only` and `npm run lint`. All passed with 0 warnings and 0 errors.
-
 ### FE-USER-03: Build Registration Page with Vee-Validate/Yup and Initial Level 1 Setup
 
 - Date: 2026-10-26
