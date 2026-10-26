@@ -32,14 +32,18 @@ async function handleRegister(
   surnameEn: string,
   province: string,
   email: string,
+  _password?: string,
+  profileImageUrl?: string,
 ) {
   authStore.register({
-  nameTh,
-  surnameTh,
-  nameEn,
-  surnameEn,
-  province,
-  email,})
+    nameTh,
+    surnameTh,
+    nameEn,
+    surnameEn,
+    province,
+    email,
+    profileImageUrl,
+  })
 
   await triggerToast('Registration successful! Redirecting to login...', 2000)
   router.push('/login')

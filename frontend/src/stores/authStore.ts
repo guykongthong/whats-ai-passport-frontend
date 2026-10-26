@@ -14,6 +14,7 @@ interface RegisterFields {
   surnameEn: string,
   province: string,
   email: string,
+  profileImageUrl?: string,
 }
 
 interface UserFilters {
@@ -96,6 +97,7 @@ export const useAuthStore = defineStore('auth', () => {
       surname: fields.surnameEn,
       province: fields.province,
       email: fields.email,
+      profileImageUrl: fields.profileImageUrl,
       level: '1',
       role: 'user',
       isActive: true,

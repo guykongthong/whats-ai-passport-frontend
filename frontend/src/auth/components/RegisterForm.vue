@@ -62,6 +62,14 @@
       <ErrorMessage :message="error.province"/>
       </div>
 
+      <!-- Profile Picture Upload -->
+      <ImageUpload
+        v-model="form.profileImageUrl"
+        label="Profile image"
+        :error-message="error.profileImageUrl"
+        required
+      />
+
       <BaseButton type="submit" variant="primary" class="mt-6 w-full py-3 text-base">Next →</BaseButton>
     </form>
 
@@ -180,6 +188,7 @@ import type { FieldErrors } from '@/types/FieldErrors'
 import ErrorMessage from '@/shared/components/ErrorMessage.vue'
 import RequiredField from '@/shared/components/RequiredField.vue'
 import AlertBox from '@/shared/components/AlertBox.vue'
+import ImageUpload from '@/components/common/ImageUpload.vue'
 
 const emit = defineEmits<{
   'submit-register': [
@@ -190,6 +199,7 @@ const emit = defineEmits<{
     province: string,
     email: string,
     password: string,
+    profileImageUrl?: string,
   ]
 }>()
 
@@ -201,6 +211,7 @@ const form = reactive({
   nameEn: '',
   surnameEn: '',
   province: '',
+  profileImageUrl: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -234,10 +245,17 @@ const alertVariant = ref<'error' | 'warning' | 'info' | 'success'>('error')
 
 function goNext() {
   if (currentStep.value === 1) {
-    const stepErrors = validateRequired({ nameTh: form.nameTh, surnameTh: form.surnameTh, nameEn: form.nameEn, surnameEn: form.surnameEn, province: form.province })
+    const stepErrors = validateRequired({
+      nameTh: form.nameTh,
+      surnameTh: form.surnameTh,
+      nameEn: form.nameEn,
+      surnameEn: form.surnameEn,
+      province: form.province,
+      profileImageUrl: form.profileImageUrl,
+    })
     error.value = stepErrors
         if (Object.keys(stepErrors).length > 0) {
-          alertMessage.value = 'Please fill in all required fields.'
+          alertMessage.value = 'Please fill in all required fields and upload a profile picture.'
           alertVariant.value = 'error'
           return
         }
@@ -268,6 +286,7 @@ function goNext() {
       form.province,
       form.email,
       form.password,
+      form.profileImageUrl,
     )
     currentStep.value = 3
     }
