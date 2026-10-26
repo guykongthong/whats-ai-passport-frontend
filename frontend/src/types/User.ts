@@ -4,13 +4,17 @@ export interface User {
   email: string
   name: string
   surname: string
+  firstname?: string
+  lastname?: string
   nameTh?: string
   surnameTh?: string
   level: string
   province: string
   profileImageUrl?: string
   role: 'admin' | 'user'
+  roles?: readonly string[] | string[]
   isActive: boolean
+  enabled?: boolean
 }
 
 // Request body for POST /auth/register (see API contract)

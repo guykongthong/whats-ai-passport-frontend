@@ -12,7 +12,8 @@ This document tracks work progress, branch references, and implementation notes 
 |---|---|---|---|---|
 | FE-ADMIN-01 | 1-fe-admin-01-define-typescript-interfaces-and-dtos-for-admin-features | Completed | frontend/src/types/admin.ts, frontend/src/types/index.ts | vue-tsc --build, vite build |
 | FE-ADMIN-02 | feat/2-fe-admin-02-implement-admin-api-services-with-axios-client | Completed | frontend/src/services/apiClient.ts, AdminUserService.ts, AdminLevelService.ts, AdminQuestionService.ts, index.ts | vue-tsc --build, vite build, eslint |
-| FE-ADMIN-03 | 3-fe-admin-03-build-admin-dashboard-shell-and-responsive-sidebar | Pending | frontend/src/components/admin/AdminSidebar.vue, frontend/src/views/admin/AdminLayoutView.vue | - |
+| FE-ADMIN-03 | 3-fe-admin-03-build-admin-dashboard-shell-and-responsive-sidebar | In Review (PR #50) | frontend/src/components/admin/AdminSidebar.vue, frontend/src/views/admin/AdminLayoutView.vue | vue-tsc --build, vite build, eslint |
+| FE-ADMIN-04 | feat/4-fe-admin-04-setup-role-based-navigation-guard-for-admin-routes | Completed | frontend/src/router/index.ts, frontend/src/router.ts, frontend/src/composables/useToast.ts, frontend/src/shared/components/UserPageLayout.vue | vue-tsc --build, vite build, eslint |
 | FE-USER-02 | feat/28-fe-user-02-implement-user-api-services-with-axios-client | In Review (PR #49) | frontend/src/services/apiClient.ts, UserService.ts, ELearningService.ts, ExamService.ts, index.ts | vue-tsc --build, vite build |
 | FE-USER-03 | feat/29-fe-user-03-build-registration-page-with-veevalidateyup-and-initial-level-1-setup | Completed | frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, LoginView.vue, registerSchema.ts, authStore.ts, User.ts | vue-tsc --build, vite build, eslint |
 
@@ -88,6 +89,25 @@ Known Follow-up:
 Testing:
 - Checked types with `npx vue-tsc --build` and ran `npm run build`. Build passed with 0 errors.
 
+### FE-ADMIN-04: Setup Role-Based Navigation Guard for Admin Routes
+
+- Date: 2026-10-26
+- Branch: `feat/4-fe-admin-04-setup-role-based-navigation-guard-for-admin-routes`
+- Status: Completed
+
+Summary:
+Configured route-level metadata and global navigation guards in Vue Router to restrict admin access:
+- `router/index.ts` & `router.ts`: Added `meta: { requiresAuth: true, requiresAdmin: true }` across all `/admin` routes and child routes (`/admin/users/:id/info`, `history`, `edit`, `/admin/levels`, `/admin/exams`). Added route aliases `/login-view`, `/admin/users`, `/admin/questions`.
+- Navigation Guards (`router.beforeEach`):
+  - Unauthenticated access to protected routes redirects to `login` (with query `redirect`).
+  - Authenticated non-admin access (lacking `ROLE_ADMIN` / `admin` role) is redirected to user dashboard (`/dashboard?error=unauthorized`) with an unauthorized toast notification.
+  - Deactivated accounts (`enabled === false` or `isActive === false`) are blocked from navigating and logging in, forcing immediate logout.
+- Toast feedback: Configured global singleton toast state in `useToast.ts` and integrated toast display in `UserPageLayout.vue` and `MyProfilePage.vue`.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`).
+- Ran `npm run build-only` and `npm run lint`. All passed with 0 warnings and 0 errors.
+
 ### FE-USER-03: Build Registration Page with Vee-Validate/Yup and Initial Level 1 Setup
 
 - Date: 2026-10-26
@@ -114,4 +134,3 @@ Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`).
 - Built production bundle with `npm run build-only`.
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 errors and 0 warnings.
-
