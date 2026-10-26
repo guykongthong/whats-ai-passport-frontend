@@ -14,6 +14,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-ADMIN-02 | feat/2-fe-admin-02-implement-admin-api-services-with-axios-client | Completed | frontend/src/services/apiClient.ts, AdminUserService.ts, AdminLevelService.ts, AdminQuestionService.ts, index.ts | vue-tsc --build, vite build, eslint |
 | FE-ADMIN-03 | 3-fe-admin-03-build-admin-dashboard-shell-and-responsive-sidebar | Pending | frontend/src/components/admin/AdminSidebar.vue, frontend/src/views/admin/AdminLayoutView.vue | - |
 | FE-USER-02 | feat/28-fe-user-02-implement-user-api-services-with-axios-client | In Review (PR #49) | frontend/src/services/apiClient.ts, UserService.ts, ELearningService.ts, ExamService.ts, index.ts | vue-tsc --build, vite build |
+| FE-USER-03 | feat/29-fe-user-03-build-registration-page-with-veevalidateyup-and-initial-level-1-setup | Completed | frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, LoginView.vue, registerSchema.ts, authStore.ts, User.ts | vue-tsc --build, vite build, eslint |
 
 ---
 
@@ -86,3 +87,31 @@ Known Follow-up:
 
 Testing:
 - Checked types with `npx vue-tsc --build` and ran `npm run build`. Build passed with 0 errors.
+
+### FE-USER-03: Build Registration Page with Vee-Validate/Yup and Initial Level 1 Setup
+
+- Date: 2026-10-26
+- Branch: `feat/29-fe-user-03-build-registration-page-with-veevalidateyup-and-initial-level-1-setup`
+- Status: Completed
+
+Summary:
+- Form & API Contract Alignment:
+  - Aligned registration payload shape with backend `POST /auth/register` contract (`username`, `password`, `firstname`, `lastname`, `email`, `province`, `profileImageUrl`).
+  - Removed Thai name fields (`nameTh`, `surnameTh`) from the form and registration flow.
+- Schema Validation (Vee-Validate & Yup):
+  - Created `registerSchema` and `step1Schema` using `yup` and `@vee-validate/yup`.
+  - Added real-time inline errors and form validation for `username` (min 4 chars), `password` (min 6 chars), `confirmPassword` (matches password), `firstname`, `lastname`, `province`, `profileImageUrl` (URL validation), and `email`.
+  - Step 1 validates profile details before advancing to step 2; step 2 validates credentials on submit.
+- User Store & Progression Setup:
+  - Updated `authStore.register()` to accept `RegisterPayload`.
+  - Automatically initializes new users at `level: '1'`, `role: 'user'`, and `isActive: true`.
+  - Allowed login by username in addition to email.
+- UI & Feedback:
+  - Displayed inline error messages for each field and `AlertBox` for submission error alerts.
+  - Added redirect to `/login?registered=true` after registration with toast notification ("Registration successful! Please log in.").
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`).
+- Built production bundle with `npm run build-only`.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 errors and 0 warnings.
+
