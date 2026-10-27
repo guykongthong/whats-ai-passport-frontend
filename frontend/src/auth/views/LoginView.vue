@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
 import { isUserAdmin } from '@/shared/utils/auth'
 import LoginForm from '@/auth/components/LoginForm.vue'
 import Footer from '@/shared/components/Footer.vue'
+import Toast from '@/shared/components/Toast.vue'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const loginError = ref('')
+const { showToast, toastMessage, triggerToast } = useToast()
+
+onMounted(() => {
+  if (route.query.registered === 'true') {
+    triggerToast('Registration successful! Please log in.', 4000)
+  }
+})
 
 const onLoginSubmit = (email: string) => {
   loginError.value = ''
@@ -37,6 +47,7 @@ const noAccount = () => {
 
 <template>
   <div class="flex min-h-screen flex-col bg-[#EEF2F7]">
+    <Toast :show="showToast" :message="toastMessage" />
     <main class="flex flex-1 items-center justify-center p-4">
       <LoginForm :login-error="loginError" @submit-login="onLoginSubmit" @no-account="noAccount" />
     </main>

@@ -2,20 +2,11 @@ import { defineStore } from 'pinia'
 import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
-import type { User } from '@/types/User'
+import type { User, RegisterPayload } from '@/types'
 import { isUserDeactivated } from '@/shared/utils/auth'
 
 const MAX_LEVEL = levels.length
 
-interface RegisterFields {
-  nameTh: string,
-  surnameTh: string,
-  nameEn: string,
-  surnameEn: string,
-  province: string,
-  email: string,
-  profileImageUrl?: string,
-}
 
 interface UserFilters {
   level: string | null
@@ -50,7 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
     surnameEn: '',
     email: '',
     province: '',
-    level: '1'
+    level: '1',
   })
 
   function login(identifier: string): 'success' | 'deactivated' | 'not_found' {
@@ -60,7 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (isEmail) {
         return u.email === identifier
       } else {
-        return u.email.split('@')[0] === identifier.split('@')[0]
+        return u.username === identifier || u.email.split('@')[0] === identifier.split('@')[0]
       }
     }))) ?? null
 
@@ -88,19 +79,35 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function register(fields: RegisterFields) {
+  async function register(fields: RegisterPayload): Promise<User> {
+    const existingUsername = users.value.find(
+      (u) =>
+        (u.username && u.username.toLowerCase() === fields.username.toLowerCase()) ||
+        u.email.split('@')[0]?.toLowerCase() === fields.username.toLowerCase()
+    )
+    if (existingUsername) {
+      throw new Error('Username is already taken.')
+    }
+
+    const existingEmail = users.value.find(
+      (u) => u.email.toLowerCase() === fields.email.toLowerCase()
+    )
+    if (existingEmail) {
+      throw new Error('Email is already registered.')
+    }
+
     const newUser: User = {
       id: crypto.randomUUID(),
-      nameTh: fields.nameTh,
-      surnameTh: fields.surnameTh,
-      name: fields.nameEn,
-      surname: fields.surnameEn,
+      username: fields.username,
+      name: fields.firstname,
+      surname: fields.lastname,
       province: fields.province,
       email: fields.email,
       profileImageUrl: fields.profileImageUrl,
       level: '1',
       role: 'user',
       isActive: true,
+      enabled: true,
     }
     users.value.push(newUser)
     return newUser
