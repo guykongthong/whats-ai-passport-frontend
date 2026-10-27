@@ -17,6 +17,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-USER-02 | feat/28-fe-user-02-implement-user-api-services-with-axios-client | In Review (PR #49) | frontend/src/services/apiClient.ts, UserService.ts, ELearningService.ts, ExamService.ts, index.ts | vue-tsc --build, vite build |
 | FE-USER-03 | feat/29-fe-user-03-build-registration-page-with-veevalidateyup-and-initial-level-1-setup | Completed | frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, LoginView.vue, registerSchema.ts, authStore.ts, User.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-04 | feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form | Completed | frontend/src/services/FileService.ts, frontend/src/components/common/ImageUpload.vue, frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, authStore.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-06 | feat/31-fe-user-06-build-top-right-user-profile-header-area-with-avatar-and-name | Completed | frontend/src/components/user/UserNavbarProfile.vue, frontend/src/shared/components/NavBar.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 
 ---
 
@@ -152,3 +153,31 @@ Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`).
 - Built production bundle with `npm run build-only`.
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 errors and 0 warnings.
+
+### FE-USER-06: Build Top-Right User Profile Header Area with Avatar and Name
+
+- Date: 2026-10-27
+- Branch: `feat/31-fe-user-06-build-top-right-user-profile-header-area-with-avatar-and-name`
+- Status: Completed
+
+Summary:
+Implemented the top-right user profile header area displaying the user's avatar, name, and current level badge with an interactive dropdown menu across all user pages (Criteria #21):
+- `UserNavbarProfile.vue`: Built the header profile component:
+  - Circular avatar using `currentUser.profileImageUrl` with fallback to user initials / SVG icon on error or missing image.
+  - User's full name (`firstname lastname` or `name surname`) with responsive truncation.
+  - Current Level badge pill (e.g., "Level 2") styled with dynamic level-based colors.
+  - Interactive dropdown menu containing direct navigation links:
+    - "My Profile" (`/profile`)
+    - "eLearning" (`/elearning`)
+    - "Take Exam" (`/exam`)
+    - "Admin Dashboard" (`/admin`) for users with administrative roles
+    - "Log out" button calling `authStore.logout()` and redirecting to `/login`
+  - Click-outside event listener to automatically dismiss the dropdown.
+  - Mobile-responsive layout that gracefully collapses full name to compact avatar and level badge on small screens.
+- `NavBar.vue`: Integrated `UserNavbarProfile` in the top-right header area, rendering whenever `currentUser` is logged in, replacing the legacy placeholder.
+- `router/index.ts`: Added route aliases for `/profile`, `/elearning`, and `/exam` ensuring seamless navigation from the dropdown menu.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
