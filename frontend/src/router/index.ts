@@ -6,6 +6,7 @@ import { useToast } from '@/composables/useToast'
 import { isUserAdmin, isUserDeactivated } from '@/shared/utils/auth'
 import LoginView from '@/auth/views/LoginView.vue'
 import RegisterPage from '@/auth/views/RegisterPage.vue'
+import UserLayoutView from '@/views/user/UserLayoutView.vue'
 import MyProfilePage from '@/user/views/MyProfilePage.vue'
 import MyDetailsPage from '@/user/views/MyDetailsPage.vue'
 import ELearningPage from '@/user/views/ELearningPage.vue'
@@ -52,49 +53,56 @@ const router = createRouter({
       meta: { requiresGuest: true },
     },
     {
-      path: '/dashboard',
-      alias: ['/profile'],
-      name: 'dashboard',
-      component: MyProfilePage,
+      path: '',
+      component: UserLayoutView,
       meta: { requiresAuth: true },
-    },
-    {
-      path: '/profile/edit',
-      name: 'profile-edit',
-      component: MyDetailsPage,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/dashboard/elearning',
-      alias: ['/elearning'],
-      name: 'elearning',
-      component: ELearningPage,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/dashboard/exam',
-      alias: ['/exam'],
-      name: 'exam',
-      component: ExamPage,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/dashboard/exam-history',
-      name: 'exam-history',
-      component: ExamHistoryPage,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/dashboard/services',
-      name: 'services',
-      component: ServicesPage,
-      meta: { requiresAuth: true },
-    },
-    {
-      path: '/dashboard/badges',
-      name: 'badges',
-      component: UserBadgesPage,
-      meta: { requiresAuth: true },
+      children: [
+        {
+          path: '/dashboard',
+          alias: ['/profile'],
+          name: 'dashboard',
+          component: MyProfilePage,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/profile/edit',
+          name: 'profile-edit',
+          component: MyDetailsPage,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/dashboard/elearning',
+          alias: ['/elearning'],
+          name: 'elearning',
+          component: ELearningPage,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/dashboard/exam',
+          alias: ['/exam'],
+          name: 'exam',
+          component: ExamPage,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/dashboard/exam-history',
+          name: 'exam-history',
+          component: ExamHistoryPage,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/dashboard/services',
+          name: 'services',
+          component: ServicesPage,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: '/dashboard/badges',
+          name: 'badges',
+          component: UserBadgesPage,
+          meta: { requiresAuth: true },
+        },
+      ],
     },
     {
       path: '/admin',

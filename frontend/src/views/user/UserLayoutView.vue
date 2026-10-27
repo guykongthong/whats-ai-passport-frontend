@@ -229,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, provide } from 'vue'
 import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores'
 import { useToast } from '@/composables/useToast'
@@ -237,6 +237,8 @@ import Toast from '@/shared/components/Toast.vue'
 import Footer from '@/shared/components/Footer.vue'
 import UserNavbarProfile from '@/components/user/UserNavbarProfile.vue'
 import { userFooterLinks } from '@/data/navigation'
+
+provide('insideUserLayout', true)
 
 interface NavItem {
   label: string
