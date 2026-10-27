@@ -16,7 +16,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-ADMIN-04 | feat/4-fe-admin-04-setup-role-based-navigation-guard-for-admin-routes | Completed | frontend/src/router/index.ts, frontend/src/router.ts, frontend/src/composables/useToast.ts, frontend/src/shared/components/UserPageLayout.vue | vue-tsc --build, vite build, eslint |
 | FE-USER-02 | feat/28-fe-user-02-implement-user-api-services-with-axios-client | In Review (PR #49) | frontend/src/services/apiClient.ts, UserService.ts, ELearningService.ts, ExamService.ts, index.ts | vue-tsc --build, vite build |
 | FE-USER-03 | feat/29-fe-user-03-build-registration-page-with-veevalidateyup-and-initial-level-1-setup | Completed | frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, LoginView.vue, registerSchema.ts, authStore.ts, User.ts | vue-tsc --build, vite build, eslint |
-| FE-USER-04 | feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form | Completed | frontend/src/services/FileService.ts, frontend/src/components/common/ImageUpload.vue, frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, authStore.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-04 | feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form | In Review (PR #54) | frontend/src/services/FileService.ts, frontend/src/components/common/ImageUpload.vue, frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, authStore.ts | vue-tsc --build, vite build, eslint |
 
 ---
 
