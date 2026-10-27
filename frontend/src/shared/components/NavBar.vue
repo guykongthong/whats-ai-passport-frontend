@@ -25,8 +25,14 @@
     </nav>
 
     <div class="flex flex-1 items-center justify-end">
+      <!-- Top-right user profile area with avatar, name and level (FE-USER-06) -->
+      <UserNavbarProfile
+        v-if="currentUser"
+        :theme="theme"
+        @logout="handleLogout"
+      />
       <UserProfile 
-        v-if="userName"
+        v-else-if="userName"
         variant="navbar"
         :theme="theme"
         :user-name="userName"
@@ -41,8 +47,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores'
 import UserProfile from '@/shared/components/UserProfile.vue'
+import UserNavbarProfile from '@/components/user/UserNavbarProfile.vue'
 
 interface NavLink {
   label: string
@@ -67,6 +76,9 @@ withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   logout: []
 }>()
+
+const authStore = useAuthStore()
+const currentUser = computed(() => authStore.currentUser)
 
 function handleLogout() {
   emit('logout')

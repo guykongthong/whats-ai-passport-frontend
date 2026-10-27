@@ -53,6 +53,7 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
+      alias: ['/profile'],
       name: 'dashboard',
       component: MyProfilePage,
       meta: { requiresAuth: true },
@@ -65,12 +66,14 @@ const router = createRouter({
     },
     {
       path: '/dashboard/elearning',
+      alias: ['/elearning'],
       name: 'elearning',
       component: ELearningPage,
       meta: { requiresAuth: true },
     },
     {
       path: '/dashboard/exam',
+      alias: ['/exam'],
       name: 'exam',
       component: ExamPage,
       meta: { requiresAuth: true },
