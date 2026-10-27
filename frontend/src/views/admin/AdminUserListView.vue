@@ -3,7 +3,7 @@
     <!-- Filter Toolbar -->
     <UserFilterToolbar
       theme="light"
-      :initial-search="(route.query.search as string) || (route.query.name as string) || ''"
+      :initial-search="(route.query.name as string) || (route.query.search as string) || ''"
       :initial-level="(route.query.level as string) || ''"
       :initial-province="(route.query.province as string) || ''"
       @filter-change="handleFilterChange"
@@ -108,7 +108,11 @@ const totalCount = ref(0)
 const totalPages = ref(1)
 const loading = ref(false)
 const error = ref<string | null>(null)
-const activeFilters = ref<UserFilters>({})
+const activeFilters = ref<UserFilters>({
+  name: (route.query.name as string) || (route.query.search as string) || undefined,
+  level: route.query.level ? Number(route.query.level) : undefined,
+  province: (route.query.province as string) || undefined,
+})
 
 // Read page and pageSize from $route.query (defaults: page=1, pageSize=10)
 const currentPage = computed(() => {
@@ -171,10 +175,22 @@ function handlePageChange(newPage: number) {
   })
 }
 
-// Watch $route.query.page to reload data automatically on navigation or browser back/forward
+// Watch query parameters to reload data automatically on navigation or browser back/forward
 watch(
-  () => [route.query.page, route.query.pageSize],
+  () => [
+    route.query.page,
+    route.query.pageSize,
+    route.query.name,
+    route.query.search,
+    route.query.level,
+    route.query.province,
+  ],
   () => {
+    activeFilters.value = {
+      name: (route.query.name as string) || (route.query.search as string) || undefined,
+      level: route.query.level ? Number(route.query.level) : undefined,
+      province: (route.query.province as string) || undefined,
+    }
     fetchUsers()
   },
   { immediate: true },
@@ -183,14 +199,31 @@ watch(
 function handleFilterChange(filters: UserFilters) {
   activeFilters.value = filters
 
-  // Reset page to 1 on filter criteria change
-  if (currentPage.value !== 1) {
-    router.push({
-      query: {
-        ...route.query,
-        page: '1',
-      },
-    })
+  const nextQuery: Record<string, string | undefined> = {
+    ...route.query,
+    page: '1',
+    name: filters.name || undefined,
+    level: filters.level ? String(filters.level) : undefined,
+    province: filters.province || undefined,
+    search: undefined, // clean up legacy param if present
+  }
+
+  // Remove undefined keys so the URL stays clean
+  Object.keys(nextQuery).forEach((key) => {
+    if (nextQuery[key] === undefined) {
+      delete nextQuery[key]
+    }
+  })
+
+  // Compare if query changes to avoid redundant navigation
+  const currentKeys = Object.keys(route.query).sort()
+  const nextKeys = Object.keys(nextQuery).sort()
+  const isSame =
+    currentKeys.length === nextKeys.length &&
+    currentKeys.every((k) => String(route.query[k]) === String(nextQuery[k]))
+
+  if (!isSame) {
+    router.push({ query: nextQuery })
   } else {
     fetchUsers()
   }
@@ -201,11 +234,13 @@ function handleViewDetails(userId: number) {
 }
 
 async function handleToggleStatus(user: AdminUser) {
+  const previousState = user.enabled
   try {
     const nextState = !user.enabled
-    await AdminUserService.toggleUserStatus(user.id, nextState)
     user.enabled = nextState
+    await AdminUserService.toggleUserStatus(user.id, nextState)
   } catch (err) {
+    user.enabled = previousState
     console.error('Failed to toggle user status:', err)
   }
 }
