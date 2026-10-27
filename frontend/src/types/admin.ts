@@ -14,6 +14,7 @@ export interface AdminUser {
   currentLevel: number
   enabled: boolean
   roles: string[]
+  examHistories?: ExamHistoryItem[]
 }
 
 export interface LevelAdmin {
