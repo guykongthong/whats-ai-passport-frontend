@@ -1,0 +1,256 @@
+<template>
+  <div v-if="currentUser" ref="profileDropdownRef" class="relative">
+    <!-- Trigger Button -->
+    <button
+      type="button"
+      class="flex items-center gap-2.5 rounded-full p-1 sm:pr-3 transition-colors focus:outline-none focus:ring-2 focus:ring-button-primary/20"
+      :class="[
+        theme === 'dark'
+          ? 'hover:bg-white/10 text-white'
+          : 'hover:bg-gray-100 text-gray-900',
+        isDropdownOpen ? (theme === 'dark' ? 'bg-white/10' : 'bg-gray-100') : '',
+      ]"
+      aria-label="User Profile Menu"
+      :aria-expanded="isDropdownOpen"
+      @click="toggleDropdown"
+    >
+      <!-- Circular Profile Picture / Fallback -->
+      <div class="relative size-9 sm:size-10 shrink-0 overflow-hidden rounded-full border-2 border-white/80 shadow-sm bg-gray-100">
+        <img
+          v-if="currentUser.profileImageUrl && !imageLoadError"
+          :src="currentUser.profileImageUrl"
+          :alt="fullName"
+          class="size-full object-cover"
+          @error="imageLoadError = true"
+        />
+        <div
+          v-else
+          class="flex size-full items-center justify-center font-bold text-xs"
+          :class="theme === 'dark' ? 'bg-button-primary text-white' : 'bg-blue-100 text-button-primary'"
+        >
+          <span v-if="userInitials">{{ userInitials }}</span>
+          <svg v-else class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- User Name & Level Badge Pill (Desktop) -->
+      <div class="hidden sm:flex flex-col items-start text-left leading-tight">
+        <span class="text-sm font-bold truncate max-w-[140px] md:max-w-[180px]">
+          {{ fullName }}
+        </span>
+        <div class="mt-0.5">
+          <span
+            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
+            :class="levelBadgeClasses"
+          >
+            <span class="size-1.5 rounded-full bg-current"></span>
+            Level {{ currentLevel }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Mobile Badge Pill -->
+      <div class="sm:hidden">
+        <span
+          class="inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold shadow-xs"
+          :class="levelBadgeClasses"
+        >
+          L{{ currentLevel }}
+        </span>
+      </div>
+
+      <!-- Chevron Icon -->
+      <svg
+        class="size-4 shrink-0 transition-transform duration-200 opacity-60"
+        :class="{ 'rotate-180': isDropdownOpen }"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <Transition
+      enter-active-class="transition duration-150 ease-out"
+      enter-from-class="transform scale-95 opacity-0"
+      enter-to-class="transform scale-100 opacity-100"
+      leave-active-class="transition duration-100 ease-in"
+      leave-from-class="transform scale-100 opacity-100"
+      leave-to-class="transform scale-95 opacity-0"
+    >
+      <div
+        v-if="isDropdownOpen"
+        class="absolute right-0 top-full mt-2 w-56 rounded-xl border border-gray-200 bg-white py-1.5 shadow-xl z-50 text-gray-800"
+        role="menu"
+      >
+        <!-- Header in dropdown -->
+        <div class="px-4 py-2.5 border-b border-gray-100">
+          <p class="text-xs text-gray-500 font-medium">Signed in as</p>
+          <p class="text-sm font-bold text-gray-900 truncate">{{ fullName }}</p>
+          <p class="text-xs text-gray-500 truncate">{{ currentUser.email }}</p>
+          <div class="mt-1.5">
+            <span
+              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
+              :class="levelBadgeClasses"
+            >
+              <span class="size-1.5 rounded-full bg-current"></span>
+              Level {{ currentLevel }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Links -->
+        <div class="py-1">
+          <!-- My Profile -->
+          <RouterLink
+            to="/profile"
+            class="flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 hover:text-button-primary transition-colors"
+            role="menuitem"
+            @click="isDropdownOpen = false"
+          >
+            <svg class="size-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            My Profile
+          </RouterLink>
+
+          <!-- eLearning -->
+          <RouterLink
+            to="/elearning"
+            class="flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 hover:text-button-primary transition-colors"
+            role="menuitem"
+            @click="isDropdownOpen = false"
+          >
+            <svg class="size-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            eLearning
+          </RouterLink>
+
+          <!-- Take Exam -->
+          <RouterLink
+            to="/exam"
+            class="flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 hover:text-button-primary transition-colors"
+            role="menuitem"
+            @click="isDropdownOpen = false"
+          >
+            <svg class="size-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            Take Exam
+          </RouterLink>
+        </div>
+
+        <!-- Logout Action -->
+        <div class="border-t border-gray-100 pt-1">
+          <button
+            type="button"
+            class="flex w-full items-center gap-3 px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+            role="menuitem"
+            @click="handleLogout"
+          >
+            <svg class="size-4 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Log out
+          </button>
+        </div>
+      </div>
+    </Transition>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores'
+
+interface Props {
+  theme?: 'light' | 'dark'
+}
+
+withDefaults(defineProps<Props>(), {
+  theme: 'light',
+})
+
+const emit = defineEmits<{
+  logout: []
+}>()
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const currentUser = computed(() => authStore.currentUser)
+const isDropdownOpen = ref(false)
+const imageLoadError = ref(false)
+const profileDropdownRef = ref<HTMLElement | null>(null)
+
+const fullName = computed(() => {
+  const u = currentUser.value
+  if (!u) return 'Guest'
+  if (u.firstname && u.lastname) return `${u.firstname} ${u.lastname}`
+  if (u.name && u.surname) return `${u.name} ${u.surname}`
+  return u.name || u.username || 'User'
+})
+
+const userInitials = computed(() => {
+  const name = fullName.value.trim()
+  if (!name || name === 'Guest') return 'U'
+  const parts = name.split(/\s+/)
+  if (parts.length >= 2) {
+    const first = parts[0]?.[0] ?? ''
+    const second = parts[1]?.[0] ?? ''
+    return `${first}${second}`.toUpperCase()
+  }
+  return name.slice(0, 2).toUpperCase()
+})
+
+const currentLevel = computed(() => {
+  return currentUser.value?.level ?? '1'
+})
+
+const levelBadgeClasses = computed(() => {
+  const lvl = String(currentLevel.value)
+  switch (lvl) {
+    case '1':
+      return 'bg-gray-100 text-gray-700 border border-gray-200'
+    case '2':
+      return 'bg-blue-100 text-blue-800 border border-blue-200'
+    case '3':
+      return 'bg-amber-100 text-amber-800 border border-amber-200'
+    case '4':
+      return 'bg-purple-100 text-purple-800 border border-purple-200'
+    default:
+      return 'bg-blue-50 text-button-primary border border-blue-200'
+  }
+})
+
+function toggleDropdown() {
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+
+function handleLogout() {
+  isDropdownOpen.value = false
+  emit('logout')
+  authStore.logout()
+  router.push('/login')
+}
+
+function handleClickOutside(event: MouseEvent) {
+  if (profileDropdownRef.value && !profileDropdownRef.value.contains(event.target as Node)) {
+    isDropdownOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
+</script>
