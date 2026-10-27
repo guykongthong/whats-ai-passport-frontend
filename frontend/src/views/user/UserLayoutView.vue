@@ -259,7 +259,7 @@ const navLinks: NavItem[] = [
   { label: 'Home / Dashboard', to: '/dashboard', icon: 'home' },
   { label: 'eLearning', to: '/dashboard/elearning', icon: 'book' },
   { label: 'Upgrade Exam', to: '/dashboard/exam', icon: 'exam' },
-  { label: 'My Profile', to: '/profile/edit', icon: 'profile' },
+  { label: 'My Profile', to: '/profile', icon: 'profile' },
 ]
 
 function toggleDrawer() {
@@ -272,9 +272,9 @@ function closeDrawer() {
 
 function isActiveRoute(target: string): boolean {
   if (target === '/dashboard') {
-    return route.path === '/dashboard' || route.path === '/'
+    return route.path === '/dashboard' || route.path === '/home' || route.path === '/'
   }
-  if (target === '/profile/edit') {
+  if (target === '/profile') {
     return route.path === '/profile' || route.path.startsWith('/profile')
   }
   return route.path.startsWith(target)
