@@ -12,7 +12,7 @@ import ELearningPage from '@/user/views/ELearningPage.vue'
 import ExamPage from '@/user/views/ExamPage.vue'
 import ExamHistoryPage from '@/user/views/ExamHistoryPage.vue'
 import ServicesPage from '@/user/views/ServicesPage.vue'
-import AdminDashboard from '@/admin/views/AdminDashboard.vue'
+import AdminUserListView from '@/views/admin/AdminUserListView.vue'
 import UserDetailPage from '@/admin/views/UserDetailPage.vue'
 import UserTabInfo from '@/admin/views/user-tabs/UserTabInfo.vue'
 import UserTabHistory from '@/admin/views/user-tabs/UserTabHistory.vue'
@@ -53,7 +53,6 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
-      alias: ['/profile'],
       name: 'dashboard',
       component: MyProfilePage,
       meta: { requiresAuth: true },
@@ -66,14 +65,12 @@ const router = createRouter({
     },
     {
       path: '/dashboard/elearning',
-      alias: ['/elearning'],
       name: 'elearning',
       component: ELearningPage,
       meta: { requiresAuth: true },
     },
     {
       path: '/dashboard/exam',
-      alias: ['/exam'],
       name: 'exam',
       component: ExamPage,
       meta: { requiresAuth: true },
@@ -100,7 +97,7 @@ const router = createRouter({
       path: '/admin',
       alias: ['/admin/users'],
       name: 'admin',
-      component: AdminDashboard,
+      component: AdminUserListView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
