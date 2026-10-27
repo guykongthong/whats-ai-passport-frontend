@@ -204,6 +204,7 @@ import ImageUpload from '@/components/common/ImageUpload.vue'
 interface Props {
   registerError?: string
   isSubmitting?: boolean
+  submitHandler?: (payload: RegisterPayload) => Promise<void>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -212,7 +213,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'submit-register': [payload: RegisterPayload]
+  'submit-register': [
+    payload: RegisterPayload,
+    callback?: (err?: unknown) => void,
+  ]
 }>()
 
 const currentStep = ref(1)
@@ -300,16 +304,30 @@ function goBack() {
 const onSubmit = handleSubmit(
   async (formValues) => {
     alertMessage.value = ''
+    const payload: RegisterPayload = {
+      username: formValues.username,
+      password: formValues.password,
+      firstname: formValues.firstname,
+      lastname: formValues.lastname,
+      email: formValues.email,
+      province: formValues.province,
+      profileImageUrl: formValues.profileImageUrl,
+    }
+
     try {
-      await emit('submit-register', {
-        username: formValues.username,
-        password: formValues.password,
-        firstname: formValues.firstname,
-        lastname: formValues.lastname,
-        email: formValues.email,
-        province: formValues.province,
-        profileImageUrl: formValues.profileImageUrl,
-      })
+      if (props.submitHandler) {
+        await props.submitHandler(payload)
+      } else {
+        await new Promise<void>((resolve, reject) => {
+          emit('submit-register', payload, (err?: unknown) => {
+            if (err) {
+              reject(err instanceof Error ? err : new Error(String(err)))
+            } else {
+              resolve()
+            }
+          })
+        })
+      }
       currentStep.value = 3
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : (props.registerError || 'Registration failed.')

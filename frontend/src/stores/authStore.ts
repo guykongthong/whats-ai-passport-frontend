@@ -81,7 +81,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function register(fields: RegisterPayload): Promise<User> {
     const existingUsername = users.value.find(
-      (u) => u.username && u.username.toLowerCase() === fields.username.toLowerCase()
+      (u) =>
+        (u.username && u.username.toLowerCase() === fields.username.toLowerCase()) ||
+        u.email.split('@')[0]?.toLowerCase() === fields.username.toLowerCase()
     )
     if (existingUsername) {
       throw new Error('Username is already taken.')

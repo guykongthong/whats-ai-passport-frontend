@@ -6,6 +6,7 @@
       <RegisterForm
         :register-error="registerError"
         :is-submitting="isSubmitting"
+        :submit-handler="handleRegister"
         @submit-register="handleRegister"
       />
     </main>
@@ -28,15 +29,20 @@ const router = useRouter()
 const registerError = ref('')
 const isSubmitting = ref(false)
 
-async function handleRegister(payload: RegisterPayload) {
+async function handleRegister(
+  payload: RegisterPayload,
+  callback?: (err?: unknown) => void,
+) {
   registerError.value = ''
   isSubmitting.value = true
   try {
     await authStore.register(payload)
+    callback?.(null)
     await router.push({ path: '/login', query: { registered: 'true' } })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Registration failed. Please try again.'
     registerError.value = message
+    callback?.(err)
     throw err
   } finally {
     isSubmitting.value = false
