@@ -16,13 +16,32 @@ export const useUserStore = defineStore('user', () => {
 
   // Reactive state / getter: currentUserLevel
   const currentUserLevel = computed<number>(() => {
-    if (currentLevelDetails.value?.level) {
-      const parsed = Number(currentLevelDetails.value.level)
+    const raw = currentLevelDetails.value?.currentLevel ?? currentLevelDetails.value?.level
+    if (raw !== undefined && raw !== null) {
+      const parsed = Number(raw)
       if (!isNaN(parsed) && parsed > 0) return parsed
     }
     const authLvl = Number(authStore.currentUser?.level || 1)
     return isNaN(authLvl) || authLvl < 1 ? 1 : authLvl
   })
+
+  // Helper to normalize backend API response (supports GET /me/level baseline contract)
+  function normalizeLevelDetails(data: UserLevelDetails): UserLevelDetails {
+    const rawLevel = data.currentLevel ?? (data.level ? Number(data.level) : currentUserLevel.value)
+    const levelNum = Number(rawLevel) || 1
+    const foundLevel = levelStore.allLevels.find((l) => String(l.id) === String(levelNum))
+
+    return {
+      level: String(levelNum),
+      currentLevel: levelNum,
+      label: data.levelName || data.label || foundLevel?.label || getLevelName(levelNum),
+      levelName: data.levelName || data.label || foundLevel?.label || getLevelName(levelNum),
+      passingScore: data.passingScore ?? foundLevel?.passingScore ?? 70,
+      benefits: Array.isArray(data.benefits) ? data.benefits : [],
+      services: Array.isArray(data.services) ? data.services : [],
+      description: data.description || foundLevel?.description || `Benefits and privileges for Level ${levelNum}.`,
+    }
+  }
 
   // Helper to generate fallback UserLevelDetails from levelStore
   function getFallbackLevelDetails(level: number): UserLevelDetails {
@@ -30,9 +49,12 @@ export const useUserStore = defineStore('user', () => {
     const benefits = levelStore.getBenefitsForLevel(String(level)).map((b) => b.description)
     return {
       level: String(level),
+      currentLevel: level,
       label: foundLevel?.label || getLevelName(level),
+      levelName: foundLevel?.label || getLevelName(level),
       passingScore: foundLevel?.passingScore ?? 70,
       benefits,
+      services: levelStore.allServices.filter((s) => Number(s.level) <= level).map((s) => s.name),
       description: foundLevel?.description || `Benefits and privileges for Level ${level}.`,
     }
   }
@@ -47,8 +69,9 @@ export const useUserStore = defineStore('user', () => {
     try {
       const response = await UserService.getUserLevelDetails()
       if (response?.data) {
-        currentLevelDetails.value = response.data
-        return response.data
+        const normalized = normalizeLevelDetails(response.data)
+        currentLevelDetails.value = normalized
+        return normalized
       }
     } catch (err: unknown) {
       console.info('Backend getUserLevelDetails offline or unavailable, fallback to local store:', err)
@@ -79,8 +102,11 @@ export const useUserStore = defineStore('user', () => {
     // 3. Re-fetch getUserLevelDetails() in the background
     try {
       const res = await UserService.getUserLevelDetails()
-      if (res?.data && String(res.data.level) === nextLevelStr) {
-        currentLevelDetails.value = res.data
+      if (res?.data) {
+        const resLvl = String(res.data.currentLevel ?? res.data.level ?? '')
+        if (resLvl === nextLevelStr || resLvl === '') {
+          currentLevelDetails.value = normalizeLevelDetails(res.data)
+        }
       }
     } catch {
       // Keep optimistic fallback details if backend is unavailable

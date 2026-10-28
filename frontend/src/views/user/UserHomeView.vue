@@ -263,6 +263,15 @@ const currentBenefits = computed<string[]>(() => {
 })
 
 const activeServices = computed(() => {
+  if (levelDetails.value?.services && levelDetails.value.services.length > 0) {
+    return levelDetails.value.services.map((name) => {
+      const match = levelStore.allServices.find((s) => s.name === name)
+      return {
+        name,
+        level: match ? match.level : String(currentLevel.value),
+      }
+    })
+  }
   return levelStore.allServices.filter((s) => Number(s.level) <= currentLevel.value)
 })
 
