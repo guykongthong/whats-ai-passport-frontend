@@ -6,6 +6,7 @@ import { useToast } from '@/composables/useToast'
 import { isUserAdmin, isUserDeactivated } from '@/shared/utils/auth'
 import LoginView from '@/auth/views/LoginView.vue'
 import RegisterPage from '@/auth/views/RegisterPage.vue'
+import UserHomeView from '@/views/user/UserHomeView.vue'
 import MyProfilePage from '@/user/views/MyProfilePage.vue'
 import MyDetailsPage from '@/user/views/MyDetailsPage.vue'
 import ELearningPage from '@/user/views/ELearningPage.vue'
@@ -53,8 +54,14 @@ const router = createRouter({
     },
     {
       path: '/dashboard',
-      alias: ['/profile'],
+      alias: ['/home'],
       name: 'dashboard',
+      component: UserHomeView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/profile',
+      name: 'profile',
       component: MyProfilePage,
       meta: { requiresAuth: true },
     },
