@@ -184,14 +184,14 @@ function emitFilterChange() {
   })
 }
 
-// Debounce search input changes by 300ms to reduce unnecessary API requests
+// Debounce search input changes by 400ms to avoid excessive API requests
 watch(search, () => {
   if (debounceTimer) {
     clearTimeout(debounceTimer)
   }
   debounceTimer = setTimeout(() => {
     emitFilterChange()
-  }, 300)
+  }, 400)
 })
 
 // Dropdowns (Level & Province) emit immediately without debounce
