@@ -4,6 +4,7 @@ import { questions } from '@/data/questions'
 import { examRecords } from '@/data/examRecords'
 import { useAuthStore } from '@/stores/authStore'
 import { useLevelStore } from '@/stores/levelStore'
+import { useUserStore } from '@/stores/user'
 import type { AnsweredQuestion, ExamQuestion, ExamRecord } from '@/types/ExamContent'
 
 const DEFAULT_PASS_CRITERIA = 60
@@ -53,7 +54,10 @@ export const useExamStore = defineStore('exam', () => {
 
     if (pass && !alreadyPassed) {
       const authStore = useAuthStore()
+      const userStore = useUserStore()
+      const nextLevel = Math.min(Number(level) + 1, 4)
       authStore.levelUp(userId, level)
+      userStore.upgradeUserLevel(nextLevel)
     }
 
     return record
