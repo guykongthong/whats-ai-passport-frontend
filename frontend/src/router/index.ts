@@ -13,10 +13,10 @@ import ExamPage from '@/user/views/ExamPage.vue'
 import ExamHistoryPage from '@/user/views/ExamHistoryPage.vue'
 import ServicesPage from '@/user/views/ServicesPage.vue'
 import AdminUserListView from '@/views/admin/AdminUserListView.vue'
-import UserDetailPage from '@/admin/views/UserDetailPage.vue'
-import UserTabInfo from '@/admin/views/user-tabs/UserTabInfo.vue'
-import UserTabHistory from '@/admin/views/user-tabs/UserTabHistory.vue'
-import UserTabEdit from '@/admin/views/user-tabs/UserTabEdit.vue'
+import UserDetailLayout from '@/views/admin/user-detail/UserDetailLayout.vue'
+import UserInfoTab from '@/views/admin/user-detail/UserInfoTab.vue'
+import UserExamHistoryTab from '@/views/admin/user-detail/UserExamHistoryTab.vue'
+import UserEditTab from '@/views/admin/user-detail/UserEditTab.vue'
 import LevelListPage from '@/admin/views/LevelListPage.vue'
 import LevelDetailPage from '@/admin/views/LevelDetailPage.vue'
 import LevelEditPage from '@/admin/views/LevelEditPage.vue'
@@ -105,7 +105,7 @@ const router = createRouter({
     },
     {
       path: '/admin/users/:id',
-      component: UserDetailPage,
+      component: UserDetailLayout,
       meta: { requiresAuth: true, requiresAdmin: true },
       children: [
         {
@@ -115,19 +115,19 @@ const router = createRouter({
         {
           path: 'info',
           name: 'admin-user-detail-info',
-          component: UserTabInfo,
+          component: UserInfoTab,
           meta: { requiresAuth: true, requiresAdmin: true },
         },
         {
           path: 'history',
           name: 'admin-user-detail-history',
-          component: UserTabHistory,
+          component: UserExamHistoryTab,
           meta: { requiresAuth: true, requiresAdmin: true },
         },
         {
           path: 'edit',
           name: 'admin-user-detail-edit',
-          component: UserTabEdit,
+          component: UserEditTab,
           meta: { requiresAuth: true, requiresAdmin: true },
         },
       ],
