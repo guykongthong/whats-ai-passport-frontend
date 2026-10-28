@@ -1,5 +1,13 @@
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div v-if="isInsideLayout" class="flex flex-1 flex-col">
+    <slot name="toast">
+      <Toast :show="showToast" :message="toastMessage" />
+    </slot>
+
+    <slot />
+  </div>
+
+  <div v-else class="flex min-h-screen flex-col">
     <NavBar
       :links="navLinks"
       :user-name="userName"
@@ -18,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from '@/composables/useToast'
@@ -30,6 +38,7 @@ import { userNavLinks, userFooterLinks } from '@/data/navigation'
 const authStore = useAuthStore()
 const router = useRouter()
 const { showToast, toastMessage } = useToast()
+const isInsideLayout = inject('insideUserLayout', false)
 
 const navLinks = userNavLinks
 const footerLinks = userFooterLinks
