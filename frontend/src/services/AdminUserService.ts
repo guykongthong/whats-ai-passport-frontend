@@ -32,7 +32,15 @@ export default {
     return apiClient.put(`/admin/users/${id}`, data)
   },
 
-  toggleUserStatus(id: number, enabled: boolean): Promise<AxiosResponse<AdminUser>> {
-    return apiClient.patch(`/admin/users/${id}/status`, { enabled })
+  async toggleUserStatus(id: number, enabled: boolean): Promise<AxiosResponse<AdminUser>> {
+    try {
+      return await apiClient.patch(`/admin/users/${id}/enabled`, { enabled })
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number } }
+      if (axiosErr?.response?.status === 404) {
+        return await apiClient.patch(`/admin/users/${id}/status`, { enabled })
+      }
+      throw err
+    }
   },
 }
