@@ -127,11 +127,48 @@ export const useAuthStore = defineStore('auth', () => {
     if (user) user.isActive = false
   }
 
+  const currentUserLevel = computed<number>(() => {
+    const lvl = Number(currentUser.value?.level || 1)
+    return isNaN(lvl) || lvl < 1 ? 1 : lvl
+  })
+
+  function upgradeUserLevel(newLevel: number) {
+    const nextLevel = Math.min(Math.max(newLevel, 1), MAX_LEVEL)
+    const nextLevelStr = String(nextLevel)
+
+    if (currentUser.value) {
+      currentUser.value.level = nextLevelStr
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    const found = users.value.find((u) => u.id === currentUser.value?.id)
+    if (found) {
+      found.level = nextLevelStr
+    }
+  }
+
   function levelUp(userId: string, passedLevel: string) {
     const user = users.value.find((u) => u.id === userId)
     if (!user) return
     const nextLevel = Math.min(Number(passedLevel) + 1, MAX_LEVEL)
     user.level = String(nextLevel)
+
+    if (currentUser.value && currentUser.value.id === userId) {
+      currentUser.value.level = String(nextLevel)
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
+        } catch {
+          // ignore
+        }
+      }
+    }
   }
 
   function activateUser(userId: string) {
@@ -168,6 +205,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     currentUser,
+    currentUserLevel,
     users: readonly(users),
     filters: readonly(filters),
     currentPage: readonly(currentPage),
@@ -182,6 +220,7 @@ export const useAuthStore = defineStore('auth', () => {
     setPage,
     deactivateUser,
     levelUp,
+    upgradeUserLevel,
     activateUser,
     updateUser,
   }
