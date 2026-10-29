@@ -10,8 +10,8 @@ import UserHomeView from '@/views/user/UserHomeView.vue'
 import ProfileLayoutView from '@/views/user/profile/ProfileLayoutView.vue'
 import MyDetailsTab from '@/views/user/profile/tabs/MyDetailsTab.vue'
 import ExamHistoryTab from '@/views/user/profile/tabs/ExamHistoryTab.vue'
-import ProfileBadgesTab from '@/views/user/profile/tabs/ProfileBadgesTab.vue'
-import ProfileServicesTab from '@/views/user/profile/tabs/ProfileServicesTab.vue'
+import BadgesTab from '@/views/user/profile/tabs/BadgesTab.vue'
+import AvailableServicesTab from '@/views/user/profile/tabs/AvailableServicesTab.vue'
 import ELearningPage from '@/user/views/ELearningPage.vue'
 import ExamPage from '@/user/views/ExamPage.vue'
 import ServicesPage from '@/user/views/ServicesPage.vue'
@@ -86,13 +86,13 @@ const router = createRouter({
         {
           path: 'badges',
           name: 'profile-badges',
-          component: ProfileBadgesTab,
+          component: BadgesTab,
           meta: { requiresAuth: true },
         },
         {
           path: 'services',
           name: 'profile-services',
-          component: ProfileServicesTab,
+          component: AvailableServicesTab,
           meta: { requiresAuth: true },
         },
       ],

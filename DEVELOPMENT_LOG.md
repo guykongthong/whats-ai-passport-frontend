@@ -22,6 +22,8 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-USER-10 | feat/34-fe-user-10-setup-user-profile-layout-with-4-nested-sub-routes | Completed | frontend/src/views/user/profile/ProfileLayoutView.vue, tabs/, router/index.ts, user.ts, UserService.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-11 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/MyDetailsTab.vue, frontend/src/shared/components/UserEditForm.vue, frontend/src/views/admin/user-detail/UserEditTab.vue, frontend/src/stores/user.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-12 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/ExamHistoryTab.vue, frontend/src/views/user/profile/ProfileLayoutView.vue, frontend/src/views/user/profile/tabs/ProfileBadgesTab.vue, frontend/src/views/user/profile/tabs/ProfileServicesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-13 | feat/37-fe-user-13-sub-route-3-unlocked-badges-gallery-and-level-progression-showcase | Completed | frontend/src/views/user/profile/tabs/BadgesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-14 | feat/37-fe-user-13-sub-route-3-unlocked-badges-gallery-and-level-progression-showcase | Completed | frontend/src/views/user/profile/tabs/AvailableServicesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 
 ---
 
@@ -306,6 +308,45 @@ Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
 - Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+### FE-USER-13: Sub-route 3 - Unlocked Badges Gallery and Level Progression Showcase
+
+- Date: 2026-10-30
+- Branch: `feat/37-fe-user-13-sub-route-3-unlocked-badges-gallery-and-level-progression-showcase`
+- Status: Completed
+- Closes: #37 (Criteria #21, Score 4)
+
+Summary:
+Developed the Certification & Badges sub-page showcasing earned and upcoming credentials corresponding to level progression:
+- Badges Gallery View (`src/views/user/profile/tabs/BadgesTab.vue`):
+  - Renders a 4-level credential matrix (Explorer, Achiever, Innovator, Master) tailored to a digital passport aesthetic.
+  - **Unlocked Badges:** Displays full-color emblems, level tags, official badge titles, competency descriptions, unlock timestamps, and verified credential tags.
+  - **Locked Badges:** Grayscale styling with lock overlay icons and explicit unlock criteria ("Pass Level X exam to unlock").
+  - **Interactive Badge Details Modal:** Clicking any badge opens an in-depth modal featuring the official credential overview, required passing criteria percentage, unlock status, timestamp, and a direct CTA ("Go to Exam") if locked.
+- Routing & Navigation (`src/router/index.ts`):
+  - Wired `/profile/badges` directly to `BadgesTab.vue` under the nested `/profile` route hierarchy.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+### FE-USER-14: Sub-route 4 - Available Services Catalog for Current Level
+
+- Date: 2026-10-30
+- Branch: `feat/37-fe-user-13-sub-route-3-unlocked-badges-gallery-and-level-progression-showcase`
+- Status: Completed
+- Closes: #38 (Criteria #22, Score 4)
+
+Summary:
+Developed the Available Services Catalog sub-page detailing campus facilities, digital perks, and specialized workshops:
+- Available Services View (`src/views/user/profile/tabs/AvailableServicesTab.vue`):
+  - Displays all active services accessible at the user's current certified tier (cumulative up to current level).
+  - Each service card highlights the service title, comprehensive description, tier color code, access tag (e.g. "Level 1 Access", "Level 2 Exclusive"), and active status pill ("Active & Available").
+  - **Next Level Services Preview:** Previews upcoming services unlocked upon reaching the next level with lock indicator pills, requirement notices ("Pass Level X Exam to Unlock"), and direct examination action links.
+  - **Master Level Banner:** Displays an all-access completion notice when reaching Level 4.
+- Routing & Navigation (`src/router/index.ts`):
+  - Wired `/profile/services` directly to `AvailableServicesTab.vue` under the nested `/profile` route hierarchy.
 
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
