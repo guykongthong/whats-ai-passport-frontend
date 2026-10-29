@@ -61,8 +61,16 @@ async function handleSave(formData: UserFormData) {
   errorMessage.value = null
 
   try {
-    await AdminUserService.updateUser(user.value.id, formData)
-    adminUserStore.updateSelectedUser(formData)
+    const updatedData = {
+      firstname: formData.firstname.trim(),
+      lastname: formData.lastname.trim(),
+      email: formData.email.trim(),
+      province: formData.province,
+      profileImageUrl: formData.profileImageUrl,
+    }
+
+    await AdminUserService.updateUser(user.value.id, updatedData)
+    adminUserStore.updateSelectedUser(updatedData)
     successMessage.value = 'User details updated successfully.'
   } catch (err: unknown) {
     console.error('Failed to update user:', err)

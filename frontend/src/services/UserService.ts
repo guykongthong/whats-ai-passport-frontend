@@ -4,8 +4,8 @@ import type { User } from '@/types/User'
 
 export interface BadgeItem {
   name: string
-  imageUrl: string
-  unlockedAt: string
+  imageUrl?: string
+  unlockedAt?: string
 }
 
 export interface UserExamHistoryItem {

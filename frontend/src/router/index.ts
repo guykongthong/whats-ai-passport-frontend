@@ -8,13 +8,12 @@ import LoginView from '@/auth/views/LoginView.vue'
 import RegisterPage from '@/auth/views/RegisterPage.vue'
 import UserHomeView from '@/views/user/UserHomeView.vue'
 import ProfileLayoutView from '@/views/user/profile/ProfileLayoutView.vue'
-import ProfileDetailsTab from '@/views/user/profile/tabs/ProfileDetailsTab.vue'
-import ProfileHistoryTab from '@/views/user/profile/tabs/ProfileHistoryTab.vue'
+import MyDetailsTab from '@/views/user/profile/tabs/MyDetailsTab.vue'
+import ExamHistoryTab from '@/views/user/profile/tabs/ExamHistoryTab.vue'
 import ProfileBadgesTab from '@/views/user/profile/tabs/ProfileBadgesTab.vue'
 import ProfileServicesTab from '@/views/user/profile/tabs/ProfileServicesTab.vue'
 import ELearningPage from '@/user/views/ELearningPage.vue'
 import ExamPage from '@/user/views/ExamPage.vue'
-import ExamHistoryPage from '@/user/views/ExamHistoryPage.vue'
 import ServicesPage from '@/user/views/ServicesPage.vue'
 import UserBadgesPage from '@/user/views/UserBadgesPage.vue'
 import AdminUserListView from '@/views/admin/AdminUserListView.vue'
@@ -74,13 +73,14 @@ const router = createRouter({
         {
           path: 'details',
           name: 'profile-details',
-          component: ProfileDetailsTab,
+          component: MyDetailsTab,
           meta: { requiresAuth: true },
         },
         {
           path: 'history',
+          alias: ['exam-history'],
           name: 'profile-history',
-          component: ProfileHistoryTab,
+          component: ExamHistoryTab,
           meta: { requiresAuth: true },
         },
         {
@@ -117,9 +117,7 @@ const router = createRouter({
     },
     {
       path: '/dashboard/exam-history',
-      name: 'exam-history',
-      component: ExamHistoryPage,
-      meta: { requiresAuth: true },
+      redirect: '/profile/history',
     },
     {
       path: '/dashboard/services',

@@ -49,7 +49,7 @@
         v-model="form.email"
         type="email"
         required
-        :disabled="disabled || isSaving"
+        :disabled="disabled || isSaving || disableEmail"
         class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
         placeholder="Enter email address"
       />
@@ -129,6 +129,7 @@ interface Props {
   submitLabel?: string
   cancelLabel?: string
   disabled?: boolean
+  disableEmail?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -137,6 +138,7 @@ const props = withDefaults(defineProps<Props>(), {
   submitLabel: 'Save Changes',
   cancelLabel: 'Cancel',
   disabled: false,
+  disableEmail: false,
 })
 
 const emit = defineEmits<{
