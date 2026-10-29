@@ -1,5 +1,9 @@
 <template>
   <AdminPageLayout title="User Details" main-padding="px-4 sm:px-8">
+    <template #toast>
+      <Toast :show="showToast" :message="toastMessage" variant="dark" class="sticky top-[72px] backdrop-blur-sm" />
+    </template>
+
     <div class="w-full max-w-5xl mx-auto flex flex-col gap-6">
       <!-- Back to Users navigation -->
       <div>
@@ -160,11 +164,14 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
+import Toast from '@/shared/components/Toast.vue'
 import { useAdminUserStore } from '@/stores/adminUser'
+import { useToast } from '@/composables/useToast'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 
 const route = useRoute()
 const adminUserStore = useAdminUserStore()
+const { showToast, toastMessage } = useToast()
 
 const user = computed(() => adminUserStore.selectedUser)
 const avatarError = ref(false)
