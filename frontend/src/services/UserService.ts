@@ -2,7 +2,43 @@ import type { AxiosResponse } from 'axios'
 import apiClient from './apiClient'
 import type { User } from '@/types/User'
 
-export interface UserProfile extends User {
+export interface BadgeItem {
+  name: string
+  imageUrl?: string
+  unlockedAt?: string
+}
+
+export interface UserExamHistoryItem {
+  id?: number | string
+  levelNumber: number
+  score: number
+  totalScore: number
+  passed: boolean
+  attemptDateTime: string
+  badgeName?: string | null
+}
+
+export interface UserProfile extends Omit<Partial<User>, 'id'> {
+  id?: string | number
+  username?: string
+  firstname?: string
+  lastname?: string
+  name?: string
+  surname?: string
+  nameTh?: string
+  surnameTh?: string
+  email?: string
+  province?: string
+  profileImageUrl?: string
+  currentLevel?: number
+  level?: string
+  role?: 'admin' | 'user'
+  roles?: readonly string[] | string[]
+  isActive?: boolean
+  enabled?: boolean
+  badges?: BadgeItem[]
+  examHistories?: UserExamHistoryItem[]
+  availableServices?: string[]
   levelDetails?: UserLevelDetails
 }
 
