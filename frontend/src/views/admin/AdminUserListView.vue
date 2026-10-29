@@ -1,91 +1,103 @@
 <template>
   <AdminPageLayout title="User Management" main-padding="px-4 sm:px-8">
-    <!-- Filter Toolbar -->
-    <UserFilterToolbar
-      theme="light"
-      :initial-search="(route.query.name as string) || (route.query.search as string) || ''"
-      :initial-level="(route.query.level as string) || ''"
-      :initial-province="(route.query.province as string) || ''"
-      @filter-change="handleFilterChange"
-    />
+    <template #toast>
+      <Toast :show="showToast" :message="toastMessage" variant="dark" class="sticky top-[72px] backdrop-blur-sm" />
+    </template>
 
-    <!-- User Table Card -->
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden w-full">
-      <!-- Error Message Banner -->
+    <div class="w-full max-w-7xl mx-auto flex flex-col gap-6">
+      <!-- Search & Filters Toolbar -->
+      <UserFilterToolbar
+        :initial-filters="activeFilters"
+        :is-loading="loading"
+        @update:filters="handleFilterChange"
+        @reset="handleResetFilters"
+      />
+
+      <!-- Feedback States: Loading / Error / Empty -->
       <div
-        v-if="error"
-        class="bg-rose-50 border-b border-rose-200 px-6 py-3.5 text-sm text-rose-700 flex items-center justify-between"
+        v-if="loading"
+        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 flex flex-col items-center justify-center gap-3 text-slate-500"
       >
-        <span>{{ error }}</span>
+        <div class="size-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+        <span class="text-sm font-medium">Loading users...</span>
+      </div>
+
+      <div
+        v-else-if="error"
+        class="bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl p-6 text-center text-sm"
+      >
+        <p class="font-semibold">{{ error }}</p>
         <button
           type="button"
-          class="text-xs font-semibold underline hover:no-underline cursor-pointer"
+          class="mt-3 px-4 py-1.5 text-xs font-semibold bg-rose-600 text-white rounded-lg hover:bg-rose-700 transition-colors cursor-pointer"
           @click="fetchUsers"
         >
-          Retry
+          Try Again
         </button>
       </div>
 
-      <!-- Loading State Overlay / Skeleton -->
-      <div v-if="loading" class="py-16 flex flex-col items-center justify-center gap-3">
-        <div class="size-8 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
-        <span class="text-sm font-medium text-slate-500">Loading users...</span>
+      <div
+        v-else-if="users.length === 0"
+        class="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center text-slate-500"
+      >
+        <p class="text-base font-semibold">No users found</p>
+        <p class="text-xs text-slate-400 mt-1">Try adjusting your filters or search term.</p>
       </div>
 
-      <!-- Table Content -->
-      <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-slate-200">
-          <thead class="bg-slate-50 text-slate-500 text-xs font-semibold uppercase tracking-wider">
-            <tr>
-              <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-left">User</th>
-              <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-left">Email</th>
-              <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-left">Province</th>
-              <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-left">Level</th>
-              <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-left">Status</th>
-              <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200 bg-white">
-            <UserTableRow
-              v-for="user in users"
-              :key="user.id"
-              :user="user"
-              theme="light"
-              @view-details="handleViewDetails"
-              @toggle-status="handleToggleStatus"
-            />
-          </tbody>
-        </table>
-
-        <!-- Empty State -->
-        <div
-          v-if="users.length === 0"
-          class="py-12 flex flex-col items-center justify-center text-center px-4"
-        >
-          <div class="size-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
-            <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+      <!-- Users Table Card -->
+      <div
+        v-else
+        class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col"
+      >
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4">User</th>
+                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4">Province</th>
+                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4">Level</th>
+                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4">Status</th>
+                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <UserTableRow
+                v-for="u in users"
+                :key="u.id"
+                :user="u"
+                theme="light"
+                @view-details="handleViewDetails"
+                @toggle-status="handleToggleStatus"
               />
-            </svg>
-          </div>
-          <p class="text-sm font-semibold text-slate-800">No users found</p>
-          <p class="text-xs text-slate-500 mt-0.5">Try adjusting your search or filter criteria.</p>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        <div v-if="totalPages > 0" class="border-t border-slate-200 px-4 py-2">
+          <PaginationControl
+            :current-page="currentPage"
+            :total-pages="totalPages"
+            @page-change="handlePageChange"
+          />
         </div>
       </div>
-
-      <!-- Pagination Footer -->
-      <div v-if="totalPages > 0" class="border-t border-slate-200 px-4 py-2">
-        <PaginationControl
-          :current-page="currentPage"
-          :total-pages="totalPages"
-          @page-change="handlePageChange"
-        />
-      </div>
     </div>
+
+    <!-- Confirmation Modal for Status Toggle (Criteria #13 & #14) -->
+    <ConfirmActionModal
+      v-if="modalTargetUser"
+      :is-open="isModalOpen"
+      :title="modalTargetUser.enabled ? 'Deactivate User Account' : 'Reactivate User Account'"
+      :message="modalTargetUser.enabled
+        ? `Are you sure you want to deactivate ${modalTargetFullName}? They will lose access to the system until reactivated.`
+        : `Are you sure you want to reactivate ${modalTargetFullName}? They will regain full access to their account.`"
+      :confirm-text="modalTargetUser.enabled ? 'Deactivate' : 'Reactivate'"
+      :confirm-color="modalTargetUser.enabled ? 'red' : 'emerald'"
+      :is-loading="isToggling"
+      @confirm="confirmToggleStatus"
+      @cancel="closeConfirmModal"
+    />
   </AdminPageLayout>
 </template>
 
@@ -93,18 +105,21 @@
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
+import Toast from '@/shared/components/Toast.vue'
 import UserFilterToolbar from '@/components/admin/UserFilterToolbar.vue'
 import type { UserFilters } from '@/components/admin/UserFilterToolbar.vue'
 import UserTableRow from '@/components/admin/UserTableRow.vue'
 import PaginationControl from '@/components/common/PaginationControl.vue'
+import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
 import AdminUserService from '@/services/AdminUserService'
 import type { AdminUser } from '@/types/admin'
+import { useToast } from '@/composables/useToast'
 
 const route = useRoute()
 const router = useRouter()
+const { showToast, toastMessage, triggerToast } = useToast()
 
 const users = ref<AdminUser[]>([])
-const totalCount = ref(0)
 const totalPages = ref(1)
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -114,6 +129,18 @@ const activeFilters = ref<UserFilters>({
   province: (route.query.province as string) || undefined,
 })
 
+// Confirmation modal state
+const modalTargetUser = ref<AdminUser | null>(null)
+const isModalOpen = ref(false)
+const isToggling = ref(false)
+
+const modalTargetFullName = computed(() => {
+  if (!modalTargetUser.value) return ''
+  const first = modalTargetUser.value.firstname?.trim() || ''
+  const last = modalTargetUser.value.lastname?.trim() || ''
+  return `${first} ${last}`.trim() || modalTargetUser.value.username
+})
+
 // Read page and pageSize from $route.query (defaults: page=1, pageSize=10)
 const currentPage = computed(() => {
   const p = Number(route.query.page)
@@ -121,107 +148,86 @@ const currentPage = computed(() => {
 })
 
 const pageSize = computed(() => {
-  const ps = Number(route.query.pageSize)
-  return Number.isInteger(ps) && ps > 0 ? ps : 10
+  const s = Number(route.query.pageSize)
+  return Number.isInteger(s) && s > 0 ? s : 10
 })
 
-// Fetch data via AdminUserService.getUsers(page, pageSize)
 async function fetchUsers() {
   loading.value = true
   error.value = null
 
   try {
-    const response = await AdminUserService.getUsers(
-      currentPage.value,
-      pageSize.value,
-      {
-        name: activeFilters.value.name,
-        level: activeFilters.value.level,
-        province: activeFilters.value.province,
-      },
-    )
-
-    users.value = response.data || []
-
-    // Extract x-total-count header from the response to calculate totalPages
-    const headerVal =
-      response.headers?.['x-total-count'] ??
-      response.headers?.['X-Total-Count']
-
-    if (headerVal !== undefined && headerVal !== null) {
-      totalCount.value = Number(headerVal) || 0
-    } else {
-      totalCount.value = users.value.length
+    const filters = {
+      name: activeFilters.value.name,
+      level: activeFilters.value.level,
+      province: activeFilters.value.province,
     }
 
-    totalPages.value = totalCount.value > 0
-      ? Math.ceil(totalCount.value / pageSize.value)
-      : 0
+    const response = await AdminUserService.getUsers(currentPage.value, pageSize.value, filters)
+    users.value = response.data || []
+
+    const totalHeader = response.headers?.['x-total-count']
+    if (totalHeader) {
+      const parsedTotal = parseInt(totalHeader, 10)
+      if (!isNaN(parsedTotal)) {
+        totalPages.value = Math.max(1, Math.ceil(parsedTotal / pageSize.value))
+      }
+    } else {
+      totalPages.value = users.value.length === pageSize.value ? currentPage.value + 1 : currentPage.value
+    }
   } catch (err: unknown) {
     console.error('Failed to fetch admin users:', err)
-    error.value = 'Failed to load user records. Please check backend connection.'
+    error.value = 'Failed to load users. Please check your connection and try again.'
+    users.value = []
   } finally {
     loading.value = false
   }
 }
 
-// Push route updates on page changes: router.push({ query: { ...route.query, page: newPage } })
-function handlePageChange(newPage: number) {
-  router.push({
-    query: {
-      ...route.query,
-      page: String(newPage),
-    },
-  })
-}
-
-// Watch query parameters to reload data automatically on navigation or browser back/forward
-watch(
-  () => [
-    route.query.page,
-    route.query.pageSize,
-    route.query.name,
-    route.query.search,
-    route.query.level,
-    route.query.province,
-  ],
-  () => {
-    activeFilters.value = {
-      name: (route.query.name as string) || (route.query.search as string) || undefined,
-      level: route.query.level ? Number(route.query.level) : undefined,
-      province: (route.query.province as string) || undefined,
-    }
-    fetchUsers()
-  },
-  { immediate: true },
-)
-
-function handleFilterChange(filters: UserFilters) {
-  activeFilters.value = filters
-
-  const nextQuery: Record<string, string | undefined> = {
-    ...route.query,
+function handleFilterChange(newFilters: UserFilters) {
+  activeFilters.value = { ...newFilters }
+  const nextQuery: Record<string, string> = {
+    ...route.query as Record<string, string>,
     page: '1',
-    name: filters.name || undefined,
-    level: filters.level ? String(filters.level) : undefined,
-    province: filters.province || undefined,
-    search: undefined, // clean up legacy param if present
   }
 
-  // Remove undefined keys so the URL stays clean
-  Object.keys(nextQuery).forEach((key) => {
-    if (nextQuery[key] === undefined) {
-      delete nextQuery[key]
-    }
-  })
+  if (newFilters.name) {
+    nextQuery.name = newFilters.name
+  } else {
+    delete nextQuery.name
+    delete nextQuery.search
+  }
 
-  // Compare if query changes to avoid redundant navigation
-  const currentKeys = Object.keys(route.query).sort()
-  const nextKeys = Object.keys(nextQuery).sort()
-  const isSame =
-    currentKeys.length === nextKeys.length &&
-    currentKeys.every((k) => String(route.query[k]) === String(nextQuery[k]))
+  if (newFilters.level !== undefined && newFilters.level !== null) {
+    nextQuery.level = String(newFilters.level)
+  } else {
+    delete nextQuery.level
+  }
 
+  if (newFilters.province) {
+    nextQuery.province = newFilters.province
+  } else {
+    delete nextQuery.province
+  }
+
+  router.push({ query: nextQuery })
+}
+
+function handleResetFilters() {
+  activeFilters.value = { name: undefined, level: undefined, province: undefined }
+  const nextQuery: Record<string, string> = {
+    page: '1',
+    pageSize: String(pageSize.value),
+  }
+  router.push({ query: nextQuery })
+}
+
+function handlePageChange(newPage: number) {
+  const nextQuery: Record<string, string> = {
+    ...route.query as Record<string, string>,
+    page: String(newPage),
+  }
+  const isSame = (route.query.page || '1') === String(newPage)
   if (!isSame) {
     router.push({ query: nextQuery })
   } else {
@@ -233,15 +239,54 @@ function handleViewDetails(userId: number) {
   router.push(`/admin/users/${userId}/info`)
 }
 
-async function handleToggleStatus(user: AdminUser) {
+function handleToggleStatus(user: AdminUser) {
+  modalTargetUser.value = user
+  isModalOpen.value = true
+}
+
+function closeConfirmModal() {
+  if (!isToggling.value) {
+    isModalOpen.value = false
+    modalTargetUser.value = null
+  }
+}
+
+async function confirmToggleStatus() {
+  if (!modalTargetUser.value || isToggling.value) return
+  isToggling.value = true
+  const user = modalTargetUser.value
   const previousState = user.enabled
+  const nextState = !previousState
+
   try {
-    const nextState = !user.enabled
     user.enabled = nextState
     await AdminUserService.toggleUserStatus(user.id, nextState)
+    triggerToast(
+      nextState
+        ? `User ${modalTargetFullName.value} has been reactivated.`
+        : `User ${modalTargetFullName.value} has been deactivated.`,
+    )
+    isModalOpen.value = false
+    modalTargetUser.value = null
   } catch (err) {
     user.enabled = previousState
     console.error('Failed to toggle user status:', err)
+    triggerToast('Failed to update user status. Please try again.')
+  } finally {
+    isToggling.value = false
   }
 }
+
+watch(
+  () => route.query,
+  () => {
+    activeFilters.value = {
+      name: (route.query.name as string) || (route.query.search as string) || undefined,
+      level: route.query.level ? Number(route.query.level) : undefined,
+      province: (route.query.province as string) || undefined,
+    }
+    fetchUsers()
+  },
+  { immediate: true },
+)
 </script>
