@@ -19,6 +19,8 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-USER-04 | feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form | Completed | frontend/src/services/FileService.ts, frontend/src/components/common/ImageUpload.vue, frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, authStore.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-06 | feat/31-fe-user-06-build-top-right-user-profile-header-area-with-avatar-and-name | Completed | frontend/src/components/user/UserNavbarProfile.vue, frontend/src/shared/components/NavBar.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-09 | feat/33-fe-user-09-implement-instant-reactive-level-and-benefits-update-without-re-login | Completed | frontend/src/stores/user.ts, frontend/src/stores/authStore.ts, frontend/src/stores/examStore.ts, frontend/src/views/user/UserHomeView.vue, frontend/src/user/views/ExamPage.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-11 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/MyDetailsTab.vue, frontend/src/shared/components/UserEditForm.vue, frontend/src/views/admin/user-detail/UserEditTab.vue, frontend/src/stores/user.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-12 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/ExamHistoryTab.vue, frontend/src/views/user/profile/ProfileLayoutView.vue, frontend/src/views/user/profile/tabs/ProfileBadgesTab.vue, frontend/src/views/user/profile/tabs/ProfileServicesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 
 ---
 
@@ -206,6 +208,68 @@ Implemented immediate, real-time reactive updates for the user's level, benefits
   - Created `UserHomeView.vue` connected directly to computed Pinia getters (`currentLevel`, `levelDetails`, `currentBenefits`, `activeServices`).
   - Upon exam pass, all computed properties automatically re-evaluate, dynamically re-rendering the Hero Banner progress bar, next milestone indicator, Active Benefits card, and Available Services card with 0ms delay.
   - Configured router to map `/dashboard` (and alias `/home`) directly to `UserHomeView.vue`.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+### FE-USER-11: Sub-route 1 - User Details View and Self-Edit using Reusable Form
+
+- Date: 2026-10-30
+- Branch: `feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form`
+- Status: Completed
+- Closes: #35 (Criteria #24)
+
+Summary:
+Developed the user profile details sub-route (`/profile/details`) allowing users to inspect and update their personal details using a shared, reusable form component:
+- Component Reusability (`src/shared/components/UserEditForm.vue` & `src/views/admin/user-detail/UserEditTab.vue`):
+  - Created a single reusable form component `UserEditForm.vue` that serves both User Self-Edit (`MyDetailsTab.vue`) and Admin User Edit (`UserEditTab.vue`).
+  - Supports configurable themes: `theme="light"` for the User Profile card and `theme="dark"` for the Admin glassmorphism panel.
+  - Supports `disableEmail: boolean`: In User Profile mode, email is read-only according to the Baseline API Contract (`PUT /me` request body only accepts `firstname`, `lastname`, `province`, `profileImageUrl`), while in Admin mode email remains editable.
+  - Form validation for required fields, whitespace trimming, and email pattern.
+- User Self-Edit View (`src/views/user/profile/tabs/MyDetailsTab.vue`):
+  - Renders personal information with account status pill and loading skeleton.
+  - Passes current user profile as `initialData` into `UserEditForm`.
+  - Dispatches `userStore.updateUserProfile(payload)` on submit, sending exact payload to `PUT /me`.
+  - Updates both `userStore.userProfile` and `authStore.currentUser` upon success so changes persist across route transitions and reloads.
+  - Provides dismissible success toast and error alerts.
+- Store & Service Alignment (`src/stores/user.ts` & `src/services/UserService.ts`):
+  - Added single-fetch profile caching action `fetchUserProfile()` to prevent redundant requests across tab navigation.
+  - Added action `updateUserProfile(data)` syncing both backend and client Pinia states.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+### FE-USER-12: Sub-route 2 - User Exam History Records and Attempts Table
+
+- Date: 2026-10-30
+- Branch: `feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form`
+- Status: Completed
+- Closes: #36
+
+Summary:
+Developed the examination history and achievements sub-route (`/profile/history`):
+- Exam History Records View (`src/views/user/profile/tabs/ExamHistoryTab.vue`):
+  - Displays all user examination attempts in reverse-chronological order (newest first).
+  - Matches the Baseline API Contract data structure (`examHistories` array in `GET /me`):
+    - Level examined with level name and distinctive color badge (`Level X: {Name} Exam`).
+    - Attempt Date and Time formatted cleanly.
+    - Score achieved vs total score with percentage display (`score / totalScore`).
+    - Progression result pill: `PASSED` (emerald badge) or `FAILED` (rose badge).
+    - Unlocked badge notification pill if a badge was awarded on that attempt.
+  - Showcase section for all unlocked badges with badge images, names, and unlock dates.
+  - Empty state with educational copy and a "Take Level Exam" CTA button when no attempts exist.
+- Shared Profile Shell & Nested Sub-routes (`src/views/user/profile/ProfileLayoutView.vue` & `src/router/index.ts`):
+  - Created `ProfileLayoutView.vue` with shared gradient header card displaying user avatar (or initials fallback), full name, level badge, email, province, and quick statistics counters (Badges, Exams Taken, Available Services).
+  - Navigation tab bar providing smooth switching between:
+    - `/profile/details` (`MyDetailsTab.vue`)
+    - `/profile/history` (`ExamHistoryTab.vue`)
+    - `/profile/badges` (`ProfileBadgesTab.vue`)
+    - `/profile/services` (`ProfileServicesTab.vue`)
+  - Redirects `/profile` to `/profile/details` automatically.
 
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
