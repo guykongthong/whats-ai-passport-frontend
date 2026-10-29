@@ -1,5 +1,6 @@
 export { useAuthStore } from './authStore'
 export { useExamStore } from './examStore'
 export { useLevelStore } from './levelStore'
+export { useUserStore } from './user'
 export { useAdminUserStore } from './adminUser'
 export { useUserStore } from './user'
