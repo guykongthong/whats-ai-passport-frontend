@@ -68,6 +68,17 @@ export const useAdminUserStore = defineStore('adminUser', () => {
   }
 
   /**
+   * Toggles account enabled status for a user and updates selectedUser state in cache.
+   */
+  async function toggleUserStatus(id: number, enabled: boolean): Promise<AdminUser | null> {
+    const response = await AdminUserService.toggleUserStatus(id, enabled)
+    if (selectedUser.value && selectedUser.value.id === id) {
+      selectedUser.value = { ...selectedUser.value, enabled }
+    }
+    return response.data || selectedUser.value
+  }
+
+  /**
    * Cleans up state when leaving the view.
    */
   function clearSelectedUser() {
@@ -85,6 +96,7 @@ export const useAdminUserStore = defineStore('adminUser', () => {
     fetchUserById,
     fetchUserHistory,
     updateSelectedUser,
+    toggleUserStatus,
     clearSelectedUser,
   }
 })
