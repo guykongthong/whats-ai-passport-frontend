@@ -121,3 +121,124 @@
     </Transition>
   </Teleport>
 </template>
+
+<script setup lang="ts">
+import { computed, watch, onMounted, onUnmounted, useId } from 'vue'
+
+interface Props {
+  isOpen: boolean
+  title: string
+  message: string
+  confirmText?: string
+  confirmColor?: string
+  cancelText?: string
+  isLoading?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  confirmText: 'Confirm',
+  confirmColor: 'red',
+  cancelText: 'Cancel',
+  isLoading: false,
+})
+
+const emit = defineEmits<{
+  (e: 'confirm'): void
+  (e: 'cancel'): void
+}>()
+
+const titleId = useId ? useId() : 'modal-title'
+
+const isWarningOrDanger = computed(() => {
+  const c = props.confirmColor?.toLowerCase()
+  return !c || c === 'red' || c === 'danger' || c === 'rose' || c === 'amber' || c === 'warning'
+})
+
+const iconContainerClasses = computed(() => {
+  const c = props.confirmColor?.toLowerCase()
+  switch (c) {
+    case 'amber':
+    case 'warning':
+      return 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+    case 'indigo':
+    case 'primary':
+    case 'blue':
+      return 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30'
+    case 'emerald':
+    case 'green':
+    case 'success':
+      return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+    case 'red':
+    case 'danger':
+    case 'rose':
+    default:
+      return 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+  }
+})
+
+const confirmButtonClasses = computed(() => {
+  const c = props.confirmColor?.toLowerCase()
+  switch (c) {
+    case 'amber':
+    case 'warning':
+      return 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/30'
+    case 'indigo':
+    case 'primary':
+    case 'blue':
+      return 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30'
+    case 'emerald':
+    case 'green':
+    case 'success':
+      return 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30'
+    case 'red':
+    case 'danger':
+    case 'rose':
+    default:
+      return 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/30'
+  }
+})
+
+function handleConfirm() {
+  if (props.isLoading) return
+  emit('confirm')
+}
+
+function handleCancel() {
+  if (props.isLoading) return
+  emit('cancel')
+}
+
+function handleKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && props.isOpen && !props.isLoading) {
+    handleCancel()
+  }
+}
+
+watch(
+  () => props.isOpen,
+  (open) => {
+    if (typeof document !== 'undefined') {
+      if (open) {
+        document.body.style.overflow = 'hidden'
+      } else {
+        document.body.style.overflow = ''
+      }
+    }
+  },
+)
+
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', handleKeydown)
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', handleKeydown)
+  }
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+  }
+})
+</script>
