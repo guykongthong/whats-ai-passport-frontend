@@ -55,9 +55,17 @@ async function handleSave(formData: UserFormData) {
   errorMessage.value = null
 
   try {
-    const response = await AdminUserService.updateUser(user.value.id, formData)
+    const updatedData = {
+      firstname: formData.firstname.trim(),
+      lastname: formData.lastname.trim(),
+      email: formData.email.trim(),
+      province: formData.province,
+      profileImageUrl: formData.profileImageUrl,
+    }
+
+    const response = await AdminUserService.updateUser(user.value.id, updatedData)
     // Update adminUserStore with the returned data from backend
-    adminUserStore.updateSelectedUser(response.data || formData)
+    adminUserStore.updateSelectedUser(response.data || updatedData)
     // Display success toast notification
     triggerToast('User details updated successfully.')
     // Redirect to the info tab to view the updated details

@@ -64,12 +64,13 @@
       <input
         v-model="email"
         type="email"
-        :disabled="disabled || isSaving"
+        :disabled="disabled || isSaving || disableEmail"
         :class="[
           'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
           emailError
             ? 'border-rose-500 focus:ring-rose-500/30'
             : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+          disabled || isSaving || disableEmail ? 'opacity-60 cursor-not-allowed' : '',
         ]"
         placeholder="Enter email address"
         @blur="validateField('email')"
@@ -172,6 +173,7 @@ interface Props {
   submitLabel?: string
   cancelLabel?: string
   disabled?: boolean
+  disableEmail?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -180,6 +182,7 @@ const props = withDefaults(defineProps<Props>(), {
   submitLabel: 'Save Changes',
   cancelLabel: 'Cancel',
   disabled: false,
+  disableEmail: false,
 })
 
 const emit = defineEmits<{
