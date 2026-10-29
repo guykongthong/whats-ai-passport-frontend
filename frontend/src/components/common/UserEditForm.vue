@@ -16,13 +16,21 @@
           First Name <span class="text-rose-500">*</span>
         </label>
         <input
-          v-model="form.firstname"
+          v-model="firstname"
           type="text"
-          required
           :disabled="disabled || isSaving"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
+          :class="[
+            'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+            firstnameError
+              ? 'border-rose-500 focus:ring-rose-500/30'
+              : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+          ]"
           placeholder="Enter first name"
+          @blur="validateField('firstname')"
         />
+        <p v-if="firstnameError" class="text-xs text-rose-500 font-medium mt-1">
+          {{ firstnameError }}
+        </p>
       </div>
 
       <div>
@@ -74,20 +82,26 @@
     <!-- Province Field -->
     <div>
       <label class="block text-xs font-semibold text-slate-700 dark:text-white/80 mb-1.5">
-        Province
+        Province <span class="text-rose-500">*</span>
       </label>
       <select
-        v-model="form.province"
+        v-model="province"
         :disabled="disabled || isSaving"
-        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors cursor-pointer"
+        :class="[
+          'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 text-sm transition-colors cursor-pointer',
+          provinceError
+            ? 'border-rose-500 focus:ring-rose-500/30'
+            : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+        ]"
+        @blur="validateField('province')"
       >
         <option value="" class="text-slate-900 bg-white">Select Province</option>
         <option
-          v-if="form.province && !provinces.includes(form.province)"
-          :value="form.province"
+          v-if="province && !provinces.includes(province)"
+          :value="province"
           class="text-slate-900 bg-white"
         >
-          {{ form.province }}
+          {{ province }}
         </option>
         <option
           v-for="prov in provinces"
@@ -116,8 +130,13 @@
 
       <button
         type="submit"
-        :disabled="disabled || isSaving"
-        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 text-xs sm:text-sm font-semibold transition-colors shadow-sm cursor-pointer flex items-center gap-2"
+        :disabled="isSubmitDisabled"
+        :class="[
+          'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm flex items-center gap-2',
+          isSubmitDisabled
+            ? 'bg-indigo-600/50 text-white/70 cursor-not-allowed opacity-60'
+            : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-indigo-500/20',
+        ]"
       >
         <span
           v-if="isSaving"
@@ -129,11 +148,7 @@
   </form>
 </template>
 
-<script setup lang="ts">
-import { reactive, watch } from 'vue'
-import ImageUpload from '@/components/common/ImageUpload.vue'
-import type { AdminUser } from '@/types/admin'
-
+<script lang="ts">
 export interface UserFormData {
   firstname: string
   lastname: string
@@ -141,6 +156,15 @@ export interface UserFormData {
   province: string
   profileImageUrl: string
 }
+</script>
+
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import { useForm, useField } from 'vee-validate'
+import * as yup from 'yup'
+import { toTypedSchema } from '@vee-validate/yup'
+import ImageUpload from '@/components/common/ImageUpload.vue'
+import type { AdminUser } from '@/types/admin'
 
 interface Props {
   initialData?: AdminUser | Partial<AdminUser> | null
@@ -257,18 +281,28 @@ watch(
   { immediate: true },
 )
 
-function handleSubmit() {
+const onSubmit = handleSubmit((values) => {
   emit('submit-form', {
-    firstname: form.firstname.trim(),
-    lastname: form.lastname.trim(),
-    email: form.email.trim(),
-    province: form.province,
-    profileImageUrl: form.profileImageUrl,
+    firstname: values.firstname.trim(),
+    lastname: values.lastname.trim(),
+    email: values.email.trim(),
+    province: values.province.trim(),
+    profileImageUrl: values.profileImageUrl || '',
   })
-}
+})
 
 function handleCancel() {
-  populateForm(props.initialData)
+  if (props.initialData) {
+    setValues({
+      firstname: props.initialData.firstname || '',
+      lastname: props.initialData.lastname || '',
+      email: props.initialData.email || '',
+      province: props.initialData.province || '',
+      profileImageUrl: props.initialData.profileImageUrl || '',
+    })
+  } else {
+    resetForm()
+  }
   emit('cancel')
 }
 </script>
