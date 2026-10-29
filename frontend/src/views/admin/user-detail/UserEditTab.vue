@@ -45,25 +45,29 @@ import { useAdminUserStore } from '@/stores/adminUser'
 import AdminUserService from '@/services/AdminUserService'
 import UserEditForm from '@/components/common/UserEditForm.vue'
 import type { UserFormData } from '@/components/common/UserEditForm.vue'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 const adminUserStore = useAdminUserStore()
-const user = computed(() => adminUserStore.selectedUser)
+const { triggerToast } = useToast()
 
+const user = computed(() => adminUserStore.selectedUser)
 const isSaving = ref(false)
-const successMessage = ref<string | null>(null)
 const errorMessage = ref<string | null>(null)
 
 async function handleSave(formData: UserFormData) {
   if (!user.value) return
   isSaving.value = true
-  successMessage.value = null
   errorMessage.value = null
 
   try {
-    await AdminUserService.updateUser(user.value.id, formData)
-    adminUserStore.updateSelectedUser(formData)
-    successMessage.value = 'User details updated successfully.'
+    const response = await AdminUserService.updateUser(user.value.id, formData)
+    // Update adminUserStore with the returned data from backend
+    adminUserStore.updateSelectedUser(response.data || formData)
+    // Display success toast notification
+    triggerToast('User details updated successfully.')
+    // Redirect to the info tab to view the updated details
+    router.push({ name: 'admin-user-detail-info', params: { id: user.value.id } })
   } catch (err: unknown) {
     console.error('Failed to update user:', err)
     errorMessage.value = 'Failed to update user details. Please try again.'
