@@ -7,11 +7,13 @@ import { isUserAdmin, isUserDeactivated } from '@/shared/utils/auth'
 import LoginView from '@/auth/views/LoginView.vue'
 import RegisterPage from '@/auth/views/RegisterPage.vue'
 import UserHomeView from '@/views/user/UserHomeView.vue'
-import MyProfilePage from '@/user/views/MyProfilePage.vue'
-import MyDetailsPage from '@/user/views/MyDetailsPage.vue'
+import ProfileLayoutView from '@/views/user/profile/ProfileLayoutView.vue'
+import MyDetailsTab from '@/views/user/profile/tabs/MyDetailsTab.vue'
+import ExamHistoryTab from '@/views/user/profile/tabs/ExamHistoryTab.vue'
+import ProfileBadgesTab from '@/views/user/profile/tabs/ProfileBadgesTab.vue'
+import ProfileServicesTab from '@/views/user/profile/tabs/ProfileServicesTab.vue'
 import ELearningPage from '@/user/views/ELearningPage.vue'
 import ExamPage from '@/user/views/ExamPage.vue'
-import ExamHistoryPage from '@/user/views/ExamHistoryPage.vue'
 import ServicesPage from '@/user/views/ServicesPage.vue'
 import AdminUserListView from '@/views/admin/AdminUserListView.vue'
 import UserDetailLayout from '@/views/admin/user-detail/UserDetailLayout.vue'
@@ -61,15 +63,43 @@ const router = createRouter({
     },
     {
       path: '/profile',
-      name: 'profile',
-      component: MyProfilePage,
+      component: ProfileLayoutView,
       meta: { requiresAuth: true },
+      children: [
+        {
+          path: '',
+          redirect: '/profile/details',
+        },
+        {
+          path: 'details',
+          name: 'profile-details',
+          component: MyDetailsTab,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'history',
+          alias: ['exam-history'],
+          name: 'profile-history',
+          component: ExamHistoryTab,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'badges',
+          name: 'profile-badges',
+          component: ProfileBadgesTab,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: 'services',
+          name: 'profile-services',
+          component: ProfileServicesTab,
+          meta: { requiresAuth: true },
+        },
+      ],
     },
     {
       path: '/profile/edit',
-      name: 'profile-edit',
-      component: MyDetailsPage,
-      meta: { requiresAuth: true },
+      redirect: '/profile/details',
     },
     {
       path: '/dashboard/elearning',
@@ -87,9 +117,7 @@ const router = createRouter({
     },
     {
       path: '/dashboard/exam-history',
-      name: 'exam-history',
-      component: ExamHistoryPage,
-      meta: { requiresAuth: true },
+      redirect: '/profile/history',
     },
     {
       path: '/dashboard/services',
@@ -102,59 +130,6 @@ const router = createRouter({
       name: 'badges',
       component: UserBadgesPage,
       meta: { requiresAuth: true },
-      children: [
-        {
-          path: '/dashboard',
-          alias: ['/home'],
-          name: 'dashboard',
-          component: UserHomeView,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/profile',
-          name: 'profile',
-          component: MyProfilePage,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/profile/edit',
-          name: 'profile-edit',
-          component: MyDetailsPage,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/dashboard/elearning',
-          alias: ['/elearning'],
-          name: 'elearning',
-          component: ELearningPage,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/dashboard/exam',
-          alias: ['/exam'],
-          name: 'exam',
-          component: ExamPage,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/dashboard/exam-history',
-          name: 'exam-history',
-          component: ExamHistoryPage,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/dashboard/services',
-          name: 'services',
-          component: ServicesPage,
-          meta: { requiresAuth: true },
-        },
-        {
-          path: '/dashboard/badges',
-          name: 'badges',
-          component: UserBadgesPage,
-          meta: { requiresAuth: true },
-        },
-      ],
     },
     {
       path: '/admin',
