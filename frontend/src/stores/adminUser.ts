@@ -23,12 +23,12 @@ export const useAdminUserStore = defineStore('adminUser', () => {
     try {
       const response = await AdminUserService.getUserById(id)
       selectedUser.value = response.data
-      if (response.data.examHistories) {
-        userExamHistory.value = response.data.examHistories
-      }
+      userExamHistory.value = response.data.examHistories || []
       return selectedUser.value
     } catch (error) {
       console.error(`Failed to fetch user by id (${id}):`, error)
+      selectedUser.value = null
+      userExamHistory.value = []
       return null
     } finally {
       isLoading.value = false
@@ -40,11 +40,7 @@ export const useAdminUserStore = defineStore('adminUser', () => {
    * Leverages cached history if already present for the active user.
    */
   async function fetchUserHistory(id: number): Promise<ExamHistoryItem[]> {
-    if (
-      selectedUser.value &&
-      selectedUser.value.id === id &&
-      userExamHistory.value.length > 0
-    ) {
+    if (selectedUser.value && selectedUser.value.id === id) {
       return userExamHistory.value
     }
 
