@@ -19,6 +19,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-USER-04 | feat/0-fe-user-04-integrate-cloud-storage-image-upload-into-registration-form | Completed | frontend/src/services/FileService.ts, frontend/src/components/common/ImageUpload.vue, frontend/src/auth/components/RegisterForm.vue, RegisterPage.vue, authStore.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-06 | feat/31-fe-user-06-build-top-right-user-profile-header-area-with-avatar-and-name | Completed | frontend/src/components/user/UserNavbarProfile.vue, frontend/src/shared/components/NavBar.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-09 | feat/33-fe-user-09-implement-instant-reactive-level-and-benefits-update-without-re-login | Completed | frontend/src/stores/user.ts, frontend/src/stores/authStore.ts, frontend/src/stores/examStore.ts, frontend/src/views/user/UserHomeView.vue, frontend/src/user/views/ExamPage.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-10 | feat/34-fe-user-10-setup-user-profile-layout-with-4-nested-sub-routes | Completed | frontend/src/views/user/profile/ProfileLayoutView.vue, tabs/, router/index.ts, user.ts, UserService.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-11 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/MyDetailsTab.vue, frontend/src/shared/components/UserEditForm.vue, frontend/src/views/admin/user-detail/UserEditTab.vue, frontend/src/stores/user.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-12 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/ExamHistoryTab.vue, frontend/src/views/user/profile/ProfileLayoutView.vue, frontend/src/views/user/profile/tabs/ProfileBadgesTab.vue, frontend/src/views/user/profile/tabs/ProfileServicesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 
@@ -214,6 +215,36 @@ Testing:
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
 - Built production bundle with `npm run build-only` (`vite build`). All passed.
 
+### FE-USER-10: Setup User Profile Layout with 4 Nested Sub-routes
+
+- Date: 2026-10-29
+- Branch: `feat/34-fe-user-10-setup-user-profile-layout-with-4-nested-sub-routes`
+- Status: Completed
+- Closes: #34 (Criteria #22, Score 4)
+
+Summary:
+Configured nested routes and shared layout for the User Profile section covering User Details, Exam History, Badges, and Available Services:
+- Store & Service Layer (`src/services/UserService.ts` & `src/stores/user.ts`):
+  - Updated `UserProfile` interface to adhere strictly to the Baseline API Contract (`GET /me`, `PUT /me`).
+  - Added reactive `userProfile` state and computed getters `badges`, `examHistories`, and `availableServices` with offline fallback.
+  - Implemented single-fetch action `fetchUserProfile(force = false)` in `useUserStore` to share user profile state across all 4 nested sub-routes without redundant network requests on tab switching.
+  - Implemented `updateUserProfile(data)` action to persist profile edits and sync local auth state.
+- Tab Views (`src/views/user/profile/tabs/`):
+  - `ProfileDetailsTab.vue`: Personal info display and edit form with input validation and instant reactivity.
+  - `ProfileHistoryTab.vue`: Certification exam attempt records, scores, status badges, and timestamp formatting.
+  - `ProfileBadgesTab.vue`: Unlocked digital skill credentials grid with level milestone metadata and verified badge indicator.
+  - `ProfileServicesTab.vue`: Catalog of institutional campus services unlocked by certified level tier.
+- Shared Profile Layout & Router Integration (`src/views/user/profile/ProfileLayoutView.vue` & `src/router/index.ts`):
+  - Created `ProfileLayoutView.vue` featuring a shared header card with profile image/initials, full name, email, province, and dynamic level badge.
+  - Implemented 4-item navigation tab bar with active indicator and smooth `<RouterView />` transitions (`tab-fade`).
+  - Configured nested route tree in `src/router/index.ts` under `/profile` (`/profile/details`, `/profile/history`, `/profile/badges`, `/profile/services`, and redirect `/profile` -> `/profile/details`).
+  - Cleaned up redundant route declarations and preserved aliases for backward compatibility.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
+
 ### FE-USER-11: Sub-route 1 - User Details View and Self-Edit using Reusable Form
 
 - Date: 2026-10-30
@@ -270,6 +301,11 @@ Developed the examination history and achievements sub-route (`/profile/history`
     - `/profile/badges` (`ProfileBadgesTab.vue`)
     - `/profile/services` (`ProfileServicesTab.vue`)
   - Redirects `/profile` to `/profile/details` automatically.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
 
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.

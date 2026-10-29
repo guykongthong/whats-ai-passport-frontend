@@ -1,133 +1,123 @@
 <template>
   <UserPageLayout>
-    <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8">
-      <div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <!-- Top Back Link -->
+    <main class="flex-1 bg-[#EEF2F7] px-4 py-8 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-4xl space-y-6">
+
+        <!-- Back Link / Breadcrumb -->
         <div>
           <RouterLink
             to="/dashboard"
-            class="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#00385A] transition-colors"
+            class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-button-primary transition-colors cursor-pointer"
           >
-            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
+            <span>&larr;</span>
             <span>Back to Dashboard</span>
           </RouterLink>
         </div>
 
         <!-- Shared Profile Header Card -->
-        <section
-          aria-label="User Profile Header"
-          class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#002d4f] via-[#00385e] to-[#1a4a6e] p-6 sm:p-8 text-white shadow-lg"
-        >
-          <!-- Decorative Blurs -->
-          <div class="pointer-events-none absolute -right-12 -top-12 size-56 rounded-full bg-indigo-400/15 blur-2xl" />
-          <div class="pointer-events-none absolute -bottom-16 -left-16 size-56 rounded-full bg-blue-400/10 blur-2xl" />
-
-          <div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            <!-- Avatar -->
+        <div class="rounded-3xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+            <!-- Profile Avatar / Image -->
             <div class="relative shrink-0">
-              <img
-                v-if="profileImageUrl"
-                :src="profileImageUrl"
-                alt="Profile photo"
-                class="size-20 sm:size-24 rounded-2xl object-cover ring-4 ring-white/20 shadow-md"
-              />
-              <div
-                v-else
-                class="size-20 sm:size-24 rounded-2xl bg-white/20 ring-4 ring-white/20 flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-white shadow-md"
-              >
-                {{ userInitials }}
-              </div>
-
-              <!-- Level badge indicator overlay -->
-              <span
-                class="absolute -bottom-2 -right-2 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow-sm"
-                :class="getLevelClasses(currentLevel)"
-              >
-                Lvl {{ currentLevel }}
-              </span>
-            </div>
-
-            <!-- Profile Info -->
-            <div class="flex-1 text-center sm:text-left space-y-2">
-              <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                  {{ displayName }}
-                </h1>
+              <div class="size-24 sm:size-28 overflow-hidden rounded-full border-4 border-white shadow-md ring-2 ring-slate-100 bg-slate-100 flex items-center justify-center">
+                <img
+                  v-if="profileImageUrl"
+                  :src="profileImageUrl"
+                  :alt="fullName"
+                  class="size-full object-cover"
+                />
                 <span
-                  class="self-center sm:self-auto px-2.5 py-0.5 rounded-full text-xs font-bold"
-                  :class="getLevelClasses(currentLevel)"
+                  v-else
+                  class="text-3xl sm:text-4xl font-extrabold text-[#00385A]"
                 >
-                  {{ getLevelName(currentLevel) }}
+                  {{ userInitials }}
                 </span>
               </div>
+            </div>
 
-              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 text-xs sm:text-sm text-slate-200">
-                <span v-if="email" class="inline-flex items-center gap-1.5">
-                  <svg class="size-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Profile Info & Level Badge -->
+            <div class="flex-1 text-center sm:text-left">
+              <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h1 class="text-2xl sm:text-3xl font-extrabold text-[#00385A]">
+                    {{ fullName }}
+                  </h1>
+                  <p v-if="thaiName" class="text-xs font-semibold text-slate-400 mt-0.5">
+                    {{ thaiName }}
+                  </p>
+                </div>
+
+                <!-- Current Level Badge -->
+                <div class="self-center sm:self-start">
+                  <span
+                    :class="[
+                      'inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-black shadow-2xs',
+                      getLevelClasses(userLevel),
+                    ]"
+                  >
+                    <span class="size-2 rounded-full bg-current opacity-80"></span>
+                    Level {{ userLevel }}: {{ getLevelName(userLevel) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Meta Details: Email & Province -->
+              <div class="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-y-2 gap-x-5 text-xs font-semibold text-slate-500">
+                <div class="flex items-center gap-1.5">
+                  <svg class="size-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                   <span>{{ email }}</span>
-                </span>
+                </div>
 
-                <span v-if="province" class="inline-flex items-center gap-1.5">
-                  <svg class="size-4 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div v-if="province" class="flex items-center gap-1.5">
+                  <svg class="size-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <span>{{ province }}</span>
-                </span>
-              </div>
-
-              <!-- Quick stats pills -->
-              <div class="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                <div class="px-3 py-1 rounded-xl bg-white/10 text-xs font-medium text-slate-200 backdrop-blur-xs border border-white/10">
-                  Badges: <strong class="text-white">{{ badgesCount }}</strong>
-                </div>
-                <div class="px-3 py-1 rounded-xl bg-white/10 text-xs font-medium text-slate-200 backdrop-blur-xs border border-white/10">
-                  Exams Taken: <strong class="text-white">{{ examHistoriesCount }}</strong>
-                </div>
-                <div class="px-3 py-1 rounded-xl bg-white/10 text-xs font-medium text-slate-200 backdrop-blur-xs border border-white/10">
-                  Services: <strong class="text-white">{{ servicesCount }}</strong>
                 </div>
               </div>
             </div>
           </div>
-        </section>
 
-        <!-- Nested Sub-routes Navigation Tabs -->
-        <nav
-          aria-label="Profile Sections"
-          class="flex items-center gap-2 overflow-x-auto rounded-2xl bg-white/80 p-1.5 shadow-xs border border-slate-200/80 backdrop-blur-xs"
-        >
-          <RouterLink
-            v-for="tab in tabs"
-            :key="tab.to"
-            :to="tab.to"
-            class="flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs sm:text-sm font-semibold transition-all whitespace-nowrap"
-            :class="[
-              isTabActive(tab.to)
-                ? 'bg-[#00385A] text-white shadow-xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100',
-            ]"
+          <!-- Navigation Tab Bar -->
+          <nav
+            class="mt-8 flex border-b border-slate-200 gap-2 sm:gap-4 overflow-x-auto scrollbar-none"
+            role="tablist"
+            aria-label="Profile Sections"
           >
-            <span>{{ tab.icon }}</span>
-            <span>{{ tab.label }}</span>
-          </RouterLink>
-        </nav>
+            <RouterLink
+              v-for="tab in tabs"
+              :key="tab.to"
+              :to="tab.to"
+              class="relative flex items-center gap-2 whitespace-nowrap px-3 sm:px-4 py-3 text-sm font-bold transition-colors cursor-pointer"
+              :class="[
+                isTabActive(tab.to)
+                  ? 'text-[#00385A]'
+                  : 'text-slate-500 hover:text-slate-800'
+              ]"
+              role="tab"
+              :aria-selected="isTabActive(tab.to)"
+            >
+              <component :is="tab.icon" class="size-4 shrink-0" />
+              <span>{{ tab.label }}</span>
+              <!-- Active Underline Indicator -->
+              <span
+                v-if="isTabActive(tab.to)"
+                class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00385A] rounded-full"
+              />
+            </RouterLink>
+          </nav>
+        </div>
 
-        <!-- Sub-route Content Container -->
-        <section
-          aria-label="Tab Content"
-          class="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs"
-        >
-          <RouterView v-slot="{ Component }">
-            <Transition name="fade" mode="out-in">
-              <component :is="Component" />
-            </Transition>
-          </RouterView>
-        </section>
+        <!-- Child Router View for Tabs with Smooth Transition -->
+        <RouterView v-slot="{ Component }">
+          <Transition name="tab-fade" mode="out-in">
+            <component :is="Component" />
+          </Transition>
+        </RouterView>
+
       </div>
     </main>
   </UserPageLayout>
@@ -136,68 +126,79 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
-import { useUserStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/user'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
+import UserIcon from '@/shared/components/icons/UserIcon.vue'
+import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
+import StarIcon from '@/shared/components/icons/StarIcon.vue'
+import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 
 const route = useRoute()
-const userStore = useUserStore()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
+// Single-fetch on mount: loads profile into store and caches for child tabs
 onMounted(async () => {
-  await userStore.fetchUserProfile()
+  if (!userStore.userProfile) {
+    await userStore.fetchUserProfile()
+  }
 })
 
-const profile = computed(() => userStore.userProfile)
-const authUser = computed(() => authStore.currentUser)
+const user = computed(() => userStore.userProfile || authStore.currentUser)
 
-const displayName = computed(() => {
-  const p = profile.value
-  const u = authUser.value
-  const first = p?.firstname || p?.name || u?.firstname || u?.name || ''
-  const last = p?.lastname || p?.surname || u?.lastname || u?.surname || ''
-  const full = `${first} ${last}`.trim()
-  return full || u?.username || 'User Profile'
+const userLevel = computed(() => userStore.currentUserLevel)
+
+const fullName = computed(() => {
+  if (user.value?.firstname && user.value?.lastname) {
+    return `${user.value.firstname} ${user.value.lastname}`
+  }
+  if (user.value?.name && user.value?.surname) {
+    return `${user.value.name} ${user.value.surname}`
+  }
+  return user.value?.username || 'User Profile'
 })
 
-const email = computed(() => profile.value?.email || authUser.value?.email || '')
-const province = computed(() => profile.value?.province || authUser.value?.province || '')
-const profileImageUrl = computed(() => profile.value?.profileImageUrl || authUser.value?.profileImageUrl || '')
+const thaiName = computed(() => {
+  if (user.value?.nameTh && user.value?.surnameTh) {
+    return `${user.value.nameTh} ${user.value.surnameTh}`
+  }
+  return null
+})
+
+const email = computed(() => user.value?.email || 'N/A')
+const province = computed(() => user.value?.province || '')
+const profileImageUrl = computed(() => user.value?.profileImageUrl || '')
 
 const userInitials = computed(() => {
-  const p = profile.value
-  const u = authUser.value
-  const first = (p?.firstname || p?.name || u?.firstname || u?.name || 'U').charAt(0)
-  const last = (p?.lastname || p?.surname || u?.lastname || u?.surname || '').charAt(0)
-  return `${first}${last}`.toUpperCase()
+  const name = user.value?.firstname || user.value?.name || 'U'
+  return name.charAt(0).toUpperCase()
 })
 
-const currentLevel = computed(() => userStore.currentUserLevel)
-const badgesCount = computed(() => userStore.badges.length)
-const examHistoriesCount = computed(() => userStore.examHistories.length)
-const servicesCount = computed(() => userStore.availableServices.length)
-
 const tabs = [
-  { label: 'My Details', to: '/profile/details', icon: '👤' },
-  { label: 'Exam History', to: '/profile/history', icon: '📝' },
-  { label: 'Badges & Certification', to: '/profile/badges', icon: '🏆' },
-  { label: 'Available Services', to: '/profile/services', icon: '⚡' },
+  { label: 'Details', to: '/profile/details', icon: UserIcon },
+  { label: 'Exam History', to: '/profile/history', icon: DocumentTextIcon },
+  { label: 'Badges', to: '/profile/badges', icon: StarIcon },
+  { label: 'Services', to: '/profile/services', icon: CheckCircleIcon },
 ]
 
-function isTabActive(path: string): boolean {
-  return route.path === path || route.path.startsWith(`${path}/`)
+function isTabActive(tabPath: string): boolean {
+  if (tabPath === '/profile/details') {
+    return route.path === '/profile/details' || route.path === '/profile'
+  }
+  return route.path === tabPath
 }
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
+.tab-fade-enter-active,
+.tab-fade-leave-active {
   transition: opacity 0.15s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.tab-fade-enter-from,
+.tab-fade-leave-to {
   opacity: 0;
 }
 </style>

@@ -112,7 +112,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/authStore'
-import UserEditForm, { type UserEditFormData } from '@/shared/components/UserEditForm.vue'
+import UserEditForm, { type UserFormData } from '@/components/common/UserEditForm.vue'
 
 const userStore = useUserStore()
 const authStore = useAuthStore()
@@ -157,7 +157,7 @@ function handleCancel() {
   errorMessage.value = null
 }
 
-async function handleSave(formData: UserEditFormData) {
+async function handleSave(formData: UserFormData) {
   isSaving.value = true
   successMessage.value = null
   errorMessage.value = null
