@@ -144,6 +144,60 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
+// 1. Yup Validation Schema (Criteria #27)
+const userEditSchema = yup.object({
+  firstname: yup
+    .string()
+    .trim()
+    .required('First name is required'),
+  lastname: yup
+    .string()
+    .trim()
+    .required('Last name is required'),
+  email: yup
+    .string()
+    .trim()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
+  province: yup
+    .string()
+    .trim()
+    .required('Province is required'),
+  profileImageUrl: yup
+    .string()
+    .nullable()
+    .optional(),
+})
+
+// 2. Connect schema with VeeValidate useForm
+const { handleSubmit, errors, meta, resetForm, setValues, validateField } = useForm<UserFormData>({
+  validationSchema: toTypedSchema(userEditSchema),
+  initialValues: {
+    firstname: props.initialData?.firstname || '',
+    lastname: props.initialData?.lastname || '',
+    email: props.initialData?.email || '',
+    province: props.initialData?.province || '',
+    profileImageUrl: props.initialData?.profileImageUrl || '',
+  },
+})
+
+// 3. Connect fields with VeeValidate useField
+const { value: firstname, errorMessage: firstnameError } = useField<string>('firstname')
+const { value: lastname, errorMessage: lastnameError } = useField<string>('lastname')
+const { value: email, errorMessage: emailError } = useField<string>('email')
+const { value: province, errorMessage: provinceError } = useField<string>('province')
+const { value: profileImageUrl } = useField<string>('profileImageUrl')
+
+// Disable submit button while form contains active errors or is saving/disabled
+const isSubmitDisabled = computed(() => {
+  return (
+    props.disabled ||
+    props.isSaving ||
+    Object.keys(errors.value).length > 0 ||
+    !meta.value.valid
+  )
+})
+
 const provinces = [
   'Bangkok',
   'Chiang Mai',
@@ -168,34 +222,18 @@ const provinces = [
   'Udon Thani',
 ]
 
-const form = reactive<UserFormData>({
-  firstname: '',
-  lastname: '',
-  email: '',
-  province: '',
-  profileImageUrl: '',
-})
-
-function populateForm(data: AdminUser | Partial<AdminUser> | null) {
-  if (data) {
-    form.firstname = data.firstname || ''
-    form.lastname = data.lastname || ''
-    form.email = data.email || ''
-    form.province = data.province || ''
-    form.profileImageUrl = data.profileImageUrl || ''
-  } else {
-    form.firstname = ''
-    form.lastname = ''
-    form.email = ''
-    form.province = ''
-    form.profileImageUrl = ''
-  }
-}
-
 watch(
   () => props.initialData,
   (newData) => {
-    populateForm(newData)
+    if (newData) {
+      setValues({
+        firstname: newData.firstname || '',
+        lastname: newData.lastname || '',
+        email: newData.email || '',
+        province: newData.province || '',
+        profileImageUrl: newData.profileImageUrl || '',
+      })
+    }
   },
   { immediate: true },
 )
