@@ -1,9 +1,9 @@
 <template>
-  <form class="space-y-6" @submit.prevent="handleSubmit">
+  <form class="space-y-6" @submit.prevent="onSubmit">
     <!-- Profile Image Upload Field -->
     <div class="space-y-2">
       <ImageUpload
-        v-model="form.profileImageUrl"
+        v-model="profileImageUrl"
         label="Profile Image"
         :disabled="disabled || isSaving"
       />
@@ -30,13 +30,21 @@
           Last Name <span class="text-rose-500">*</span>
         </label>
         <input
-          v-model="form.lastname"
+          v-model="lastname"
           type="text"
-          required
           :disabled="disabled || isSaving"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
+          :class="[
+            'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+            lastnameError
+              ? 'border-rose-500 focus:ring-rose-500/30'
+              : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+          ]"
           placeholder="Enter last name"
+          @blur="validateField('lastname')"
         />
+        <p v-if="lastnameError" class="text-xs text-rose-500 font-medium mt-1">
+          {{ lastnameError }}
+        </p>
       </div>
     </div>
 
@@ -46,13 +54,21 @@
         Email Address <span class="text-rose-500">*</span>
       </label>
       <input
-        v-model="form.email"
+        v-model="email"
         type="email"
-        required
         :disabled="disabled || isSaving"
-        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
+        :class="[
+          'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+          emailError
+            ? 'border-rose-500 focus:ring-rose-500/30'
+            : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+        ]"
         placeholder="Enter email address"
+        @blur="validateField('email')"
       />
+      <p v-if="emailError" class="text-xs text-rose-500 font-medium mt-1">
+        {{ emailError }}
+      </p>
     </div>
 
     <!-- Province Field -->
@@ -82,6 +98,9 @@
           {{ prov }}
         </option>
       </select>
+      <p v-if="provinceError" class="text-xs text-rose-500 font-medium mt-1">
+        {{ provinceError }}
+      </p>
     </div>
 
     <!-- Action Buttons (Save Changes & Cancel) -->
