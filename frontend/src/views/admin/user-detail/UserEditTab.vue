@@ -5,23 +5,17 @@
       <p class="text-xs text-white/60">Update profile and contact information for this account.</p>
     </div>
 
-    <!-- Success / Error Alerts -->
-    <div
-      v-if="successMessage"
-      class="p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-200 text-sm flex items-center justify-between"
-    >
-      <span>{{ successMessage }}</span>
-      <button type="button" class="text-xs font-semibold hover:underline cursor-pointer" @click="successMessage = null">
-        Dismiss
-      </button>
-    </div>
-
+    <!-- Error Alert -->
     <div
       v-if="errorMessage"
       class="p-4 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-200 text-sm flex items-center justify-between"
     >
       <span>{{ errorMessage }}</span>
-      <button type="button" class="text-xs font-semibold hover:underline cursor-pointer" @click="errorMessage = null">
+      <button
+        type="button"
+        class="text-xs font-semibold hover:underline cursor-pointer"
+        @click="errorMessage = null"
+      >
         Dismiss
       </button>
     </div>
@@ -45,19 +39,19 @@ import { useAdminUserStore } from '@/stores/adminUser'
 import AdminUserService from '@/services/AdminUserService'
 import UserEditForm from '@/components/common/UserEditForm.vue'
 import type { UserFormData } from '@/components/common/UserEditForm.vue'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
 const adminUserStore = useAdminUserStore()
-const user = computed(() => adminUserStore.selectedUser)
+const { triggerToast } = useToast()
 
+const user = computed(() => adminUserStore.selectedUser)
 const isSaving = ref(false)
-const successMessage = ref<string | null>(null)
 const errorMessage = ref<string | null>(null)
 
 async function handleSave(formData: UserFormData) {
   if (!user.value) return
   isSaving.value = true
-  successMessage.value = null
   errorMessage.value = null
 
   try {
@@ -69,9 +63,13 @@ async function handleSave(formData: UserFormData) {
       profileImageUrl: formData.profileImageUrl,
     }
 
-    await AdminUserService.updateUser(user.value.id, updatedData)
-    adminUserStore.updateSelectedUser(updatedData)
-    successMessage.value = 'User details updated successfully.'
+    const response = await AdminUserService.updateUser(user.value.id, updatedData)
+    // Update adminUserStore with the returned data from backend
+    adminUserStore.updateSelectedUser(response.data || updatedData)
+    // Display success toast notification
+    triggerToast('User details updated successfully.')
+    // Redirect to the info tab to view the updated details
+    router.push({ name: 'admin-user-detail-info', params: { id: user.value.id } })
   } catch (err: unknown) {
     console.error('Failed to update user:', err)
     errorMessage.value = 'Failed to update user details. Please try again.'
@@ -81,7 +79,6 @@ async function handleSave(formData: UserFormData) {
 }
 
 function handleCancel() {
-  successMessage.value = null
   errorMessage.value = null
   if (user.value) {
     router.push({ name: 'admin-user-detail-info', params: { id: user.value.id } })

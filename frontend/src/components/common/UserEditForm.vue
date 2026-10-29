@@ -1,9 +1,9 @@
 <template>
-  <form class="space-y-6" @submit.prevent="handleSubmit">
+  <form class="space-y-6" @submit.prevent="onSubmit">
     <!-- Profile Image Upload Field -->
     <div class="space-y-2">
       <ImageUpload
-        v-model="form.profileImageUrl"
+        v-model="profileImageUrl"
         label="Profile Image"
         :disabled="disabled || isSaving"
       />
@@ -16,13 +16,21 @@
           First Name <span class="text-rose-500">*</span>
         </label>
         <input
-          v-model="form.firstname"
+          v-model="firstname"
           type="text"
-          required
           :disabled="disabled || isSaving"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
+          :class="[
+            'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+            firstnameError
+              ? 'border-rose-500 focus:ring-rose-500/30'
+              : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+          ]"
           placeholder="Enter first name"
+          @blur="validateField('firstname')"
         />
+        <p v-if="firstnameError" class="text-xs text-rose-500 font-medium mt-1">
+          {{ firstnameError }}
+        </p>
       </div>
 
       <div>
@@ -30,13 +38,21 @@
           Last Name <span class="text-rose-500">*</span>
         </label>
         <input
-          v-model="form.lastname"
+          v-model="lastname"
           type="text"
-          required
           :disabled="disabled || isSaving"
-          class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
+          :class="[
+            'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+            lastnameError
+              ? 'border-rose-500 focus:ring-rose-500/30'
+              : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+          ]"
           placeholder="Enter last name"
+          @blur="validateField('lastname')"
         />
+        <p v-if="lastnameError" class="text-xs text-rose-500 font-medium mt-1">
+          {{ lastnameError }}
+        </p>
       </div>
     </div>
 
@@ -46,32 +62,47 @@
         Email Address <span class="text-rose-500">*</span>
       </label>
       <input
-        v-model="form.email"
+        v-model="email"
         type="email"
-        required
         :disabled="disabled || isSaving || disableEmail"
-        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors"
+        :class="[
+          'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+          emailError
+            ? 'border-rose-500 focus:ring-rose-500/30'
+            : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+          disabled || isSaving || disableEmail ? 'opacity-60 cursor-not-allowed' : '',
+        ]"
         placeholder="Enter email address"
+        @blur="validateField('email')"
       />
+      <p v-if="emailError" class="text-xs text-rose-500 font-medium mt-1">
+        {{ emailError }}
+      </p>
     </div>
 
     <!-- Province Field -->
     <div>
       <label class="block text-xs font-semibold text-slate-700 dark:text-white/80 mb-1.5">
-        Province
+        Province <span class="text-rose-500">*</span>
       </label>
       <select
-        v-model="form.province"
+        v-model="province"
         :disabled="disabled || isSaving"
-        class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-white/20 bg-white dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm transition-colors cursor-pointer"
+        :class="[
+          'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 text-sm transition-colors cursor-pointer',
+          provinceError
+            ? 'border-rose-500 focus:ring-rose-500/30'
+            : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+        ]"
+        @blur="validateField('province')"
       >
         <option value="" class="text-slate-900 bg-white">Select Province</option>
         <option
-          v-if="form.province && !provinces.includes(form.province)"
-          :value="form.province"
+          v-if="province && !provinces.includes(province)"
+          :value="province"
           class="text-slate-900 bg-white"
         >
-          {{ form.province }}
+          {{ province }}
         </option>
         <option
           v-for="prov in provinces"
@@ -82,6 +113,9 @@
           {{ prov }}
         </option>
       </select>
+      <p v-if="provinceError" class="text-xs text-rose-500 font-medium mt-1">
+        {{ provinceError }}
+      </p>
     </div>
 
     <!-- Action Buttons (Save Changes & Cancel) -->
@@ -97,8 +131,13 @@
 
       <button
         type="submit"
-        :disabled="disabled || isSaving"
-        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 text-xs sm:text-sm font-semibold transition-colors shadow-sm cursor-pointer flex items-center gap-2"
+        :disabled="isSubmitDisabled"
+        :class="[
+          'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm flex items-center gap-2',
+          isSubmitDisabled
+            ? 'bg-indigo-600/50 text-white/70 cursor-not-allowed opacity-60'
+            : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-indigo-500/20',
+        ]"
       >
         <span
           v-if="isSaving"
@@ -110,11 +149,7 @@
   </form>
 </template>
 
-<script setup lang="ts">
-import { reactive, watch } from 'vue'
-import ImageUpload from '@/components/common/ImageUpload.vue'
-import type { AdminUser } from '@/types/admin'
-
+<script lang="ts">
 export interface UserFormData {
   firstname: string
   lastname: string
@@ -122,6 +157,15 @@ export interface UserFormData {
   province: string
   profileImageUrl: string
 }
+</script>
+
+<script setup lang="ts">
+import { computed, watch } from 'vue'
+import { useForm, useField } from 'vee-validate'
+import * as yup from 'yup'
+import { toTypedSchema } from '@vee-validate/yup'
+import ImageUpload from '@/components/common/ImageUpload.vue'
+import type { AdminUser } from '@/types/admin'
 
 interface Props {
   initialData?: AdminUser | Partial<AdminUser> | null
@@ -145,6 +189,60 @@ const emit = defineEmits<{
   (e: 'submit-form', formData: UserFormData): void
   (e: 'cancel'): void
 }>()
+
+// 1. Yup Validation Schema (Criteria #27)
+const userEditSchema = yup.object({
+  firstname: yup
+    .string()
+    .trim()
+    .required('First name is required'),
+  lastname: yup
+    .string()
+    .trim()
+    .required('Last name is required'),
+  email: yup
+    .string()
+    .trim()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
+  province: yup
+    .string()
+    .trim()
+    .required('Province is required'),
+  profileImageUrl: yup
+    .string()
+    .nullable()
+    .optional(),
+})
+
+// 2. Connect schema with VeeValidate useForm
+const { handleSubmit, errors, meta, resetForm, setValues, validateField } = useForm<UserFormData>({
+  validationSchema: toTypedSchema(userEditSchema),
+  initialValues: {
+    firstname: props.initialData?.firstname || '',
+    lastname: props.initialData?.lastname || '',
+    email: props.initialData?.email || '',
+    province: props.initialData?.province || '',
+    profileImageUrl: props.initialData?.profileImageUrl || '',
+  },
+})
+
+// 3. Connect fields with VeeValidate useField
+const { value: firstname, errorMessage: firstnameError } = useField<string>('firstname')
+const { value: lastname, errorMessage: lastnameError } = useField<string>('lastname')
+const { value: email, errorMessage: emailError } = useField<string>('email')
+const { value: province, errorMessage: provinceError } = useField<string>('province')
+const { value: profileImageUrl } = useField<string>('profileImageUrl')
+
+// Disable submit button while form contains active errors or is saving/disabled
+const isSubmitDisabled = computed(() => {
+  return (
+    props.disabled ||
+    props.isSaving ||
+    Object.keys(errors.value).length > 0 ||
+    !meta.value.valid
+  )
+})
 
 const provinces = [
   'Bangkok',
@@ -170,50 +268,44 @@ const provinces = [
   'Udon Thani',
 ]
 
-const form = reactive<UserFormData>({
-  firstname: '',
-  lastname: '',
-  email: '',
-  province: '',
-  profileImageUrl: '',
-})
-
-function populateForm(data: AdminUser | Partial<AdminUser> | null) {
-  if (data) {
-    form.firstname = data.firstname || ''
-    form.lastname = data.lastname || ''
-    form.email = data.email || ''
-    form.province = data.province || ''
-    form.profileImageUrl = data.profileImageUrl || ''
-  } else {
-    form.firstname = ''
-    form.lastname = ''
-    form.email = ''
-    form.province = ''
-    form.profileImageUrl = ''
-  }
-}
-
 watch(
   () => props.initialData,
   (newData) => {
-    populateForm(newData)
+    if (newData) {
+      setValues({
+        firstname: newData.firstname || '',
+        lastname: newData.lastname || '',
+        email: newData.email || '',
+        province: newData.province || '',
+        profileImageUrl: newData.profileImageUrl || '',
+      })
+    }
   },
   { immediate: true },
 )
 
-function handleSubmit() {
+const onSubmit = handleSubmit((values) => {
   emit('submit-form', {
-    firstname: form.firstname.trim(),
-    lastname: form.lastname.trim(),
-    email: form.email.trim(),
-    province: form.province,
-    profileImageUrl: form.profileImageUrl,
+    firstname: values.firstname.trim(),
+    lastname: values.lastname.trim(),
+    email: values.email.trim(),
+    province: values.province.trim(),
+    profileImageUrl: values.profileImageUrl || '',
   })
-}
+})
 
 function handleCancel() {
-  populateForm(props.initialData)
+  if (props.initialData) {
+    setValues({
+      firstname: props.initialData.firstname || '',
+      lastname: props.initialData.lastname || '',
+      email: props.initialData.email || '',
+      province: props.initialData.province || '',
+      profileImageUrl: props.initialData.profileImageUrl || '',
+    })
+  } else {
+    resetForm()
+  }
   emit('cancel')
 }
 </script>
