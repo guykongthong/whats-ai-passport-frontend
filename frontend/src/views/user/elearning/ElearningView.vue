@@ -23,6 +23,37 @@
           </span>
         </div>
 
+        <!-- Level Upgrade Transition Notification Banner (FE-USER-16) -->
+        <transition
+          enter-active-class="transition duration-300 ease-out"
+          enter-from-class="transform -translate-y-2 opacity-0"
+          enter-to-class="transform translate-y-0 opacity-100"
+          leave-active-class="transition duration-200 ease-in"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div
+            v-if="levelTransitionAlert"
+            class="flex items-center justify-between gap-3 px-5 py-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 shadow-xs"
+          >
+            <div class="flex items-center gap-3">
+              <span class="flex size-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white font-bold text-sm">
+                ✓
+              </span>
+              <p class="text-xs sm:text-sm font-semibold">
+                {{ levelTransitionAlert }}
+              </p>
+            </div>
+            <button
+              type="button"
+              @click="levelTransitionAlert = null"
+              class="text-emerald-600 hover:text-emerald-900 text-xs font-bold px-2 py-1 rounded-lg hover:bg-emerald-100/60 transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
+        </transition>
+
         <!-- Main Content Grid: Video Player (Left) + Playlist Outline (Right) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           <!-- Video Player Column (2 Cols on lg) -->
@@ -129,8 +160,9 @@
               </div>
             </section>
 
-            <!-- Exam Readiness Call-To-Action Banner -->
+            <!-- Exam Readiness Call-To-Action Banner / Level 4 Completion Banner (FE-USER-16) -->
             <section
+              v-if="currentLevelNumber < 4"
               class="rounded-3xl bg-gradient-to-r from-[#00385A] to-[#005a8f] p-6 text-white shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4"
             >
               <div class="space-y-1 text-center sm:text-left">
@@ -149,6 +181,34 @@
                 <span>Take Upgrade Exam</span>
                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </RouterLink>
+            </section>
+
+            <!-- Level 4 Master / Completion State Banner -->
+            <section
+              v-else
+              class="rounded-3xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 p-6 text-white shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4"
+            >
+              <div class="space-y-1 text-center sm:text-left">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-bold mb-1 backdrop-blur-xs">
+                  <span>🏆 Highest Tier Achieved</span>
+                </div>
+                <h3 class="text-base sm:text-lg font-bold">
+                  All Levels Completed!
+                </h3>
+                <p class="text-xs sm:text-sm text-amber-100 max-w-lg">
+                  Congratulations! You have reached Level 4: Platinum, mastering all competency curricula. Feel free to review all lesson videos at any time.
+                </p>
+              </div>
+
+              <RouterLink
+                to="/profile"
+                class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-white text-amber-900 hover:bg-amber-50 font-bold text-xs sm:text-sm shadow-md transition-all whitespace-nowrap active:scale-95"
+              >
+                <span>View Badges & Profile</span>
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
               </RouterLink>
             </section>
@@ -260,7 +320,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import ELearningService, { type VideoItem, type UserVideosResponse } from '@/services/ELearningService'
@@ -273,6 +333,7 @@ const userStore = useUserStore()
 const isLoading = ref(false)
 const videos = ref<VideoItem[]>([])
 const currentVideoIndex = ref(0)
+const levelTransitionAlert = ref<string | null>(null)
 
 const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 1)
 
@@ -345,6 +406,19 @@ async function fetchLevelVideos() {
     currentVideoIndex.value = 0
   }
 }
+
+// Watch for dynamic level upgrades and transition content automatically (FE-USER-16)
+watch(
+  () => userStore.currentUserLevel,
+  async (newLevel, oldLevel) => {
+    if (newLevel && oldLevel && newLevel !== oldLevel) {
+      const levelName = getLevelName(newLevel)
+      levelTransitionAlert.value = `Level updated to Level ${newLevel}: ${levelName}! Curriculum refreshed.`
+      currentVideoIndex.value = 0
+      await fetchLevelVideos()
+    }
+  }
+)
 
 onMounted(async () => {
   if (!userStore.userProfile) {
