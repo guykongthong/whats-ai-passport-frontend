@@ -12,8 +12,8 @@ import MyDetailsTab from '@/views/user/profile/tabs/MyDetailsTab.vue'
 import ExamHistoryTab from '@/views/user/profile/tabs/ExamHistoryTab.vue'
 import ProfileBadgesTab from '@/views/user/profile/tabs/ProfileBadgesTab.vue'
 import ProfileServicesTab from '@/views/user/profile/tabs/ProfileServicesTab.vue'
-import ELearningPage from '@/user/views/ELearningPage.vue'
-import ExamPage from '@/user/views/ExamPage.vue'
+import ElearningView from '@/views/user/elearning/ElearningView.vue'
+import ExamTakingView from '@/views/user/exam/ExamTakingView.vue'
 import ServicesPage from '@/user/views/ServicesPage.vue'
 import UserBadgesPage from '@/user/views/UserBadgesPage.vue'
 import AdminUserListView from '@/views/admin/AdminUserListView.vue'
@@ -105,14 +105,14 @@ const router = createRouter({
       path: '/dashboard/elearning',
       alias: ['/elearning'],
       name: 'elearning',
-      component: ELearningPage,
+      component: ElearningView,
       meta: { requiresAuth: true },
     },
     {
       path: '/dashboard/exam',
       alias: ['/exam'],
       name: 'exam',
-      component: ExamPage,
+      component: ExamTakingView,
       meta: { requiresAuth: true },
     },
     {
