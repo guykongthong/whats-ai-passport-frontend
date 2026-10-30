@@ -311,3 +311,76 @@ Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
 - Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+
+| FE-USER-15 | feat/39-fe-user-15-build-elearning-video-player-page-matching-users-current-level | Completed | frontend/src/views/user/elearning/ElearningView.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+| FE-USER-16 | feat/39-fe-user-15-build-elearning-video-player-page-matching-users-current-level | Completed | frontend/src/views/user/elearning/ElearningView.vue | vue-tsc --build, vite build, eslint |
+| FE-USER-17 | feat/39-fe-user-15-build-elearning-video-player-page-matching-users-current-level | Completed | frontend/src/views/user/exam/ExamTakingView.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+
+---
+
+### FE-USER-15: Build eLearning Video Player Page Matching User's Current Level
+
+- Date: 2026-10-30
+- Branch: `feat/39-fe-user-15-build-elearning-video-player-page-matching-users-current-level`
+- Status: Completed
+- Closes: #39
+
+Summary:
+Developed the eLearning curriculum view (`src/views/user/elearning/ElearningView.vue`):
+- Responsive Video Player (16:9 Aspect Ratio) supporting automatic URL transformations:
+  - YouTube standard and short links (`youtu.be`, `youtube.com/watch`) converted dynamically to privacy-enhanced embed frames (`youtube-nocookie.com/embed`).
+  - Direct HTML5 videos (`.mp4`, `.webm`, `.ogg`) using `<video controls>`.
+  - Fallback cards for external lecture resources with a direct open button.
+- Active Lesson Metadata Details:
+  - Lesson index pill, current level indicator badge with thematic level colors.
+  - Title and detailed lesson descriptions.
+- Course Outline Playlist Sidebar:
+  - Interactive playlist displaying all lessons for the user's level.
+  - Active lesson indicator with playing icon and quick selection handlers.
+- Integrated `ELearningService.getCurrentLevelVideos()` (`GET /me/videos`) following the Baseline API Contract.
+
+### FE-USER-16: Implement Dynamic eLearning Content Transition upon Level Upgrade
+
+- Date: 2026-10-30
+- Branch: `feat/39-fe-user-15-build-elearning-video-player-page-matching-users-current-level`
+- Status: Completed
+- Closes: #40
+
+Summary:
+Enhanced `ElearningView.vue` with automated level transition capabilities:
+- Dynamic Watcher on `userStore.currentUserLevel`: Automatically detects when the user's level changes (e.g. after passing an advancement exam) and triggers an immediate curriculum reload without requiring a manual page refresh.
+- Level Upgrade Notification Banner: Displays a dismissible feedback banner welcoming the user to the newly unlocked curriculum tier.
+- Level 4 Master / Completion State:
+  - In accordance with the Baseline API Contract (where Level 4 is the top tier with no subsequent exam), the Call-To-Action banner dynamically switches to a celebratory Platinum completion banner.
+  - Links directly to `/profile` and `/profile/badges` to view earned credentials.
+
+### FE-USER-17: Build Exam Taking View and Fetch Level-Matched Questions
+
+- Date: 2026-10-30
+- Branch: `feat/39-fe-user-15-build-elearning-video-player-page-matching-users-current-level`
+- Status: Completed
+- Closes: #41
+
+Summary:
+Built the complete examination interface in `src/views/user/exam/ExamTakingView.vue`:
+- Exam Instructions & Guidelines Header:
+  - Displays target level (`targetLevelNumber = currentLevel + 1`), total questions, and passing score criteria (`passCriteria`).
+  - Gracefully renders a "Maximum Level Reached" state if the user is already Level 4.
+- Question Cards & Multiple-Choice Selector:
+  - Formats choices A, B, C, D as interactive buttons with active selection states and radio indicators.
+  - Answer Progress Bar tracking completed vs remaining questions in real-time.
+  - Question Jump Navigator allowing direct navigation to any question with answered/unanswered color codes.
+- Sticky Action Bar & Validation:
+  - Floating submission bar with answered counter.
+  - Prevents premature submission with validation warning banners and auto-scrolls to the first unanswered question.
+- API Submission & Result Feedback (`POST /me/exam/submit`):
+  - Submits answers with 0-based `selectedChoice` indices matching the Baseline API Contract.
+  - Displays a comprehensive results modal with score, pass criteria, and unlocked badge card (`badgeUnlocked`).
+  - Immediately updates `userStore.currentUserLevel` upon passing so the entire app reflects the promotion immediately.
+  - Configured router entries for `/elearning` and `/exam` in `src/router/index.ts`.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
