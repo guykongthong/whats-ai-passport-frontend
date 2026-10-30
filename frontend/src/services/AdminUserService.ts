@@ -32,6 +32,10 @@ export default {
     return apiClient.put(`/admin/users/${id}`, data)
   },
 
+  /**
+   * Toggles account status between active (true) and deactivated (false).
+   * Aligned with API contract: PATCH /admin/users/{userId}/enabled
+   */
   async toggleUserStatus(id: number, enabled: boolean): Promise<AxiosResponse<AdminUser>> {
     try {
       return await apiClient.patch(`/admin/users/${id}/enabled`, { enabled })

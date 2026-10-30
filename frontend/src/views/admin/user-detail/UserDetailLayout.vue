@@ -55,23 +55,8 @@
                 <h2 class="text-xl sm:text-2xl font-bold truncate leading-tight">
                   {{ fullName }}
                 </h2>
-                <!-- Account Status Badge -->
-                <span
-                  :class="[
-                    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold',
-                    user.enabled
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
-                  ]"
-                >
-                  <span
-                    :class="[
-                      'size-1.5 rounded-full',
-                      user.enabled ? 'bg-emerald-400' : 'bg-rose-400',
-                    ]"
-                  />
-                  {{ user.enabled ? 'Active' : 'Deactivated' }}
-                </span>
+                <!-- Account Status Badge (Criteria #13 & #14) -->
+                <StatusBadge :enabled="user.enabled" />
               </div>
 
               <span class="text-xs sm:text-sm text-white/70 mt-0.5">
@@ -80,8 +65,8 @@
             </div>
           </div>
 
-          <!-- Current Level Badge -->
-          <div class="shrink-0">
+          <!-- Header Actions: Current Level Badge & Deactivate/Reactivate Action Button -->
+          <div class="flex items-center gap-3 shrink-0 flex-wrap">
             <span
               :class="[
                 'inline-flex items-center px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm',
@@ -90,6 +75,25 @@
             >
               Level {{ user.currentLevel }}: {{ levelName }}
             </span>
+
+            <button
+              type="button"
+              :class="[
+                'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer border shadow-sm',
+                user.enabled
+                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/30 hover:bg-rose-500/30'
+                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30',
+              ]"
+              @click="openConfirmModal"
+            >
+              <svg v-if="user.enabled" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+              <svg v-else class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{{ user.enabled ? 'Deactivate User' : 'Reactivate User' }}</span>
+            </button>
           </div>
         </div>
 
@@ -157,6 +161,21 @@
         </RouterLink>
       </div>
     </div>
+
+    <!-- Deactivate / Reactivate Confirmation Modal (Criteria #13 & #14) -->
+    <ConfirmActionModal
+      v-if="user"
+      :is-open="isModalOpen"
+      :title="user.enabled ? 'Deactivate User Account' : 'Reactivate User Account'"
+      :message="user.enabled
+        ? `Are you sure you want to deactivate ${fullName}? They will not be able to log in until their account is reactivated.`
+        : `Are you sure you want to reactivate ${fullName}? They will regain full access to their account.`"
+      :confirm-text="user.enabled ? 'Deactivate' : 'Reactivate'"
+      :confirm-color="user.enabled ? 'red' : 'emerald'"
+      :is-loading="isToggling"
+      @confirm="handleToggleStatus"
+      @cancel="closeConfirmModal"
+    />
   </AdminPageLayout>
 </template>
 
@@ -165,16 +184,22 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import Toast from '@/shared/components/Toast.vue'
+import StatusBadge from '@/components/admin/StatusBadge.vue'
+import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
 import { useAdminUserStore } from '@/stores/adminUser'
 import { useToast } from '@/composables/useToast'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 
 const route = useRoute()
 const adminUserStore = useAdminUserStore()
-const { showToast, toastMessage } = useToast()
+const { showToast, toastMessage, triggerToast } = useToast()
 
 const user = computed(() => adminUserStore.selectedUser)
 const avatarError = ref(false)
+
+// Modal state
+const isModalOpen = ref(false)
+const isToggling = ref(false)
 
 watch(
   () => user.value?.profileImageUrl,
@@ -205,6 +230,37 @@ const levelName = computed(() =>
 const levelBadgeClass = computed(() =>
   user.value ? getLevelClasses(user.value.currentLevel) : '',
 )
+
+function openConfirmModal() {
+  isModalOpen.value = true
+}
+
+function closeConfirmModal() {
+  if (!isToggling.value) {
+    isModalOpen.value = false
+  }
+}
+
+async function handleToggleStatus() {
+  if (!user.value || isToggling.value) return
+  isToggling.value = true
+  const nextStatus = !user.value.enabled
+
+  try {
+    await adminUserStore.toggleUserStatus(user.value.id, nextStatus)
+    triggerToast(
+      nextStatus
+        ? 'User has been successfully activated.'
+        : 'User has been successfully deactivated.',
+    )
+    isModalOpen.value = false
+  } catch (err: unknown) {
+    console.error('Failed to toggle user status:', err)
+    triggerToast('Failed to update user status. Please try again.')
+  } finally {
+    isToggling.value = false
+  }
+}
 
 // Fetch user details once via adminUserStore (cached internally to prevent redundant calls on tab switch)
 async function loadUserData() {
