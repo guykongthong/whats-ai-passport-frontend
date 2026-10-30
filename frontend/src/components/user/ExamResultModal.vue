@@ -118,7 +118,8 @@
 
               <div class="min-w-0 flex-1">
                 <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-md">
-                  ★ Badge Unlocked!
+                  <BadgeMedalIcon class="size-3 text-amber-800" />
+                  <span>Badge Unlocked!</span>
                 </span>
                 <h4 class="text-sm sm:text-base font-bold text-slate-900 truncate mt-1">
                   {{ result.badgeUnlocked.name }}
