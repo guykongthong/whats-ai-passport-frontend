@@ -250,14 +250,25 @@
               v-for="(question, qIndex) in questions"
               :key="question.id"
               :id="`question-${qIndex}`"
-              class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4 transition-all"
-              :class="{
-                'ring-2 ring-[#00385A]/15 border-[#00385A]/40': isQuestionAnswered(question.id)
-              }"
+              class="rounded-3xl border bg-white p-6 sm:p-7 shadow-xs space-y-4 transition-all"
+              :class="[
+                isQuestionAnswered(question.id)
+                  ? 'ring-2 ring-[#00385A]/15 border-[#00385A]/40'
+                  : showUnansweredErrors
+                    ? 'border-rose-400 bg-rose-50/20 ring-2 ring-rose-400/30'
+                    : 'border-slate-200/90'
+              ]"
             >
               <!-- Question Header -->
               <div class="flex items-start justify-between gap-3">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#00385A]/10 text-[#00385A] text-xs font-bold">
+                <span
+                  class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold"
+                  :class="[
+                    !isQuestionAnswered(question.id) && showUnansweredErrors
+                      ? 'bg-rose-100 text-rose-700'
+                      : 'bg-[#00385A]/10 text-[#00385A]'
+                  ]"
+                >
                   Question {{ qIndex + 1 }} of {{ questions.length }}
                 </span>
 
@@ -272,9 +283,10 @@
                 </span>
                 <span
                   v-else
-                  class="text-[11px] font-medium text-slate-400"
+                  class="text-[11px] font-medium"
+                  :class="showUnansweredErrors ? 'text-rose-600 font-bold' : 'text-slate-400'"
                 >
-                  Unanswered
+                  {{ showUnansweredErrors ? 'Required' : 'Unanswered' }}
                 </span>
               </div>
 
@@ -414,6 +426,7 @@ const questions = ref<ContractQuestion[]>([])
 const selectedAnswers = ref<Record<string | number, number>>({})
 const isSubmitting = ref(false)
 const validationError = ref<string | null>(null)
+const showUnansweredErrors = ref(false)
 const examResultModal = ref<ExamSubmitResponse | null>(null)
 
 const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 1)
@@ -431,9 +444,12 @@ const progressPercent = computed<number>(() => {
   return Math.round((answeredCount.value / questions.value.length) * 100)
 })
 
-const allAnswered = computed<boolean>(() => {
+// Scope #42: isExamComplete checks if answered count equals total questions
+const isExamComplete = computed<boolean>(() => {
   return questions.value.length > 0 && answeredCount.value === questions.value.length
 })
+
+const allAnswered = isExamComplete
 
 function isQuestionAnswered(questionId: string | number): boolean {
   return selectedAnswers.value[questionId] !== undefined
@@ -442,6 +458,9 @@ function isQuestionAnswered(questionId: string | number): boolean {
 function selectChoice(questionId: string | number, choiceIndex: number) {
   selectedAnswers.value[questionId] = choiceIndex
   validationError.value = null
+  if (isExamComplete.value) {
+    showUnansweredErrors.value = false
+  }
 }
 
 function scrollToQuestion(qIndex: number) {
@@ -452,7 +471,8 @@ function scrollToQuestion(qIndex: number) {
 }
 
 async function submitExamPrompt() {
-  if (!allAnswered.value) {
+  if (!isExamComplete.value) {
+    showUnansweredErrors.value = true
     validationError.value = `Please answer all questions before submitting. (${questions.value.length - answeredCount.value} remaining)`
     const firstUnansweredIndex = questions.value.findIndex((q) => !isQuestionAnswered(q.id))
     if (firstUnansweredIndex !== -1) {
@@ -461,6 +481,7 @@ async function submitExamPrompt() {
     return
   }
 
+  showUnansweredErrors.value = false
   isSubmitting.value = true
   validationError.value = null
 
