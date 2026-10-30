@@ -478,3 +478,35 @@ Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
 - Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+
+| FE-USER-20 | feat/44-fe-user-20-verify-exam-attempt-history-recording-and-badge-unlocking | Completed | frontend/src/views/user/exam/ExamTakingView.vue, frontend/src/stores/user.ts, frontend/src/components/user/ExamResultModal.vue, frontend/src/views/user/profile/tabs/ExamHistoryTab.vue, frontend/src/views/user/profile/tabs/BadgesTab.vue | vue-tsc --build, vite build, eslint |
+
+---
+
+### FE-USER-20: Verify Exam Attempt History Recording and Badge Unlocking
+
+- Date: 2026-10-30
+- Branch: `feat/44-fe-user-20-verify-exam-attempt-history-recording-and-badge-unlocking`
+- Status: Completed
+- Closes: #44
+
+Summary:
+Verified and enhanced the exam attempt history recording and badge unlocking pipeline:
+- History Recording Action in User Store (`src/stores/user.ts`):
+  - Added `recordExamAttempt(attempt, badgeUnlocked)` to store action suite.
+  - Automatically unshifts new attempt records (with `levelNumber`, `score`, `totalScore`, `passed`, `attemptDateTime`, and `badgeName`) into `userProfile.examHistories` and syncs with `examStore.records`.
+  - Supports both passed and failed attempts so user history remains fully auditable.
+- Unlocked Badge Synchronization:
+  - If an examination is passed, adds newly unlocked badge details to `userProfile.badges` immediately.
+  - Reflects the newly earned badge instantly in the Badges Gallery (`/profile/badges`) without requiring re-login.
+- Result Modal Direct Shortcuts (`src/components/user/ExamResultModal.vue`):
+  - Added direct navigation button to `"Exam History"` (`/profile/history`) on both pass and fail result views.
+  - Replaced all visual emojis across modal, history cards, and badges gallery with clean SVG icons (`TrophyIcon.vue`, `BadgeMedalIcon.vue`, `DocumentTextIcon.vue`).
+- Exam History & Badges Gallery Consistency:
+  - Updated `ExamHistoryTab.vue` and `BadgesTab.vue` to leverage SVG icons and render instant store state.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build-only` (`vite build`). All passed.
