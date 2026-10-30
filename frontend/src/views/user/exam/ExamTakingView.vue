@@ -360,38 +360,94 @@
             </button>
           </div>
 
-          <!-- Floating Sticky Action / Submission Bar (FE-USER-17) -->
+          <!-- Floating Sticky Action / Submission Bar (FE-USER-17 & FE-USER-18) -->
           <aside
             v-if="questions.length > 0"
             aria-label="Exam Actions"
             class="sticky bottom-6 z-20 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4"
           >
             <div class="flex items-center gap-3">
-              <div
-                class="size-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0"
-                :class="allAnswered ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
-              >
-                {{ answeredCount }}/{{ questions.length }}
+              <!-- Counter Indicator & Unanswered Counter Badge -->
+              <div class="relative">
+                <div
+                  class="size-11 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors"
+                  :class="isExamComplete ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'"
+                >
+                  {{ answeredCount }}/{{ questions.length }}
+                </div>
+                <!-- Unanswered Question Counter Badge (#42) -->
+                <span
+                  v-if="!isExamComplete"
+                  class="absolute -top-1.5 -right-2 px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] shadow-xs animate-pulse"
+                  title="Unanswered questions count"
+                >
+                  {{ remainingCount }}
+                </span>
               </div>
+
               <div>
-                <p class="text-xs font-bold text-slate-800">
-                  {{ allAnswered ? 'All questions answered!' : `${questions.length - answeredCount} question(s) remaining` }}
+                <p class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>{{ isExamComplete ? 'All questions answered!' : `${remainingCount} question(s) remaining` }}</span>
+                  <span
+                    v-if="!isExamComplete"
+                    class="inline-flex items-center px-2 py-0.2 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold"
+                  >
+                    Incomplete
+                  </span>
                 </p>
                 <p class="text-[11px] text-slate-500">
-                  {{ allAnswered ? 'You are ready to submit your exam.' : 'Complete all questions before submitting.' }}
+                  {{ isExamComplete ? 'You are ready to submit your exam.' : 'Complete every question to enable submission.' }}
                 </p>
               </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full sm:w-auto">
+            <!-- Submit Button with Tooltip and Disabled State Visual Indicator (#42) -->
+            <div class="flex items-center gap-3 w-full sm:w-auto relative group">
+              <!-- Tooltip on Hover when Incomplete -->
+              <div
+                v-if="!isExamComplete"
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center justify-center px-3 py-1.5 rounded-xl bg-slate-900 text-white text-[11px] font-medium shadow-md whitespace-nowrap pointer-events-none z-30 transition-all"
+              >
+                <span>Please answer all questions before submitting ({{ answeredCount }}/{{ questions.length }} completed)</span>
+                <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+              </div>
+
               <button
                 type="button"
                 @click="submitExamPrompt"
-                :disabled="isSubmitting"
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="isSubmitting || !isExamComplete"
+                :title="!isExamComplete ? `Please answer all questions before submitting (${answeredCount}/${questions.length} completed)` : undefined"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all"
+                :class="[
+                  isExamComplete && !isSubmitting
+                    ? 'bg-[#00385A] hover:bg-[#002840] text-white cursor-pointer active:scale-95'
+                    : 'bg-slate-200 text-slate-400 border border-slate-300/80 cursor-not-allowed shadow-none'
+                ]"
               >
+                <!-- Lock Icon when Incomplete / Spinner when Submitting -->
+                <span
+                  v-if="isSubmitting"
+                  class="size-4 rounded-full border-2 border-white border-t-transparent animate-spin"
+                />
+                <svg
+                  v-else-if="!isExamComplete"
+                  class="size-4 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+
                 <span>Submit Exam Answers</span>
-                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                <svg
+                  v-if="isExamComplete && !isSubmitting"
+                  class="size-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </button>
@@ -439,6 +495,10 @@ const answeredCount = computed<number>(() => {
   return Object.keys(selectedAnswers.value).length
 })
 
+const remainingCount = computed<number>(() => {
+  return Math.max(0, questions.value.length - answeredCount.value)
+})
+
 const progressPercent = computed<number>(() => {
   if (questions.value.length === 0) return 0
   return Math.round((answeredCount.value / questions.value.length) * 100)
@@ -448,8 +508,6 @@ const progressPercent = computed<number>(() => {
 const isExamComplete = computed<boolean>(() => {
   return questions.value.length > 0 && answeredCount.value === questions.value.length
 })
-
-const allAnswered = isExamComplete
 
 function isQuestionAnswered(questionId: string | number): boolean {
   return selectedAnswers.value[questionId] !== undefined
