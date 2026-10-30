@@ -98,3 +98,18 @@ const emit = defineEmits<{
 }>()
 
 const items = computed(() => props.modelValue ?? [])
+
+/**
+ * Removes an item at the specified index.
+ */
+function removeItem(index: number) {
+  if (props.disabled) return
+
+  const removed = items.value[index]
+  const updated = items.value.filter((_, i) => i !== index)
+  emit('update:modelValue', updated)
+  if (removed !== undefined) {
+    emit('remove', index, removed)
+  }
+}
+</script>
