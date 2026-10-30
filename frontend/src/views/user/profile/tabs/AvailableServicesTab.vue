@@ -21,7 +21,7 @@
     <div class="space-y-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="text-base">⚡</span>
+          <CheckCircleIcon class="size-4 text-emerald-600" />
           <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">
             Current Tier Services (Level {{ currentLevel }}: {{ currentLevelName }})
           </h4>
@@ -47,7 +47,7 @@
                 class="size-11 rounded-xl flex items-center justify-center font-bold text-base shrink-0 shadow-inner border"
                 :class="getServiceTierColor(service.level)"
               >
-                {{ service.icon }}
+                <DocumentTextIcon class="size-6" />
               </div>
               <div>
                 <h5 class="text-sm font-bold text-slate-800 group-hover:text-[#00385A] transition-colors leading-snug">
@@ -75,7 +75,10 @@
 
           <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
             <span>Facility Access: Unlimited</span>
-            <span class="font-semibold text-emerald-600">✓ Entitled</span>
+            <span class="font-semibold text-emerald-600 inline-flex items-center gap-1">
+              <CheckCircleIcon class="size-3.5 text-emerald-600" />
+              <span>Entitled</span>
+            </span>
           </div>
         </div>
       </div>
@@ -94,7 +97,7 @@
     <div v-if="nextLevelNumber" class="space-y-4 pt-4 border-t border-slate-100">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div class="flex items-center gap-2">
-          <span class="text-base">🔒</span>
+          <LockIcon class="size-4 text-slate-500" />
           <h4 class="text-sm font-bold text-slate-700 uppercase tracking-wider">
             Upcoming Services (Unlocked at Level {{ nextLevelNumber }}: {{ nextLevelName }})
           </h4>
@@ -160,8 +163,8 @@
       v-else
       class="rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 p-6 flex items-center gap-4 text-amber-900"
     >
-      <div class="size-12 rounded-2xl bg-amber-200/80 flex items-center justify-center text-2xl shrink-0 shadow-inner">
-        👑
+      <div class="size-12 rounded-2xl bg-amber-200/80 flex items-center justify-center shrink-0 shadow-inner text-amber-800">
+        <TrophyIcon class="size-6" />
       </div>
       <div>
         <h5 class="text-sm font-black">All Campus Services Unlocked</h5>
@@ -180,12 +183,13 @@ import { useUserStore } from '@/stores/user'
 import { getLevelName } from '@/utils/levelDisplay'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
+import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 
 interface ServiceItem {
   level: string
   name: string
   description: string
-  icon: string
 }
 
 const userStore = useUserStore()
@@ -216,52 +220,44 @@ const serviceCatalog: ServiceItem[] = [
     level: '1',
     name: 'AI Literacy Orientation',
     description: 'Comprehensive onboarding to CAMT digital infrastructure, AI tools, and acceptable use policies.',
-    icon: '🧭',
   },
   {
     level: '1',
     name: 'Basic Prompt Writing Clinic',
     description: 'Hands-on guided sessions for crafting effective prompts and interacting with generative LLMs.',
-    icon: '✍️',
   },
   // Level 2
   {
     level: '2',
     name: 'Intermediate AI Tooling Workshop',
     description: 'Deep dive into model integration, workflow automation, and multimodal generation tools.',
-    icon: '🛠️',
   },
   {
     level: '2',
     name: 'Data Handling Consultation',
     description: '1-on-1 advisor sessions for data cleaning, preprocessing, and compliance with data privacy standards.',
-    icon: '📊',
   },
   // Level 3
   {
     level: '3',
     name: 'Advanced Project Mentorship',
     description: 'Dedicated faculty and industry mentors providing architectural review for capstone projects.',
-    icon: '🚀',
   },
   {
     level: '3',
     name: 'AI Ethics Review Session',
     description: 'Institutional ethics evaluation and bias auditing for production AI deployments.',
-    icon: '⚖️',
   },
   // Level 4
   {
     level: '4',
     name: 'Expert Certification Support',
     description: 'Sponsored vouchers and fast-track prep for recognized enterprise cloud and AI certifications.',
-    icon: '🎓',
   },
   {
     level: '4',
     name: 'Community Speaker Placement',
     description: 'Exclusive invitation to deliver keynote presentations and tech talks across academic symposiums.',
-    icon: '🎤',
   },
 ]
 

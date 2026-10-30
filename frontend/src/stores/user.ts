@@ -283,6 +283,68 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  /**
+   * Action: recordExamAttempt(attempt, badgeUnlocked) (#44)
+   * Records every exam attempt and unlocked badges immediately into local store state
+   */
+  function recordExamAttempt(
+    attempt: UserExamHistoryItem,
+    badgeUnlocked?: { name: string; imageUrl?: string } | null,
+  ) {
+    if (!userProfile.value) {
+      const cu = authStore.currentUser
+      userProfile.value = {
+        id: cu?.id || '1',
+        username: cu?.username || cu?.email || 'user',
+        firstname: cu?.firstname || cu?.name || 'User',
+        lastname: cu?.lastname || cu?.surname || '',
+        name: cu?.name || '',
+        surname: cu?.surname || '',
+        email: cu?.email || '',
+        province: cu?.province || '',
+        currentLevel: currentUserLevel.value,
+        examHistories: [],
+        badges: [],
+      }
+    }
+
+    if (!Array.isArray(userProfile.value.examHistories)) {
+      userProfile.value.examHistories = []
+    }
+
+    // Prepend attempt to the top of the history
+    userProfile.value.examHistories.unshift({ ...attempt })
+
+    // Also sync with examStore for offline records
+    const examStore = useExamStore()
+    const currentUserId = String(authStore.currentUser?.id || userProfile.value.id || '1')
+    examStore.records.unshift({
+      id: String(attempt.id || Date.now()),
+      userId: currentUserId,
+      level: String(attempt.levelNumber),
+      score: attempt.score,
+      completedAt: attempt.attemptDateTime,
+      questionsAsked: [],
+      passCriteria: 3,
+      pass: attempt.passed,
+    })
+
+    // If a new badge was unlocked and passed, record into badges array
+    if (attempt.passed && badgeUnlocked) {
+      if (!Array.isArray(userProfile.value.badges)) {
+        userProfile.value.badges = []
+      }
+      const alreadyHasBadge = userProfile.value.badges.some((b) => b.name === badgeUnlocked.name)
+      if (!alreadyHasBadge) {
+        userProfile.value.badges.push({
+          name: badgeUnlocked.name,
+          imageUrl: badgeUnlocked.imageUrl || '',
+          unlockedAt: attempt.attemptDateTime,
+        })
+      }
+    }
+  }
+
   return {
     currentUserLevel,
     currentLevelDetails,
@@ -298,5 +360,6 @@ export const useUserStore = defineStore('user', () => {
     fetchUserProfile,
     updateUserProfile,
     upgradeUserLevel,
+    recordExamAttempt,
   }
 })

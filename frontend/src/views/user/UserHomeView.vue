@@ -39,8 +39,9 @@
                   <span v-if="nextLevelNumber" class="text-[#F2D794]">
                     Next: Level {{ nextLevelNumber }} – {{ nextLevelTitle }}
                   </span>
-                  <span v-else class="text-amber-300 font-bold">
-                    ★ Highest Level Achieved
+                  <span v-else class="text-amber-300 font-bold inline-flex items-center gap-1">
+                    <TrophyIcon class="size-3.5" />
+                    <span>Highest Level Achieved</span>
                   </span>
                 </div>
 
@@ -209,6 +210,7 @@ import { useLevelStore } from '@/stores/levelStore'
 import { useUserStore } from '@/stores/user'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelName } from '@/utils/levelDisplay'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 
 const userStore = useUserStore()
 const levelStore = useLevelStore()

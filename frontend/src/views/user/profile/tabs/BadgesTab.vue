@@ -11,7 +11,7 @@
 
       <div class="flex items-center gap-2 self-start sm:self-auto">
         <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-800 border border-amber-200 shadow-2xs">
-          <span>🏆</span>
+          <TrophyIcon class="size-4 text-amber-700" />
           <span>{{ unlockedCount }} of 4 Badges Unlocked</span>
         </span>
       </div>
@@ -58,7 +58,7 @@
               :alt="badge.title"
               class="size-full rounded-2xl object-cover"
             />
-            <span v-else>{{ badge.icon }}</span>
+            <BadgeMedalIcon v-else class="size-10" />
           </div>
         </div>
 
@@ -146,7 +146,7 @@
                 :alt="selectedBadge.title"
                 class="size-full rounded-2xl object-cover"
               />
-              <span v-else>{{ selectedBadge.icon }}</span>
+              <BadgeMedalIcon v-else class="size-12" />
             </div>
 
             <div class="text-center sm:text-left space-y-1.5 flex-1">
@@ -251,6 +251,8 @@ import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
 interface BadgeCardItem {
   level: number
@@ -261,7 +263,6 @@ interface BadgeCardItem {
   isUnlocked: boolean
   unlockedAt?: string | null
   imageUrl?: string | null
-  icon: string
   badgeBgClass: string
 }
 
@@ -279,11 +280,11 @@ onMounted(async () => {
 
 const currentUserLevel = computed(() => userStore.currentUserLevel)
 
-const badgeIcons: Record<number, { icon: string; bgClass: string }> = {
-  1: { icon: '🧭', bgClass: 'bg-[#C1D7AE]/30 text-[#5A7447] border-[#C1D7AE]' },
-  2: { icon: '🎯', bgClass: 'bg-[#F2D794]/30 text-[#866D2B] border-[#F2D794]' },
-  3: { icon: '🚀', bgClass: 'bg-[#E5A88B]/30 text-[#7A4228] border-[#E5A88B]' },
-  4: { icon: '👑', bgClass: 'bg-[#DD898E]/30 text-[#73292E] border-[#DD898E]' },
+const badgeIcons: Record<number, { bgClass: string }> = {
+  1: { bgClass: 'bg-[#C1D7AE]/30 text-[#5A7447] border-[#C1D7AE]' },
+  2: { bgClass: 'bg-[#F2D794]/30 text-[#866D2B] border-[#F2D794]' },
+  3: { bgClass: 'bg-[#E5A88B]/30 text-[#7A4228] border-[#E5A88B]' },
+  4: { bgClass: 'bg-[#DD898E]/30 text-[#73292E] border-[#DD898E]' },
 }
 
 const badgeCards = computed<BadgeCardItem[]>(() => {
@@ -324,7 +325,6 @@ const badgeCards = computed<BadgeCardItem[]>(() => {
       isUnlocked,
       unlockedAt,
       imageUrl,
-      icon: badgeIcons[levelNum]?.icon || '🎖️',
       badgeBgClass: badgeIcons[levelNum]?.bgClass || 'bg-indigo-50 text-indigo-700 border-indigo-200',
     }
   })

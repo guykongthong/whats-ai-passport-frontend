@@ -50,11 +50,11 @@
           >
             <!-- Result Icon Header -->
             <div
-              class="size-20 mx-auto rounded-3xl flex items-center justify-center text-4xl shadow-inner transition-transform duration-300 hover:scale-105"
+              class="size-20 mx-auto rounded-3xl flex items-center justify-center text-3xl shadow-inner transition-transform duration-300 hover:scale-105"
               :class="result.passed ? 'bg-emerald-100 text-emerald-600 ring-4 ring-emerald-50' : 'bg-rose-100 text-rose-600 ring-4 ring-rose-50'"
             >
-              <span v-if="result.passed">🎉</span>
-              <span v-else>📝</span>
+              <TrophyIcon v-if="result.passed" class="size-10" />
+              <DocumentTextIcon v-else class="size-10" />
             </div>
 
             <!-- Result Status Headline (#43) -->
@@ -113,12 +113,13 @@
                   :alt="result.badgeUnlocked.name"
                   class="size-full object-contain"
                 />
-                <span v-else class="text-3xl">🏅</span>
+                <BadgeMedalIcon v-else class="size-9 text-amber-500" />
               </div>
 
               <div class="min-w-0 flex-1">
                 <span class="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-200/60 px-2 py-0.5 rounded-md">
-                  ★ Badge Unlocked!
+                  <BadgeMedalIcon class="size-3 text-amber-800" />
+                  <span>Badge Unlocked!</span>
                 </span>
                 <h4 class="text-sm sm:text-base font-bold text-slate-900 truncate mt-1">
                   {{ result.badgeUnlocked.name }}
@@ -129,34 +130,41 @@
               </div>
             </div>
 
-            <!-- Action Buttons (#43) -->
+            <!-- Action Buttons (#43 & #44) -->
             <div class="flex flex-col sm:flex-row gap-3 pt-2">
-              <!-- If Passed: "Go to Dashboard" / "View New Benefits" -->
+              <!-- If Passed: "Go to Dashboard" / "View Exam History" / "View New Benefits" -->
               <template v-if="result.passed">
                 <RouterLink
                   to="/dashboard"
-                  class="flex-1 py-3 px-5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  class="flex-1 py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  <span>Go to Dashboard</span>
+                  <span>Dashboard</span>
+                </RouterLink>
+
+                <RouterLink
+                  to="/profile/history"
+                  class="flex-1 py-3 px-4 rounded-xl border border-[#00385A]/30 bg-slate-50 hover:bg-slate-100 text-[#00385A] font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span>Exam History</span>
                 </RouterLink>
 
                 <RouterLink
                   to="/profile/services"
-                  class="flex-1 py-3 px-5 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                  class="flex-1 py-3 px-4 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                 >
-                  <span>View New Benefits</span>
+                  <span>New Benefits</span>
                   <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
                 </RouterLink>
               </template>
 
-              <!-- If Failed: Friendly encouraging message with "Try Again" / "Review eLearning" -->
+              <!-- If Failed: Friendly encouraging message with "Try Again" / "View History" / "Review eLearning" -->
               <template v-else>
                 <button
                   type="button"
                   @click="$emit('retry')"
-                  class="flex-1 py-3 px-5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  class="flex-1 py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -165,8 +173,15 @@
                 </button>
 
                 <RouterLink
+                  to="/profile/history"
+                  class="flex-1 py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <span>History</span>
+                </RouterLink>
+
+                <RouterLink
                   to="/elearning"
-                  class="flex-1 py-3 px-5 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+                  class="flex-1 py-3 px-4 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                 >
                   <span>Review eLearning</span>
                   <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,6 +202,9 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { ExamSubmitResponse } from '@/services/ExamService'
 import { getLevelName } from '@/utils/levelDisplay'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
+import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
 interface Props {
   isOpen: boolean

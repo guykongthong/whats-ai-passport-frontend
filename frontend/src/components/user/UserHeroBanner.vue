@@ -34,8 +34,9 @@
             <span v-if="nextLevelNumber" class="text-indigo-200">
               Next: Level {{ nextLevelNumber }} – {{ nextLevelTitle }}
             </span>
-            <span v-else class="text-amber-300 font-bold">
-              ★ Highest Level Reached
+            <span v-else class="text-amber-300 font-bold inline-flex items-center gap-1">
+              <TrophyIcon class="size-3.5" />
+              <span>Highest Level Reached</span>
             </span>
           </div>
 
@@ -100,6 +101,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { getLevelName } from '@/utils/levelDisplay'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 
 interface Props {
   currentLevel?: number | string

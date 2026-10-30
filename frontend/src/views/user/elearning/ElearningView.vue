@@ -38,7 +38,7 @@
           >
             <div class="flex items-center gap-3">
               <span class="flex size-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white font-bold text-sm">
-                ✓
+                <CheckCircleIcon class="size-5" />
               </span>
               <p class="text-xs sm:text-sm font-semibold">
                 {{ levelTransitionAlert }}
@@ -192,7 +192,8 @@
             >
               <div class="space-y-1 text-center sm:text-left">
                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-xs font-bold mb-1 backdrop-blur-xs">
-                  <span>🏆 Highest Tier Achieved</span>
+                  <TrophyIcon class="size-4" />
+                  <span>Highest Tier Achieved</span>
                 </div>
                 <h3 class="text-base sm:text-lg font-bold">
                   All Levels Completed!
@@ -327,6 +328,8 @@ import ELearningService, { type VideoItem, type UserVideosResponse } from '@/ser
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import { eLearningVideos } from '@/data/eLearning'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 
 const userStore = useUserStore()
 
