@@ -70,3 +70,31 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+
+interface Props {
+  modelValue?: string[]
+  label?: string
+  placeholder?: string
+  disabled?: boolean
+  theme?: 'light' | 'dark'
+  required?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  label: '',
+  placeholder: 'Type an item...',
+  disabled: false,
+  theme: 'dark',
+  required: false,
+})
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string[]): void
+  (e: 'remove', index: number, item: string): void
+}>()
+
+const items = computed(() => props.modelValue ?? [])
