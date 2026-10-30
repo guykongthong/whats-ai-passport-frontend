@@ -24,7 +24,7 @@
     <!-- Badges Showcase Section -->
     <div v-if="badges.length > 0" class="rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-50/60 to-yellow-50/30 p-5">
       <div class="flex items-center gap-2 mb-3">
-        <span class="text-lg">🏆</span>
+        <TrophyIcon class="size-5 text-amber-700" />
         <h3 class="text-sm font-bold text-amber-900">Earned Badges & Achievements</h3>
       </div>
       <div class="flex flex-wrap gap-2.5">
@@ -39,7 +39,7 @@
             :alt="badge.name"
             class="size-5 rounded-full object-cover"
           />
-          <span v-else class="text-amber-600">🎖️</span>
+          <BadgeMedalIcon v-else class="size-4 text-amber-600" />
           <span>{{ badge.name }}</span>
           <span v-if="badge.unlockedAt" class="text-[10px] text-amber-600/80 font-normal">
             ({{ formatDate(badge.unlockedAt) }})
@@ -128,7 +128,7 @@
           v-if="record.badgeName"
           class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50/50 -mx-5 -mb-5 px-5 py-2.5 rounded-b-2xl"
         >
-          <span>🏆</span>
+          <BadgeMedalIcon class="size-4 text-amber-600 shrink-0" />
           <span>Awarded Badge: <strong class="font-bold text-amber-900">{{ record.badgeName }}</strong></span>
         </div>
       </div>
@@ -174,6 +174,8 @@ import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 import type { UserExamHistoryItem } from '@/services/UserService'
 
 const userStore = useUserStore()

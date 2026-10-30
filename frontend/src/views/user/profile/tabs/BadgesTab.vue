@@ -11,7 +11,7 @@
 
       <div class="flex items-center gap-2 self-start sm:self-auto">
         <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-800 border border-amber-200 shadow-2xs">
-          <span>🏆</span>
+          <TrophyIcon class="size-4 text-amber-700" />
           <span>{{ unlockedCount }} of 4 Badges Unlocked</span>
         </span>
       </div>
@@ -58,7 +58,7 @@
               :alt="badge.title"
               class="size-full rounded-2xl object-cover"
             />
-            <span v-else>{{ badge.icon }}</span>
+            <BadgeMedalIcon v-else class="size-10" />
           </div>
         </div>
 
@@ -146,7 +146,7 @@
                 :alt="selectedBadge.title"
                 class="size-full rounded-2xl object-cover"
               />
-              <span v-else>{{ selectedBadge.icon }}</span>
+              <BadgeMedalIcon v-else class="size-12" />
             </div>
 
             <div class="text-center sm:text-left space-y-1.5 flex-1">
@@ -251,6 +251,8 @@ import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
 interface BadgeCardItem {
   level: number
