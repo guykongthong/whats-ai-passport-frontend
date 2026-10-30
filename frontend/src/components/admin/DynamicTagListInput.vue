@@ -68,11 +68,51 @@
         No items added yet.
       </span>
     </div>
+
+    <!-- Input Field & Add Button (Scope #20) -->
+    <div v-if="!disabled" class="flex items-center gap-2 mt-1">
+      <div class="relative flex-1">
+        <input
+          v-model="inputQuery"
+          type="text"
+          :placeholder="placeholder"
+          :disabled="disabled"
+          :class="[
+            'w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border transition-all focus:outline-hidden',
+            theme === 'dark'
+              ? 'bg-white/10 border-white/20 text-white placeholder-white/40 focus:border-white/40 focus:ring-2 focus:ring-white/20'
+              : 'bg-white border-slate-300 text-slate-800 placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20',
+            errorMessage ? '!border-rose-400' : '',
+          ]"
+          @keydown.enter.prevent="addItem"
+          @input="errorMessage = null"
+        />
+      </div>
+
+      <button
+        type="button"
+        :disabled="disabled || !inputQuery.trim()"
+        :class="[
+          'px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl border transition-all cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed',
+          theme === 'dark'
+            ? 'bg-white/15 hover:bg-white/25 border-white/20 text-white shadow-xs'
+            : 'bg-[#00385A] hover:bg-[#002840] border-transparent text-white shadow-xs',
+        ]"
+        @click="addItem"
+      >
+        + Add
+      </button>
+    </div>
+
+    <!-- Validation Error Feedback -->
+    <p v-if="errorMessage" class="text-xs text-rose-400 font-medium mt-0.5">
+      {{ errorMessage }}
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 
 interface Props {
   modelValue?: string[]
@@ -86,7 +126,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: () => [],
   label: '',
-  placeholder: 'Type an item...',
+  placeholder: 'Type an item and press Enter...',
   disabled: false,
   theme: 'dark',
   required: false,
@@ -94,10 +134,41 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string[]): void
+  (e: 'add', item: string): void
   (e: 'remove', index: number, item: string): void
 }>()
 
 const items = computed(() => props.modelValue ?? [])
+const inputQuery = ref('')
+const errorMessage = ref<string | null>(null)
+
+/**
+ * Adds a new item to the list with empty and duplicate validation.
+ */
+function addItem() {
+  if (props.disabled) return
+
+  const trimmed = inputQuery.value.trim()
+  if (!trimmed) {
+    errorMessage.value = 'Item cannot be empty.'
+    return
+  }
+
+  // Prevent duplicate items (case-insensitive check)
+  const isDuplicate = items.value.some(
+    (item) => item.toLowerCase() === trimmed.toLowerCase(),
+  )
+  if (isDuplicate) {
+    errorMessage.value = `"${trimmed}" is already in the list.`
+    return
+  }
+
+  errorMessage.value = null
+  const updated = [...items.value, trimmed]
+  emit('update:modelValue', updated)
+  emit('add', trimmed)
+  inputQuery.value = ''
+}
 
 /**
  * Removes an item at the specified index.
