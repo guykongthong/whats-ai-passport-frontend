@@ -38,8 +38,8 @@
           v-if="isTopLevel"
           class="rounded-3xl border border-amber-200 bg-amber-50/80 p-8 text-center space-y-4 shadow-xs"
         >
-          <div class="size-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-2xl font-bold">
-            🏆
+          <div class="size-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center text-amber-700 shadow-inner">
+            <TrophyIcon class="size-8" />
           </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-[#00385A]">
             Maximum Level Reached
@@ -386,6 +386,7 @@ import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import ExamResultModal from '@/components/user/ExamResultModal.vue'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 import ExamService, {
   type ContractQuestion,
   type ExamPaperResponse,
@@ -489,6 +490,20 @@ async function submitExamPrompt() {
         attemptDateTime: data.attemptDateTime ?? new Date().toISOString(),
       }
 
+      // Record attempt and badge into exam history (#44)
+      userStore.recordExamAttempt(
+        {
+          id: Date.now(),
+          levelNumber: targetLevelNumber.value,
+          score: examResultModal.value.score,
+          totalScore: examResultModal.value.totalScore,
+          passed: examResultModal.value.passed,
+          attemptDateTime: examResultModal.value.attemptDateTime,
+          badgeName: examResultModal.value.badgeUnlocked?.name || null,
+        },
+        examResultModal.value.badgeUnlocked,
+      )
+
       // If passed, immediately call userStore.upgradeUserLevel to update database and frontend state (#43)
       if (examResultModal.value.passed) {
         await userStore.upgradeUserLevel(examResultModal.value.newLevel)
@@ -513,6 +528,20 @@ async function submitExamPrompt() {
       badgeUnlocked: passed ? { name: `Level ${targetLevelNumber.value} Master`, imageUrl: '' } : null,
       attemptDateTime: new Date().toISOString(),
     }
+
+    // Record attempt and badge into exam history for offline fallback (#44)
+    userStore.recordExamAttempt(
+      {
+        id: Date.now(),
+        levelNumber: targetLevelNumber.value,
+        score,
+        totalScore: total,
+        passed,
+        attemptDateTime: examResultModal.value.attemptDateTime,
+        badgeName: examResultModal.value.badgeUnlocked?.name || null,
+      },
+      examResultModal.value.badgeUnlocked,
+    )
 
     if (passed) {
       await userStore.upgradeUserLevel(targetLevelNumber.value)
