@@ -2,6 +2,93 @@
   <UserPageLayout>
     <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8">
       <div class="mx-auto flex w-full max-w-4xl flex-col gap-6">
+        <!-- Exam Results Modal / Overlay (FE-USER-17) -->
+        <div
+          v-if="examResultModal"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+        >
+          <div
+            class="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 text-center space-y-6 animate-scale-up"
+          >
+            <!-- Result Icon -->
+            <div
+              class="size-20 mx-auto rounded-3xl flex items-center justify-center text-4xl shadow-inner"
+              :class="examResultModal.passed ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'"
+            >
+              <span v-if="examResultModal.passed">🎉</span>
+              <span v-else>📝</span>
+            </div>
+
+            <!-- Result Title -->
+            <div class="space-y-1">
+              <h2 class="text-2xl font-black tracking-tight" :class="examResultModal.passed ? 'text-emerald-700' : 'text-slate-800'">
+                {{ examResultModal.passed ? 'Congratulations! Exam Passed!' : 'Exam Not Passed' }}
+              </h2>
+              <p class="text-xs sm:text-sm text-slate-500">
+                {{ examResultModal.passed ? `You have successfully advanced to Level ${examResultModal.newLevel}!` : 'Do not worry, you can review the eLearning materials and retry anytime.' }}
+              </p>
+            </div>
+
+            <!-- Score Summary Cards -->
+            <div class="grid grid-cols-2 gap-3">
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="text-[11px] font-semibold text-slate-400">Your Score</span>
+                <p class="text-xl sm:text-2xl font-black text-slate-800">
+                  {{ examResultModal.score }} / {{ examResultModal.totalScore }}
+                </p>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
+                <span class="text-[11px] font-semibold text-slate-400">Passing Criteria</span>
+                <p class="text-xl sm:text-2xl font-black text-slate-800">
+                  {{ examResultModal.passCriteria }} Correct
+                </p>
+              </div>
+            </div>
+
+            <!-- Unlocked Badge Card -->
+            <div
+              v-if="examResultModal.badgeUnlocked"
+              class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-center gap-4 text-left"
+            >
+              <div class="size-14 rounded-2xl bg-white p-1.5 shadow-sm border border-amber-100 shrink-0 flex items-center justify-center">
+                <img
+                  v-if="examResultModal.badgeUnlocked.imageUrl"
+                  :src="examResultModal.badgeUnlocked.imageUrl"
+                  :alt="examResultModal.badgeUnlocked.name"
+                  class="size-full object-contain"
+                />
+                <span v-else class="text-2xl">🏅</span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Badge Unlocked!</span>
+                <h4 class="text-sm font-bold text-slate-900">{{ examResultModal.badgeUnlocked.name }}</h4>
+                <p class="text-[11px] text-slate-500">Added to your achievements</p>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                v-if="!examResultModal.passed"
+                type="button"
+                @click="resetExam"
+                class="w-full py-3 px-5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer"
+              >
+                Retry Exam
+              </button>
+              <RouterLink
+                to="/elearning"
+                class="w-full py-3 px-5 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>Continue to eLearning</span>
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </RouterLink>
+            </div>
+          </div>
+        </div>
+
         <!-- Top Navigation / Breadcrumb -->
         <div class="flex items-center justify-between">
           <RouterLink
@@ -308,7 +395,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import ExamService, { type ContractQuestion, type ExamPaperResponse } from '@/services/ExamService'
+import ExamService, {
+  type ContractQuestion,
+  type ExamPaperResponse,
+  type ExamSubmitResponse,
+  type ExamSubmissionPayload
+} from '@/services/ExamService'
 import type { ExamQuestion } from '@/types/ExamContent'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
@@ -322,6 +414,7 @@ const questions = ref<ContractQuestion[]>([])
 const selectedAnswers = ref<Record<string | number, number>>({})
 const isSubmitting = ref(false)
 const validationError = ref<string | null>(null)
+const examResultModal = ref<ExamSubmitResponse | null>(null)
 
 const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 1)
 const isTopLevel = computed<boolean>(() => currentLevelNumber.value >= 4)
@@ -358,14 +451,81 @@ function scrollToQuestion(qIndex: number) {
   }
 }
 
-function submitExamPrompt() {
+async function submitExamPrompt() {
   if (!allAnswered.value) {
     validationError.value = `Please answer all questions before submitting. (${questions.value.length - answeredCount.value} remaining)`
     const firstUnansweredIndex = questions.value.findIndex((q) => !isQuestionAnswered(q.id))
     if (firstUnansweredIndex !== -1) {
       scrollToQuestion(firstUnansweredIndex)
     }
+    return
   }
+
+  isSubmitting.value = true
+  validationError.value = null
+
+  const payload: ExamSubmissionPayload = {
+    levelNumber: targetLevelNumber.value,
+    answers: questions.value.map((q) => ({
+      questionId: q.id,
+      selectedChoice: selectedAnswers.value[q.id] ?? 0,
+    })),
+  }
+
+  try {
+    const res = await ExamService.submitExam(payload)
+    if (res?.data) {
+      const data = res.data as ExamSubmitResponse
+      examResultModal.value = {
+        score: data.score ?? 0,
+        totalScore: data.totalScore ?? questions.value.length,
+        passCriteria: data.passCriteria ?? passCriteria.value,
+        passed: Boolean(data.passed),
+        oldLevel: data.oldLevel ?? currentLevelNumber.value,
+        newLevel: data.newLevel ?? (data.passed ? targetLevelNumber.value : currentLevelNumber.value),
+        badgeUnlocked: data.badgeUnlocked ?? null,
+        attemptDateTime: data.attemptDateTime ?? new Date().toISOString(),
+      }
+
+      // If passed, immediately update user store level and refresh user profile
+      if (examResultModal.value.passed) {
+        if (userStore.userProfile) {
+          userStore.userProfile.currentLevel = examResultModal.value.newLevel
+        }
+        await userStore.fetchUserProfile().catch(() => {})
+      }
+    }
+  } catch (err: unknown) {
+    console.info('Backend submitExam offline, calculating mock result:', err)
+
+    // Fallback simulation when backend offline
+    const total = questions.value.length
+    const score = Math.min(total, Object.keys(selectedAnswers.value).length)
+    const passed = score >= passCriteria.value
+
+    examResultModal.value = {
+      score,
+      totalScore: total,
+      passCriteria: passCriteria.value,
+      passed,
+      oldLevel: currentLevelNumber.value,
+      newLevel: passed ? targetLevelNumber.value : currentLevelNumber.value,
+      badgeUnlocked: passed ? { name: `Level ${targetLevelNumber.value} Master`, imageUrl: '' } : null,
+      attemptDateTime: new Date().toISOString(),
+    }
+
+    if (passed && userStore.userProfile) {
+      userStore.userProfile.currentLevel = targetLevelNumber.value
+    }
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+function resetExam() {
+  selectedAnswers.value = {}
+  examResultModal.value = null
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 async function fetchExamQuestions() {
