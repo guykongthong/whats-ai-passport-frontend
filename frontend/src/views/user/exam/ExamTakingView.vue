@@ -2,92 +2,14 @@
   <UserPageLayout>
     <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8">
       <div class="mx-auto flex w-full max-w-4xl flex-col gap-6">
-        <!-- Exam Results Modal / Overlay (FE-USER-17) -->
-        <div
+        <!-- Exam Results Modal / Overlay (#43) -->
+        <ExamResultModal
           v-if="examResultModal"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
-        >
-          <div
-            class="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 text-center space-y-6 animate-scale-up"
-          >
-            <!-- Result Icon -->
-            <div
-              class="size-20 mx-auto rounded-3xl flex items-center justify-center text-4xl shadow-inner"
-              :class="examResultModal.passed ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'"
-            >
-              <span v-if="examResultModal.passed">🎉</span>
-              <span v-else>📝</span>
-            </div>
-
-            <!-- Result Title -->
-            <div class="space-y-1">
-              <h2 class="text-2xl font-black tracking-tight" :class="examResultModal.passed ? 'text-emerald-700' : 'text-slate-800'">
-                {{ examResultModal.passed ? 'Congratulations! Exam Passed!' : 'Exam Not Passed' }}
-              </h2>
-              <p class="text-xs sm:text-sm text-slate-500">
-                {{ examResultModal.passed ? `You have successfully advanced to Level ${examResultModal.newLevel}!` : 'Do not worry, you can review the eLearning materials and retry anytime.' }}
-              </p>
-            </div>
-
-            <!-- Score Summary Cards -->
-            <div class="grid grid-cols-2 gap-3">
-              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span class="text-[11px] font-semibold text-slate-400">Your Score</span>
-                <p class="text-xl sm:text-2xl font-black text-slate-800">
-                  {{ examResultModal.score }} / {{ examResultModal.totalScore }}
-                </p>
-              </div>
-              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100">
-                <span class="text-[11px] font-semibold text-slate-400">Passing Criteria</span>
-                <p class="text-xl sm:text-2xl font-black text-slate-800">
-                  {{ examResultModal.passCriteria }} Correct
-                </p>
-              </div>
-            </div>
-
-            <!-- Unlocked Badge Card -->
-            <div
-              v-if="examResultModal.badgeUnlocked"
-              class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200/80 flex items-center gap-4 text-left"
-            >
-              <div class="size-14 rounded-2xl bg-white p-1.5 shadow-sm border border-amber-100 shrink-0 flex items-center justify-center">
-                <img
-                  v-if="examResultModal.badgeUnlocked.imageUrl"
-                  :src="examResultModal.badgeUnlocked.imageUrl"
-                  :alt="examResultModal.badgeUnlocked.name"
-                  class="size-full object-contain"
-                />
-                <span v-else class="text-2xl">🏅</span>
-              </div>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Badge Unlocked!</span>
-                <h4 class="text-sm font-bold text-slate-900">{{ examResultModal.badgeUnlocked.name }}</h4>
-                <p class="text-[11px] text-slate-500">Added to your achievements</p>
-              </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                v-if="!examResultModal.passed"
-                type="button"
-                @click="resetExam"
-                class="w-full py-3 px-5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm transition-all cursor-pointer"
-              >
-                Retry Exam
-              </button>
-              <RouterLink
-                to="/elearning"
-                class="w-full py-3 px-5 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all inline-flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <span>Continue to eLearning</span>
-                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </RouterLink>
-            </div>
-          </div>
-        </div>
+          :is-open="Boolean(examResultModal)"
+          :result="examResultModal"
+          @retry="resetExam"
+          @close="examResultModal = null"
+        />
 
         <!-- Top Navigation / Breadcrumb -->
         <div class="flex items-center justify-between">
@@ -250,14 +172,25 @@
               v-for="(question, qIndex) in questions"
               :key="question.id"
               :id="`question-${qIndex}`"
-              class="rounded-3xl border border-slate-200/90 bg-white p-6 sm:p-7 shadow-xs space-y-4 transition-all"
-              :class="{
-                'ring-2 ring-[#00385A]/15 border-[#00385A]/40': isQuestionAnswered(question.id)
-              }"
+              class="rounded-3xl border bg-white p-6 sm:p-7 shadow-xs space-y-4 transition-all"
+              :class="[
+                isQuestionAnswered(question.id)
+                  ? 'ring-2 ring-[#00385A]/15 border-[#00385A]/40'
+                  : showUnansweredErrors
+                    ? 'border-rose-400 bg-rose-50/20 ring-2 ring-rose-400/30'
+                    : 'border-slate-200/90'
+              ]"
             >
               <!-- Question Header -->
               <div class="flex items-start justify-between gap-3">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-[#00385A]/10 text-[#00385A] text-xs font-bold">
+                <span
+                  class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold"
+                  :class="[
+                    !isQuestionAnswered(question.id) && showUnansweredErrors
+                      ? 'bg-rose-100 text-rose-700'
+                      : 'bg-[#00385A]/10 text-[#00385A]'
+                  ]"
+                >
                   Question {{ qIndex + 1 }} of {{ questions.length }}
                 </span>
 
@@ -272,9 +205,10 @@
                 </span>
                 <span
                   v-else
-                  class="text-[11px] font-medium text-slate-400"
+                  class="text-[11px] font-medium"
+                  :class="showUnansweredErrors ? 'text-rose-600 font-bold' : 'text-slate-400'"
                 >
-                  Unanswered
+                  {{ showUnansweredErrors ? 'Required' : 'Unanswered' }}
                 </span>
               </div>
 
@@ -348,38 +282,94 @@
             </button>
           </div>
 
-          <!-- Floating Sticky Action / Submission Bar (FE-USER-17) -->
+          <!-- Floating Sticky Action / Submission Bar (FE-USER-17 & FE-USER-18) -->
           <aside
             v-if="questions.length > 0"
             aria-label="Exam Actions"
             class="sticky bottom-6 z-20 rounded-2xl bg-white/95 backdrop-blur-md border border-slate-200 p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4"
           >
             <div class="flex items-center gap-3">
-              <div
-                class="size-10 rounded-xl flex items-center justify-center font-bold text-sm shrink-0"
-                :class="allAnswered ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'"
-              >
-                {{ answeredCount }}/{{ questions.length }}
+              <!-- Counter Indicator & Unanswered Counter Badge -->
+              <div class="relative">
+                <div
+                  class="size-11 rounded-xl flex items-center justify-center font-bold text-sm shrink-0 transition-colors"
+                  :class="isExamComplete ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'"
+                >
+                  {{ answeredCount }}/{{ questions.length }}
+                </div>
+                <!-- Unanswered Question Counter Badge (#42) -->
+                <span
+                  v-if="!isExamComplete"
+                  class="absolute -top-1.5 -right-2 px-1.5 py-0.5 rounded-full bg-rose-500 text-white font-bold text-[10px] shadow-xs animate-pulse"
+                  title="Unanswered questions count"
+                >
+                  {{ remainingCount }}
+                </span>
               </div>
+
               <div>
-                <p class="text-xs font-bold text-slate-800">
-                  {{ allAnswered ? 'All questions answered!' : `${questions.length - answeredCount} question(s) remaining` }}
+                <p class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>{{ isExamComplete ? 'All questions answered!' : `${remainingCount} question(s) remaining` }}</span>
+                  <span
+                    v-if="!isExamComplete"
+                    class="inline-flex items-center px-2 py-0.2 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold"
+                  >
+                    Incomplete
+                  </span>
                 </p>
                 <p class="text-[11px] text-slate-500">
-                  {{ allAnswered ? 'You are ready to submit your exam.' : 'Complete all questions before submitting.' }}
+                  {{ isExamComplete ? 'You are ready to submit your exam.' : 'Complete every question to enable submission.' }}
                 </p>
               </div>
             </div>
 
-            <div class="flex items-center gap-3 w-full sm:w-auto">
+            <!-- Submit Button with Tooltip and Disabled State Visual Indicator (#42) -->
+            <div class="flex items-center gap-3 w-full sm:w-auto relative group">
+              <!-- Tooltip on Hover when Incomplete -->
+              <div
+                v-if="!isExamComplete"
+                class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:flex items-center justify-center px-3 py-1.5 rounded-xl bg-slate-900 text-white text-[11px] font-medium shadow-md whitespace-nowrap pointer-events-none z-30 transition-all"
+              >
+                <span>Please answer all questions before submitting ({{ answeredCount }}/{{ questions.length }} completed)</span>
+                <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+              </div>
+
               <button
                 type="button"
                 @click="submitExamPrompt"
-                :disabled="isSubmitting"
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="isSubmitting || !isExamComplete"
+                :title="!isExamComplete ? `Please answer all questions before submitting (${answeredCount}/${questions.length} completed)` : undefined"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-xs sm:text-sm shadow-md transition-all"
+                :class="[
+                  isExamComplete && !isSubmitting
+                    ? 'bg-[#00385A] hover:bg-[#002840] text-white cursor-pointer active:scale-95'
+                    : 'bg-slate-200 text-slate-400 border border-slate-300/80 cursor-not-allowed shadow-none'
+                ]"
               >
+                <!-- Lock Icon when Incomplete / Spinner when Submitting -->
+                <span
+                  v-if="isSubmitting"
+                  class="size-4 rounded-full border-2 border-white border-t-transparent animate-spin"
+                />
+                <svg
+                  v-else-if="!isExamComplete"
+                  class="size-4 text-slate-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+
                 <span>Submit Exam Answers</span>
-                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+
+                <svg
+                  v-if="isExamComplete && !isSubmitting"
+                  class="size-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
               </button>
@@ -395,6 +385,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import ExamResultModal from '@/components/user/ExamResultModal.vue'
 import ExamService, {
   type ContractQuestion,
   type ExamPaperResponse,
@@ -414,6 +405,7 @@ const questions = ref<ContractQuestion[]>([])
 const selectedAnswers = ref<Record<string | number, number>>({})
 const isSubmitting = ref(false)
 const validationError = ref<string | null>(null)
+const showUnansweredErrors = ref(false)
 const examResultModal = ref<ExamSubmitResponse | null>(null)
 
 const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 1)
@@ -426,12 +418,17 @@ const answeredCount = computed<number>(() => {
   return Object.keys(selectedAnswers.value).length
 })
 
+const remainingCount = computed<number>(() => {
+  return Math.max(0, questions.value.length - answeredCount.value)
+})
+
 const progressPercent = computed<number>(() => {
   if (questions.value.length === 0) return 0
   return Math.round((answeredCount.value / questions.value.length) * 100)
 })
 
-const allAnswered = computed<boolean>(() => {
+// Scope #42: isExamComplete checks if answered count equals total questions
+const isExamComplete = computed<boolean>(() => {
   return questions.value.length > 0 && answeredCount.value === questions.value.length
 })
 
@@ -442,6 +439,9 @@ function isQuestionAnswered(questionId: string | number): boolean {
 function selectChoice(questionId: string | number, choiceIndex: number) {
   selectedAnswers.value[questionId] = choiceIndex
   validationError.value = null
+  if (isExamComplete.value) {
+    showUnansweredErrors.value = false
+  }
 }
 
 function scrollToQuestion(qIndex: number) {
@@ -452,7 +452,8 @@ function scrollToQuestion(qIndex: number) {
 }
 
 async function submitExamPrompt() {
-  if (!allAnswered.value) {
+  if (!isExamComplete.value) {
+    showUnansweredErrors.value = true
     validationError.value = `Please answer all questions before submitting. (${questions.value.length - answeredCount.value} remaining)`
     const firstUnansweredIndex = questions.value.findIndex((q) => !isQuestionAnswered(q.id))
     if (firstUnansweredIndex !== -1) {
@@ -461,6 +462,7 @@ async function submitExamPrompt() {
     return
   }
 
+  showUnansweredErrors.value = false
   isSubmitting.value = true
   validationError.value = null
 
@@ -487,11 +489,9 @@ async function submitExamPrompt() {
         attemptDateTime: data.attemptDateTime ?? new Date().toISOString(),
       }
 
-      // If passed, immediately update user store level and refresh user profile
+      // If passed, immediately call userStore.upgradeUserLevel to update database and frontend state (#43)
       if (examResultModal.value.passed) {
-        if (userStore.userProfile) {
-          userStore.userProfile.currentLevel = examResultModal.value.newLevel
-        }
+        await userStore.upgradeUserLevel(examResultModal.value.newLevel)
         await userStore.fetchUserProfile().catch(() => {})
       }
     }
@@ -514,8 +514,8 @@ async function submitExamPrompt() {
       attemptDateTime: new Date().toISOString(),
     }
 
-    if (passed && userStore.userProfile) {
-      userStore.userProfile.currentLevel = targetLevelNumber.value
+    if (passed) {
+      await userStore.upgradeUserLevel(targetLevelNumber.value)
     }
   } finally {
     isSubmitting.value = false
