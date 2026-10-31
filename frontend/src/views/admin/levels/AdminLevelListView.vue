@@ -231,8 +231,6 @@ import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import AdminLevelService from '@/services/AdminLevelService'
 import type { LevelAdmin } from '@/types/admin'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
-import { benefits as mockBenefits } from '@/data/benefits'
-import { services as mockServices } from '@/data/services'
 
 const levels = ref<LevelAdmin[]>([])
 const loading = ref(true)
@@ -324,53 +322,17 @@ function displayBenefitText(benefit: string): string {
   return benefit.replace(/^\[Exclusive\]\s*/i, '').trim()
 }
 
-function loadFallbackLevels() {
-  levels.value = [
-    {
-      levelNumber: 1,
-      name: 'Explorer',
-      passCriteria: 4,
-      benefits: mockBenefits.filter((b) => b.level === '1').map((b) => b.description),
-      services: mockServices.filter((s) => s.level === '1').map((s) => s.name),
-    },
-    {
-      levelNumber: 2,
-      name: 'Achiever',
-      passCriteria: 4,
-      benefits: mockBenefits.filter((b) => b.level === '2').map((b) => b.description),
-      services: mockServices.filter((s) => s.level === '2').map((s) => s.name),
-    },
-    {
-      levelNumber: 3,
-      name: 'Innovator',
-      passCriteria: 4,
-      benefits: mockBenefits.filter((b) => b.level === '3').map((b) => b.description),
-      services: mockServices.filter((s) => s.level === '3').map((s) => s.name),
-    },
-    {
-      levelNumber: 4,
-      name: 'Master',
-      passCriteria: 5,
-      benefits: mockBenefits.filter((b) => b.level === '4').map((b) => b.description),
-      services: mockServices.filter((s) => s.level === '4').map((s) => s.name),
-    },
-  ]
-}
-
 async function fetchLevels() {
   loading.value = true
   error.value = null
 
   try {
     const response = await AdminLevelService.getLevels()
-    if (response.data && response.data.length > 0) {
-      levels.value = response.data
-    } else {
-      loadFallbackLevels()
-    }
+    levels.value = response.data || []
   } catch (err: unknown) {
-    console.warn('Backend levels API unavailable, falling back to local dataset:', err)
-    loadFallbackLevels()
+    console.error('Failed to load levels criteria:', err)
+    error.value = 'Failed to load levels criteria. Please check your connection or session and try again.'
+    levels.value = []
   } finally {
     loading.value = false
   }

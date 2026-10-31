@@ -119,6 +119,7 @@
                 v-model.number="form.passCriteria"
                 type="number"
                 min="1"
+                max="5"
                 step="1"
                 placeholder="e.g. 4"
                 :class="[
@@ -189,6 +190,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
+import axios from 'axios'
 import * as yup from 'yup'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import BackLink from '@/shared/components/BackLink.vue'
@@ -230,8 +232,9 @@ const levelEditSchema = yup.object({
     .number()
     .typeError('Pass criteria must be a valid number.')
     .required('Pass criteria is required.')
-    .positive('Pass criteria must be greater than 0.')
-    .integer('Pass criteria must be a whole integer.'),
+    .integer('Pass criteria must be a whole integer.')
+    .min(1, 'Pass criteria must be at least 1.')
+    .max(5, 'Pass criteria cannot exceed 5 questions.'),
   benefits: yup
     .array()
     .of(yup.string().required())
@@ -279,67 +282,20 @@ async function fetchLevel() {
   try {
     const response = await AdminLevelService.getLevel(num)
     levelData.value = response.data
-    form.passCriteria = response.data.passCriteria ?? 4
+    form.passCriteria = response.data.passCriteria ?? (num === 4 ? 5 : 4)
     form.benefits = normalizeStringList(response.data.benefits)
     form.services = normalizeStringList(response.data.services)
   } catch (err: unknown) {
-    console.warn('Backend getLevel failed, using default fallback configuration:', err)
-    // Fallback data when backend offline
-    const defaults: Record<number, { name: string; pass: number; b: string[]; s: string[] }> = {
-      1: {
-        name: 'Explorer',
-        pass: 4,
-        b: [
-          'Access to borrowing basic digital equipment from the CAMT Equipment Pool',
-          'Access to high-speed CMU-WiFi 6 and university VPN',
-          'Receive a Digital Stamp for participating in events',
-        ],
-        s: ['AI Literacy Orientation', 'Basic Prompt Writing Clinic'],
-      },
-      2: {
-        name: 'Achiever',
-        pass: 4,
-        b: [
-          'Unlock all benefits from Level 1',
-          'Free quota for the 3D Printing Lab: 50 hours/semester',
-          'Reserve Smart Meeting Rooms for project team meetings',
-        ],
-        s: ['Intermediate AI Tooling Workshop', 'Data Handling Consultation'],
-      },
-      3: {
-        name: 'Innovator',
-        pass: 4,
-        b: [
-          'Unlock all benefits from Level 1 and Level 2',
-          'Access the High-Performance GPU Cluster (NVIDIA A100/H100) for AI & Deep Learning',
-        ],
-        s: ['Advanced Project Mentorship', 'AI Ethics Review Session'],
-      },
-      4: {
-        name: 'Master',
-        pass: 5,
-        b: [
-          'Unlock all benefits from Level 1, 2, and 3',
-          'Project funding support for national-level competitions, up to 10,000 THB',
-        ],
-        s: ['Expert Certification Support', 'Community Speaker Placement'],
-      },
-    }
-
-    const d = defaults[num]
-    if (d) {
-      levelData.value = {
-        levelNumber: num,
-        name: d.name,
-        passCriteria: d.pass,
-        benefits: d.b,
-        services: d.s,
-      }
-      form.passCriteria = d.pass
-      form.benefits = [...d.b]
-      form.services = [...d.s]
+    console.error(`Failed to fetch level ${num}:`, err)
+    if (axios.isAxiosError(err)) {
+      error.value =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        `Failed to load criteria for Level ${num}. Please check your connection or session and try again.`
+    } else if (err instanceof Error) {
+      error.value = err.message
     } else {
-      error.value = 'Failed to load level criteria configuration.'
+      error.value = `Failed to load criteria for Level ${num}.`
     }
   } finally {
     loading.value = false
@@ -390,11 +346,18 @@ async function handleSave() {
       router.push('/admin/levels')
     }, 600)
   } catch (err: unknown) {
-    console.warn('Backend updateLevel offline, persisting locally and simulating save:', err)
-    await triggerToast(`Level ${num} criteria updated successfully.`)
-    setTimeout(() => {
-      router.push('/admin/levels')
-    }, 600)
+    console.error(`Failed to update level ${num}:`, err)
+    let errorMessage = `Failed to update Level ${num} criteria. Please try again.`
+    if (axios.isAxiosError(err)) {
+      errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        errorMessage
+    } else if (err instanceof Error) {
+      errorMessage = err.message
+    }
+    await triggerToast(errorMessage)
   } finally {
     isSaving.value = false
   }

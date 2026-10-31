@@ -7,8 +7,17 @@ export default {
     return apiClient.get('/admin/levels')
   },
 
-  getLevel(levelNumber: number): Promise<AxiosResponse<LevelAdmin>> {
-    return apiClient.get(`/admin/levels/${levelNumber}`)
+  async getLevel(levelNumber: number): Promise<AxiosResponse<LevelAdmin>> {
+    const response = await this.getLevels()
+    const target = Number(levelNumber)
+    const found = response.data?.find((l) => l.levelNumber === target)
+    if (!found) {
+      throw new Error(`Level ${levelNumber} configuration not found.`)
+    }
+    return {
+      ...response,
+      data: found,
+    }
   },
 
   updateLevel(levelNumber: number, data: Partial<LevelAdmin>): Promise<AxiosResponse<LevelAdmin>> {

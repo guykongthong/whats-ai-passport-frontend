@@ -355,7 +355,6 @@ import CheckCircleMiniIcon from '@/shared/components/icons/CheckCircleMiniIcon.v
 import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
 import AdminQuestionService from '@/services/AdminQuestionService'
 import type { QuestionAdmin } from '@/types/admin'
-import { questions as mockQuestions } from '@/data/questions'
 
 interface LevelTab {
   level: number
@@ -418,36 +417,13 @@ async function fetchQuestions(levelNumber: number) {
 
   try {
     const response = await AdminQuestionService.getQuestionsByLevel(levelNumber)
-    if (response.data && response.data.length > 0) {
-      questions.value = response.data
-    } else {
-      // Load fallback mock questions if backend returns empty
-      loadFallbackQuestions(levelNumber)
-    }
+    questions.value = response.data || []
   } catch (err: unknown) {
-    console.warn(`Backend questions API unavailable for level ${levelNumber}, falling back to local dataset:`, err)
-    loadFallbackQuestions(levelNumber)
+    console.error(`Backend questions API unavailable for Level ${levelNumber}:`, err)
+    error.value = `Failed to load questions for Level ${levelNumber}. Please try again.`
+    questions.value = []
   } finally {
     loading.value = false
-  }
-}
-
-function loadFallbackQuestions(levelNumber: number) {
-  const prefix = `l${levelNumber}`
-  const matched = mockQuestions
-    .filter((q) => q.id.startsWith(prefix))
-    .map((q, idx) => ({
-      id: idx + 1 + (levelNumber - 1) * 10,
-      levelNumber,
-      questionText: q.question,
-      choices: [...q.choices],
-      correctAnswer: q.answerIndex,
-    }))
-
-  if (matched.length > 0) {
-    questions.value = matched
-  } else {
-    questions.value = []
   }
 }
 
