@@ -22,8 +22,7 @@ import UserInfoTab from '@/views/admin/user-detail/UserInfoTab.vue'
 import UserExamHistoryTab from '@/views/admin/user-detail/UserExamHistoryTab.vue'
 import UserEditTab from '@/views/admin/user-detail/UserEditTab.vue'
 import AdminLevelListView from '@/views/admin/levels/AdminLevelListView.vue'
-import LevelDetailPage from '@/admin/views/LevelDetailPage.vue'
-import LevelEditPage from '@/admin/views/LevelEditPage.vue'
+import AdminLevelEditView from '@/views/admin/levels/AdminLevelEditView.vue'
 import ExamManagementPage from '@/admin/views/ExamManagementPage.vue'
 import NotFoundPage from '@/shared/components/NotFoundPage.vue'
 import OfflinePage from '@/shared/components/OfflinePage.vue'
@@ -174,15 +173,10 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
-      path: '/admin/levels/:id',
-      name: 'admin-level-detail',
-      component: LevelDetailPage,
-      meta: { requiresAuth: true, requiresAdmin: true },
-    },
-    {
-      path: '/admin/levels/:id/edit',
+      path: '/admin/levels/:levelNumber',
+      alias: ['/admin/levels/:levelNumber/edit'],
       name: 'admin-level-edit',
-      component: LevelEditPage,
+      component: AdminLevelEditView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
