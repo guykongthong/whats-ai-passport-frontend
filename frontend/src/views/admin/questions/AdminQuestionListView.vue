@@ -229,9 +229,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import Toast from '@/shared/components/Toast.vue'
+import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
+import QuestionFormModal, { type QuestionFormData } from '@/components/admin/QuestionFormModal.vue'
 import PencilSquareIcon from '@/shared/components/icons/PencilSquareIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
 import CheckCircleMiniIcon from '@/shared/components/icons/CheckCircleMiniIcon.vue'
@@ -281,6 +284,14 @@ const saving = ref<boolean>(false)
 const showDeleteModal = ref<boolean>(false)
 const questionToDelete = ref<QuestionAdmin | null>(null)
 const deleting = ref<boolean>(false)
+
+const deleteConfirmMessage = computed<string>(() => {
+  if (!questionToDelete.value) return ''
+  const preview = questionToDelete.value.questionText.length > 70
+    ? questionToDelete.value.questionText.slice(0, 70) + '...'
+    : questionToDelete.value.questionText
+  return `Are you sure you want to permanently delete "${preview}"? This action cannot be undone and will immediately affect subsequent Level ${selectedLevel.value} exams.`
+})
 
 async function fetchQuestions(levelNumber: number) {
   loading.value = true
@@ -361,6 +372,12 @@ function confirmDeleteQuestion(q: QuestionAdmin) {
   showDeleteModal.value = true
 }
 
+function closeDeleteModal() {
+  if (deleting.value) return
+  showDeleteModal.value = false
+  questionToDelete.value = null
+}
+
 async function handleDeleteQuestion() {
   if (!questionToDelete.value) return
 
@@ -368,16 +385,20 @@ async function handleDeleteQuestion() {
   const id = questionToDelete.value.id
 
   try {
-    try {
-      await AdminQuestionService.deleteQuestion(id)
-    } catch (err) {
-      console.warn('API deleteQuestion failed, deleting client state locally:', err)
-    }
-
-    questions.value = questions.value.filter((q) => q.id !== id)
-    showDeleteModal.value = false
-    questionToDelete.value = null
+    await AdminQuestionService.deleteQuestion(id)
+    closeDeleteModal()
     triggerToast('Question deleted successfully.')
+    // Refresh question list immediately from backend
+    await fetchQuestions(selectedLevel.value)
+  } catch (err: unknown) {
+    console.error('Failed to delete question:', err)
+    let msg = 'Failed to delete question. Please try again.'
+    if (axios.isAxiosError(err)) {
+      msg = err.response?.data?.message || err.response?.data?.error || err.message || msg
+    } else if (err instanceof Error) {
+      msg = err.message
+    }
+    triggerToast(msg)
   } finally {
     deleting.value = false
   }
