@@ -1,9 +1,5 @@
 <template>
   <AdminPageLayout title="Criteria of Levels" main-padding="!max-w-[1400px] px-4 sm:px-8">
-    <template #toast>
-      <Toast :show="showToast" :message="toastMessage" variant="dark" class="sticky top-[72px] backdrop-blur-sm" />
-    </template>
-
     <div class="w-full flex flex-col gap-6 -mt-3">
       <!-- Subheader (Tightened to PageTitle with 12px gap) -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
@@ -64,9 +60,9 @@
                   ]"
                 >
                   <img
-                    v-if="level.badge?.imageUrl"
-                    :src="level.badge.imageUrl"
-                    :alt="level.name"
+                    v-if="level.badgeImageUrl || level.badge?.imageUrl"
+                    :src="level.badgeImageUrl || level.badge?.imageUrl"
+                    :alt="level.badgeName || level.badge?.name || level.name"
                     class="size-9 rounded-xl object-cover"
                   />
                   <!-- Vector SVG Icons per Tier -->
@@ -177,7 +173,7 @@
                     >
                       Exclusive
                     </span>
-                    <span class="break-words">{{ benefit }}</span>
+                    <span class="break-words">{{ displayBenefitText(benefit) }}</span>
                   </div>
                 </li>
                 <li
@@ -232,104 +228,13 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
-import Toast from '@/shared/components/Toast.vue'
 import AdminLevelService from '@/services/AdminLevelService'
 import type { LevelAdmin } from '@/types/admin'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
-import { useToast } from '@/composables/useToast'
-
-const { showToast, toastMessage } = useToast()
 
 const levels = ref<LevelAdmin[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
-
-const fallbackLevels: LevelAdmin[] = [
-  {
-    id: 1,
-    levelNumber: 1,
-    name: 'Explorer',
-    passCriteria: 4,
-    benefits: [
-      'Access to borrowing basic digital equipment from the CAMT Equipment Pool',
-      'Access to high-speed CMU-WiFi 6 and university VPN',
-      'Receive a Digital Stamp for participating in events',
-      'Access to basic video courses in the Level 1 system',
-      'Receive early notifications about Hackathons and special Workshops',
-    ],
-    services: [
-      'AI Literacy Orientation',
-      'Basic Prompt Writing Clinic',
-    ],
-    badge: {
-      name: 'Level 1 Explorer Badge',
-      imageUrl: '',
-    },
-  },
-  {
-    id: 2,
-    levelNumber: 2,
-    name: 'Achiever',
-    passCriteria: 4,
-    benefits: [
-      'Unlock all benefits from Level 1',
-      'Free quota for the 3D Printing Lab: 50 hours/semester',
-      'Reserve Smart Meeting Rooms for project team meetings',
-      'Receive a Digital Certificate of Achievement (Level 2)',
-      'Access Exclusive Industry Mentoring with experts in the technology industry',
-      'Borrow Cinema equipment and professional-grade production equipment',
-    ],
-    services: [
-      'Intermediate AI Tooling Workshop',
-      'Data Handling Consultation',
-    ],
-    badge: {
-      name: 'Level 2 Achiever Badge',
-      imageUrl: '',
-    },
-  },
-  {
-    id: 3,
-    levelNumber: 3,
-    name: 'Innovator',
-    passCriteria: 4,
-    benefits: [
-      'Unlock all benefits from Level 1 and Level 2',
-      'Access the High-Performance GPU Cluster (NVIDIA A100/H100) for AI & Deep Learning',
-      'Fast-track selection for the CAMT Tech Startup Incubation program',
-      'Priority booking for the Motion Capture Studio & Virtual Production facilities',
-    ],
-    services: [
-      'Advanced Project Mentorship',
-      'AI Ethics Review Session',
-    ],
-    badge: {
-      name: 'Level 3 Innovator Badge',
-      imageUrl: '',
-    },
-  },
-  {
-    id: 4,
-    levelNumber: 4,
-    name: 'Master',
-    passCriteria: 5,
-    benefits: [
-      'Unlock all benefits from Level 1, 2, and 3',
-      'Access the High-Performance GPU Cluster (NVIDIA A100/H100) for AI & Deep Learning',
-      'Project funding support for national-level competitions, up to 10,000 THB',
-      'Fast-track selection for the CAMT Tech Startup Incubation program',
-      'Priority booking for the Motion Capture Studio & Virtual Production facilities',
-    ],
-    services: [
-      'Expert Certification Support',
-      'Community Speaker Placement',
-    ],
-    badge: {
-      name: 'Level 4 Master Badge',
-      imageUrl: '',
-    },
-  },
-]
 
 /**
  * Official Level Color System per Screenshot & levelDisplay.ts
@@ -387,9 +292,6 @@ function getLevelTheme(levelNumber: number): LevelTheme {
 
 function formatPassCriteria(criteria: number | undefined): string {
   if (criteria === undefined || criteria === null) return 'N/A'
-  if (criteria > 10) {
-    return `${criteria}% Score`
-  }
   return `${criteria}/5 questions`
 }
 
@@ -406,12 +308,18 @@ function normalizeStringList(items: unknown[] | undefined): string[] {
 }
 
 /**
- * Highlights unique tier perks (#4)
+ * Checks if a benefit should display the exclusive badge.
+ * Dynamic: detects [Exclusive] tag prefix or "exclusive" keyword instead of hardcoded strings.
  */
-function isExclusiveBenefit(levelNumber: number, benefit: string): boolean {
-  if (levelNumber === 4 && benefit.includes('10,000 THB')) return true
-  if (levelNumber === 2 && benefit.includes('3D Printing Lab')) return true
-  return false
+function isExclusiveBenefit(_levelNumber: number, benefit: string): boolean {
+  if (!benefit) return false
+  const trimmed = benefit.trim()
+  return trimmed.toLowerCase().includes('exclusive') || trimmed.startsWith('[Exclusive]')
+}
+
+function displayBenefitText(benefit: string): string {
+  if (!benefit) return ''
+  return benefit.replace(/^\[Exclusive\]\s*/i, '').trim()
 }
 
 async function fetchLevels() {
@@ -420,14 +328,11 @@ async function fetchLevels() {
 
   try {
     const response = await AdminLevelService.getLevels()
-    if (response.data && response.data.length > 0) {
-      levels.value = response.data
-    } else {
-      levels.value = fallbackLevels
-    }
+    levels.value = response.data || []
   } catch (err: unknown) {
-    console.warn('Could not fetch levels from backend, using fallback configuration:', err)
-    levels.value = fallbackLevels
+    console.error('Failed to fetch levels from backend:', err)
+    error.value = 'Failed to load levels criteria. Please check your connection or session and try again.'
+    levels.value = []
   } finally {
     loading.value = false
   }
