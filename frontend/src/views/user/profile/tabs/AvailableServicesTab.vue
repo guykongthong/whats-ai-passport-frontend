@@ -219,45 +219,45 @@ const serviceCatalog: ServiceItem[] = [
   {
     level: '1',
     name: 'AI Literacy Orientation',
-    description: 'Comprehensive onboarding to CAMT digital infrastructure, AI tools, and acceptable use policies.',
+    description: 'Introduction to CAMT digital equipment borrowing, student accounts, and basic digital tool guidelines.',
   },
   {
     level: '1',
     name: 'Basic Prompt Writing Clinic',
-    description: 'Hands-on guided sessions for crafting effective prompts and interacting with generative LLMs.',
+    description: 'Hands-on guided sessions for students on writing clear prompts for academic coursework and study.',
   },
   // Level 2
   {
     level: '2',
     name: 'Intermediate AI Tooling Workshop',
-    description: 'Deep dive into model integration, workflow automation, and multimodal generation tools.',
+    description: 'Practical workshop on using development tools, modern frameworks, and automation for student projects.',
   },
   {
     level: '2',
     name: 'Data Handling Consultation',
-    description: '1-on-1 advisor sessions for data cleaning, preprocessing, and compliance with data privacy standards.',
+    description: 'Advisory consultation on data collection, dataset cleaning, and student project data privacy.',
   },
   // Level 3
   {
     level: '3',
     name: 'Advanced Project Mentorship',
-    description: 'Dedicated faculty and industry mentors providing architectural review for capstone projects.',
+    description: 'Consultation with faculty advisors and industry mentors for student project and capstone architecture.',
   },
   {
     level: '3',
     name: 'AI Ethics Review Session',
-    description: 'Institutional ethics evaluation and bias auditing for production AI deployments.',
+    description: 'Review session and discussions on responsible and ethical use of technology in academic projects.',
   },
   // Level 4
   {
     level: '4',
     name: 'Expert Certification Support',
-    description: 'Sponsored vouchers and fast-track prep for recognized enterprise cloud and AI certifications.',
+    description: 'Institutional exam vouchers and preparation support for professional cloud and developer certifications.',
   },
   {
     level: '4',
     name: 'Community Speaker Placement',
-    description: 'Exclusive invitation to deliver keynote presentations and tech talks across academic symposiums.',
+    description: 'Opportunity to share project experience and present in CAMT student technology sharing symposiums.',
   },
 ]
 
