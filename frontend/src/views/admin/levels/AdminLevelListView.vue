@@ -330,7 +330,7 @@ async function fetchLevels() {
     const response = await AdminLevelService.getLevels()
     levels.value = response.data || []
   } catch (err: unknown) {
-    console.error('Failed to fetch levels from backend:', err)
+    console.error('Failed to load levels criteria:', err)
     error.value = 'Failed to load levels criteria. Please check your connection or session and try again.'
     levels.value = []
   } finally {
