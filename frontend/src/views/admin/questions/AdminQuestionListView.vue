@@ -204,144 +204,27 @@
       </div>
     </div>
 
-    <!-- Add / Edit Question Modal -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto"
-      @click.self="closeModal"
-    >
-      <div class="bg-[#00385e] border border-white/20 rounded-2xl p-6 sm:p-8 max-w-xl w-full shadow-2xl text-white flex flex-col gap-5 my-8">
-        <div class="flex items-center justify-between pb-3 border-b border-white/10">
-          <div>
-            <h3 class="text-base sm:text-lg font-bold text-white">
-              {{ modalMode === 'create' ? 'Add Exam Question' : 'Edit Exam Question' }}
-            </h3>
-            <p class="text-xs text-white/70 mt-0.5">
-              Level {{ selectedLevel }} Exam ({{ levelTabs.find(t => t.level === selectedLevel)?.target }})
-            </p>
-          </div>
-          <button
-            type="button"
-            class="text-white/60 hover:text-white p-1 rounded-lg transition-colors cursor-pointer"
-            @click="closeModal"
-          >
-            <XMarkIcon class="size-5" />
-          </button>
-        </div>
+    <!-- Question Form Modal (FE-ADMIN-23 & FE-ADMIN-24 Integration) -->
+    <QuestionFormModal
+      :is-open="showModal"
+      :initial-data="selectedQuestion"
+      :level-number="selectedLevel"
+      :is-saving="saving"
+      @save="handleSaveQuestion"
+      @close="closeModal"
+    />
 
-        <form class="flex flex-col gap-4" @submit.prevent="saveQuestion">
-          <!-- Question Prompt Text -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-xs font-bold text-white/90">
-              Question Prompt <span class="text-rose-400">*</span>
-            </label>
-            <textarea
-              v-model="form.questionText"
-              rows="3"
-              class="w-full bg-white/10 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs sm:text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/40 resize-none"
-              placeholder="e.g. What does 'AI' stand for?"
-            />
-            <span v-if="formErrors.questionText" class="text-[11px] font-medium text-rose-300">
-              {{ formErrors.questionText }}
-            </span>
-          </div>
-
-          <!-- Answer Choices -->
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center justify-between">
-              <label class="text-xs font-bold text-white/90">
-                Answer Choices (Select correct answer) <span class="text-rose-400">*</span>
-              </label>
-            </div>
-
-            <div
-              v-for="(letter, idx) in optionLetters"
-              :key="letter"
-              :class="[
-                'flex items-center gap-2.5 p-2 rounded-xl border transition-all',
-                form.correctAnswer === idx
-                  ? 'bg-emerald-500/15 border-emerald-400/80'
-                  : 'bg-white/5 border-white/10',
-              ]"
-            >
-              <label class="flex items-center gap-1.5 cursor-pointer shrink-0 pl-1 select-none">
-                <input
-                  v-model="form.correctAnswer"
-                  type="radio"
-                  :value="idx"
-                  name="correctChoice"
-                  class="size-4 text-emerald-500 focus:ring-emerald-400 accent-emerald-500 cursor-pointer"
-                />
-                <span class="text-xs font-bold w-4 text-center">{{ letter }}</span>
-              </label>
-              <input
-                v-model="form.choices[idx]"
-                type="text"
-                class="flex-1 bg-white/10 border border-white/20 rounded-lg px-3 py-1.5 text-xs sm:text-sm text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-white/40"
-                :placeholder="`Enter option ${letter}...`"
-              />
-            </div>
-            <span v-if="formErrors.choices" class="text-[11px] font-medium text-rose-300">
-              {{ formErrors.choices }}
-            </span>
-          </div>
-
-          <!-- Modal Actions -->
-          <div class="flex items-center justify-end gap-3 pt-3 border-t border-white/10 mt-2">
-            <button
-              type="button"
-              class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-              @click="closeModal"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              :disabled="saving"
-              class="px-5 py-2 rounded-xl text-xs font-bold bg-white text-[#00385e] hover:bg-white/90 shadow transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <div v-if="saving" class="size-3.5 rounded-full border-2 border-[#00385e] border-t-transparent animate-spin" />
-              <span>{{ modalMode === 'create' ? 'Create Question' : 'Save Changes' }}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div
-      v-if="showDeleteModal && questionToDelete"
-      class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-      @click.self="showDeleteModal = false"
-    >
-      <div class="bg-[#00385e] border border-white/20 rounded-2xl p-6 max-w-md w-full shadow-2xl text-white flex flex-col gap-4">
-        <h3 class="text-base font-bold text-white">Delete Question</h3>
-        <p class="text-xs sm:text-sm text-white/80 leading-relaxed">
-          Are you sure you want to delete this question? This action will permanently remove it from Level {{ selectedLevel }} Exam.
-        </p>
-        <div class="p-3 rounded-xl bg-white/5 border border-white/10 text-xs text-white/90 italic">
-          "{{ questionToDelete.questionText }}"
-        </div>
-        <div class="flex items-center justify-end gap-3 pt-2">
-          <button
-            type="button"
-            class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-            @click="showDeleteModal = false"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            :disabled="deleting"
-            class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
-            @click="handleDeleteQuestion"
-          >
-            <div v-if="deleting" class="size-3.5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-            <span>Delete Question</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Reusable Delete Confirmation Modal (FE-ADMIN-24 Integration) -->
+    <ConfirmActionModal
+      :is-open="showDeleteModal"
+      title="Delete Exam Question"
+      :message="deleteConfirmMessage"
+      confirm-text="Delete Question"
+      confirm-color="red"
+      :is-loading="deleting"
+      @confirm="handleDeleteQuestion"
+      @cancel="closeDeleteModal"
+    />
   </AdminPageLayout>
 </template>
 
@@ -391,20 +274,8 @@ function triggerToast(msg: string) {
 
 // Modal State
 const showModal = ref<boolean>(false)
-const modalMode = ref<'create' | 'edit'>('create')
-const activeQuestionId = ref<number | null>(null)
+const selectedQuestion = ref<QuestionAdmin | null>(null)
 const saving = ref<boolean>(false)
-
-const form = reactive({
-  questionText: '',
-  choices: ['', '', '', ''],
-  correctAnswer: 0,
-})
-
-const formErrors = reactive({
-  questionText: '',
-  choices: '',
-})
 
 // Delete State
 const showDeleteModal = ref<boolean>(false)
@@ -434,108 +305,52 @@ function switchLevel(levelNumber: number) {
 }
 
 function openAddModal() {
-  modalMode.value = 'create'
-  activeQuestionId.value = null
-  form.questionText = ''
-  form.choices = ['', '', '', '']
-  form.correctAnswer = 0
-  formErrors.questionText = ''
-  formErrors.choices = ''
+  selectedQuestion.value = null
   showModal.value = true
 }
 
 function openEditModal(q: QuestionAdmin) {
-  modalMode.value = 'edit'
-  activeQuestionId.value = q.id
-  form.questionText = q.questionText
-  form.choices = [...q.choices]
-  form.correctAnswer = q.correctAnswer
-  formErrors.questionText = ''
-  formErrors.choices = ''
+  selectedQuestion.value = q
   showModal.value = true
 }
 
 function closeModal() {
   showModal.value = false
+  selectedQuestion.value = null
 }
 
-function validateForm(): boolean {
-  let valid = true
-  formErrors.questionText = ''
-  formErrors.choices = ''
-
-  if (!form.questionText.trim()) {
-    formErrors.questionText = 'Question prompt cannot be empty.'
-    valid = false
-  }
-
-  const emptyChoices = form.choices.filter((c) => !c.trim())
-  if (emptyChoices.length > 0) {
-    formErrors.choices = 'All 4 choice options must be filled in.'
-    valid = false
-  }
-
-  return valid
-}
-
-async function saveQuestion() {
-  if (!validateForm()) return
-
+async function handleSaveQuestion(data: QuestionFormData) {
   saving.value = true
 
   try {
-    if (modalMode.value === 'create') {
-      const payload = {
-        levelNumber: selectedLevel.value,
-        questionText: form.questionText.trim(),
-        choices: form.choices.map((c) => c.trim()),
-        correctAnswer: form.correctAnswer,
-      }
-
-      try {
-        const response = await AdminQuestionService.createQuestion(payload)
-        questions.value.push(response.data)
-      } catch (err) {
-        console.warn('API createQuestion failed, updating client state locally:', err)
-        const mockNew: QuestionAdmin = {
-          id: Date.now(),
-          ...payload,
-        }
-        questions.value.push(mockNew)
-      }
-
-      triggerToast('New question created successfully.')
-    } else if (activeQuestionId.value !== null) {
-      const updatedData = {
-        questionText: form.questionText.trim(),
-        choices: form.choices.map((c) => c.trim()),
-        correctAnswer: form.correctAnswer,
-      }
-
-      try {
-        await AdminQuestionService.updateQuestion(activeQuestionId.value, updatedData)
-      } catch (err) {
-        console.warn('API updateQuestion failed, updating client state locally:', err)
-      }
-
-      const idx = questions.value.findIndex((q) => q.id === activeQuestionId.value)
-      if (idx !== -1) {
-        const current = questions.value[idx]
-        if (current) {
-          questions.value[idx] = {
-            id: current.id,
-            levelNumber: current.levelNumber,
-            questionText: updatedData.questionText,
-            choices: updatedData.choices,
-            correctAnswer: updatedData.correctAnswer,
-          }
-        }
-      }
-
+    if (data.id !== undefined) {
+      await AdminQuestionService.updateQuestion(data.id, {
+        questionText: data.questionText,
+        choices: data.choices,
+        correctAnswer: data.correctAnswer,
+      })
       triggerToast('Question updated successfully.')
+    } else {
+      await AdminQuestionService.createQuestion({
+        levelNumber: data.levelNumber,
+        questionText: data.questionText,
+        choices: data.choices,
+        correctAnswer: data.correctAnswer,
+      })
+      triggerToast('New question created successfully.')
     }
-
     closeModal()
+    // Refresh question list immediately from backend
+    await fetchQuestions(selectedLevel.value)
+  } catch (err: unknown) {
+    console.error('Failed to save question:', err)
+    let msg = 'Failed to save question. Please try again.'
+    if (axios.isAxiosError(err)) {
+      msg = err.response?.data?.message || err.response?.data?.error || err.message || msg
+    } else if (err instanceof Error) {
+      msg = err.message
+    }
+    triggerToast(msg)
   } finally {
     saving.value = false
   }
