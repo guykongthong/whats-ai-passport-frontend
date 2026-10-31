@@ -23,7 +23,7 @@ import UserExamHistoryTab from '@/views/admin/user-detail/UserExamHistoryTab.vue
 import UserEditTab from '@/views/admin/user-detail/UserEditTab.vue'
 import AdminLevelListView from '@/views/admin/levels/AdminLevelListView.vue'
 import AdminLevelEditView from '@/views/admin/levels/AdminLevelEditView.vue'
-import ExamManagementPage from '@/admin/views/ExamManagementPage.vue'
+import AdminQuestionListView from '@/views/admin/questions/AdminQuestionListView.vue'
 import NotFoundPage from '@/shared/components/NotFoundPage.vue'
 import OfflinePage from '@/shared/components/OfflinePage.vue'
 import ServerErrorPage from '@/shared/components/ServerErrorPage.vue'
@@ -183,7 +183,7 @@ const router = createRouter({
       path: '/admin/exams',
       alias: ['/admin/questions'],
       name: 'admin-exams',
-      component: ExamManagementPage,
+      component: AdminQuestionListView,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
