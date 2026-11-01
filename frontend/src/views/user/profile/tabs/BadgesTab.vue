@@ -66,8 +66,8 @@
         <div class="mb-2">
           <span
             :class="[
-              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-2xs',
-              badge.isUnlocked ? getLevelClasses(badge.level) : 'bg-slate-200 text-slate-600',
+              'inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold',
+              badge.isUnlocked ? getLevelClasses(badge.level) : 'bg-slate-100 text-slate-600 border border-slate-200',
             ]"
           >
             Level {{ badge.level }}: {{ badge.title }}
@@ -153,8 +153,8 @@
               <div class="inline-flex items-center gap-2">
                 <span
                   :class="[
-                    'px-2.5 py-0.5 rounded-full text-xs font-black shadow-2xs',
-                    selectedBadge.isUnlocked ? getLevelClasses(selectedBadge.level) : 'bg-slate-200 text-slate-600',
+                    'px-2.5 py-0.5 rounded-md text-xs font-semibold',
+                    selectedBadge.isUnlocked ? getLevelClasses(selectedBadge.level) : 'bg-slate-100 text-slate-600 border border-slate-200',
                   ]"
                 >
                   Level {{ selectedBadge.level }}: {{ selectedBadge.title }}

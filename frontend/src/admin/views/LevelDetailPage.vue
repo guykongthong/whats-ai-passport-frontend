@@ -6,7 +6,7 @@
           <!-- Level Row -->
           <FormFieldRow label="Level:">
             <div class="flex-1 bg-white/20 border border-white/10 rounded-xl px-4 py-2.5">
-              <span :class="['px-3 py-1 rounded-full text-sm font-black', getLevelClasses(Number(level.id))]">
+              <span :class="['px-2.5 py-1 rounded-md text-xs font-semibold', getLevelClasses(Number(level.id))]">
                 Level {{ level.id }} - {{ level.label ?? level.name }}
               </span>
             </div>

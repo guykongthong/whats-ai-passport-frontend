@@ -9,7 +9,7 @@
         class="bg-white/10 rounded-2xl p-5 border border-white/20 max-w-[500px]"
       >
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2">
-          <span :class="['px-3 py-1 rounded-full text-xs font-black inline-block', getLevelClasses(record.levelNum)]">
+          <span :class="['px-2.5 py-1 rounded-md text-xs font-semibold inline-block', getLevelClasses(record.levelNum)]">
             Level {{ record.levelNum }}: {{ getLevelName(record.levelNum) }}
           </span>
           <span :class="['text-sm font-black', record.pass ? 'text-green-400' : 'text-red-400']">

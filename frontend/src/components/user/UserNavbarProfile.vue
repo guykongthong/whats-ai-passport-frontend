@@ -42,10 +42,9 @@
         </span>
         <div class="mt-0.5">
           <span
-            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
+            class="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold"
             :class="levelBadgeClasses"
           >
-            <span class="size-1.5 rounded-full bg-current"></span>
             Level {{ currentLevel }}
           </span>
         </div>
@@ -54,7 +53,7 @@
       <!-- Mobile Badge Pill -->
       <div class="sm:hidden">
         <span
-          class="inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold shadow-xs"
+          class="inline-flex items-center justify-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold"
           :class="levelBadgeClasses"
         >
           L{{ currentLevel }}
@@ -94,10 +93,9 @@
           <p class="text-xs text-gray-500 truncate">{{ currentUser.email }}</p>
           <div class="mt-1.5">
             <span
-              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
+              class="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold"
               :class="levelBadgeClasses"
             >
-              <span class="size-1.5 rounded-full bg-current"></span>
               Level {{ currentLevel }}
             </span>
           </div>
@@ -183,6 +181,7 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { getLevelClasses } from '@/utils/levelDisplay'
 
 interface Props {
   theme?: 'light' | 'dark'
@@ -229,19 +228,7 @@ const currentLevel = computed(() => {
 })
 
 const levelBadgeClasses = computed(() => {
-  const lvl = String(currentLevel.value)
-  switch (lvl) {
-    case '1':
-      return 'bg-gray-100 text-gray-700 border border-gray-200'
-    case '2':
-      return 'bg-blue-100 text-blue-800 border border-blue-200'
-    case '3':
-      return 'bg-amber-100 text-amber-800 border border-amber-200'
-    case '4':
-      return 'bg-purple-100 text-purple-800 border border-purple-200'
-    default:
-      return 'bg-blue-50 text-button-primary border border-blue-200'
-  }
+  return getLevelClasses(currentLevel.value)
 })
 
 function toggleDropdown() {

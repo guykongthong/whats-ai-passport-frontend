@@ -51,11 +51,10 @@
                 <div class="self-center sm:self-start">
                   <span
                     :class="[
-                      'inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-black shadow-2xs',
+                      'inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold',
                       getLevelClasses(userLevel),
                     ]"
                   >
-                    <span class="size-2 rounded-full bg-current opacity-80"></span>
                     Level {{ userLevel }}: {{ getLevelName(userLevel) }}
                   </span>
                 </div>

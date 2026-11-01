@@ -68,7 +68,7 @@
     <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap">
       <span
         :class="[
-          'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold shadow-xs',
+          'inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold',
           levelBadgeClass,
         ]"
       >

@@ -82,7 +82,7 @@
             <span class="text-xs text-white/50 block font-medium">Current Level</span>
             <span
               :class="[
-                'inline-block mt-0.5 px-2.5 py-0.5 rounded-full text-xs font-bold',
+                'inline-block mt-0.5 px-2.5 py-0.5 rounded-md text-xs font-semibold',
                 levelBadgeClass,
               ]"
             >

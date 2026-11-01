@@ -26,10 +26,10 @@
           <!-- Target Level Indicator -->
           <span
             v-if="!isTopLevel"
-            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-2xs"
+            class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold"
             :class="getLevelClasses(targetLevelNumber)"
           >
-            <span>Target Level {{ targetLevelNumber }}: {{ getLevelName(targetLevelNumber) }}</span>
+            Target Level {{ targetLevelNumber }}: {{ getLevelName(targetLevelNumber) }}
           </span>
         </div>
 

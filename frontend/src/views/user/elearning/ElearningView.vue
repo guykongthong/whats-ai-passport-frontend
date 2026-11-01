@@ -17,10 +17,10 @@
 
           <!-- Current Level Badge -->
           <span
-            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-2xs"
+            class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold"
             :class="getLevelClasses(currentLevelNumber)"
           >
-            <span>Level {{ currentLevelNumber }}: {{ getLevelName(currentLevelNumber) }}</span>
+            Level {{ currentLevelNumber }}: {{ getLevelName(currentLevelNumber) }}
           </span>
         </div>
 

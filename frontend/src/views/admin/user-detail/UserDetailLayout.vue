@@ -69,7 +69,7 @@
           <div class="flex items-center gap-3 shrink-0 flex-wrap">
             <span
               :class="[
-                'inline-flex items-center px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold shadow-sm',
+                'inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold',
                 levelBadgeClass,
               ]"
             >
