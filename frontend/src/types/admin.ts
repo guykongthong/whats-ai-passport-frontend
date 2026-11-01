@@ -14,18 +14,21 @@ export interface AdminUser {
   currentLevel: number
   enabled: boolean
   roles: string[]
+  examHistories?: ExamHistoryItem[]
 }
 
 export interface LevelAdmin {
-  id: number
+  id?: number
   levelNumber: number
   name: string
   passCriteria: number
   benefits: string[]
   services: string[]
-  badge: {
-    name: string
-    imageUrl: string
+  badgeName?: string
+  badgeImageUrl?: string
+  badge?: {
+    name?: string
+    imageUrl?: string
   }
 }
 

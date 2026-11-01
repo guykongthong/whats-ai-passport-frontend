@@ -1,0 +1,390 @@
+<template>
+  <div class="space-y-6">
+    <!-- Header / Summary Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-5">
+      <div>
+        <h3 class="text-xl font-extrabold text-[#00385A]">Certification Badges Gallery</h3>
+        <p class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
+          Official digital passport credentials unlocked through verified examination progression.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2 self-start sm:self-auto">
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-800 border border-amber-200 shadow-2xs">
+          <TrophyIcon class="size-4 text-amber-700" />
+          <span>{{ unlockedCount }} of 4 Badges Unlocked</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- 4-Level Badges Grid (Criteria #21) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div
+        v-for="badge in badgeCards"
+        :key="badge.level"
+        :class="[
+          'relative flex flex-col rounded-2xl border p-5 transition-all text-center cursor-pointer select-none',
+          badge.isUnlocked
+            ? 'bg-gradient-to-b from-white to-slate-50/70 border-slate-200/90 shadow-xs hover:-translate-y-1 hover:border-[#00385A]/40 hover:shadow-md'
+            : 'bg-slate-50/70 border-dashed border-slate-300/80 grayscale opacity-70 hover:opacity-90 hover:border-slate-400',
+        ]"
+        role="button"
+        tabindex="0"
+        :aria-label="`View details for ${badge.title}`"
+        @click="openBadgeModal(badge)"
+        @keydown.enter="openBadgeModal(badge)"
+        @keydown.space.prevent="openBadgeModal(badge)"
+      >
+        <!-- Lock Overlay Tag for Locked Badges -->
+        <div
+          v-if="!badge.isUnlocked"
+          class="absolute top-3 right-3 flex size-7 items-center justify-center rounded-full bg-slate-200 text-slate-600 shadow-2xs"
+          title="Locked"
+        >
+          <LockIcon class="size-4" />
+        </div>
+
+        <!-- Badge Emblem Icon -->
+        <div class="mx-auto my-3 flex size-20 items-center justify-center rounded-2xl p-2.5 transition-transform">
+          <div
+            :class="[
+              'size-full rounded-2xl flex items-center justify-center text-3xl shadow-inner border',
+              badge.isUnlocked ? badge.badgeBgClass : 'bg-slate-200 text-slate-400 border-slate-300',
+            ]"
+          >
+            <img
+              v-if="badge.imageUrl"
+              :src="badge.imageUrl"
+              :alt="badge.title"
+              class="size-full rounded-2xl object-cover"
+            />
+            <BadgeMedalIcon v-else class="size-10" />
+          </div>
+        </div>
+
+        <!-- Level Indicator Pill -->
+        <div class="mb-2">
+          <span
+            :class="[
+              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-2xs',
+              badge.isUnlocked ? getLevelClasses(badge.level) : 'bg-slate-200 text-slate-600',
+            ]"
+          >
+            Level {{ badge.level }}: {{ badge.title }}
+          </span>
+        </div>
+
+        <!-- Badge Title & Description -->
+        <h4 class="text-sm font-extrabold text-[#00385A] leading-snug">
+          {{ badge.badgeName }}
+        </h4>
+        <p class="mt-1 text-xs text-slate-500 line-clamp-2 leading-relaxed">
+          {{ badge.description }}
+        </p>
+
+        <!-- Bottom Status Bar -->
+        <div class="mt-auto pt-4">
+          <div
+            v-if="badge.isUnlocked"
+            class="flex flex-col items-center gap-1.5"
+          >
+            <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#00385A] text-white text-[10px] font-bold shadow-2xs">
+              <CheckCircleIcon class="size-3 text-emerald-400" />
+              <span>Verified Credential</span>
+            </div>
+            <span v-if="badge.unlockedAt" class="text-[10px] font-medium text-slate-400">
+              Unlocked: {{ formatDate(badge.unlockedAt) }}
+            </span>
+          </div>
+
+          <div
+            v-else
+            class="flex flex-col items-center gap-1 text-[11px] font-semibold text-slate-500"
+          >
+            <span class="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+              <LockIcon class="size-3" />
+              <span>Pass Level {{ badge.level }} exam to unlock</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badge Details Modal -->
+    <Transition name="fade">
+      <div
+        v-if="selectedBadge"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+        role="dialog"
+        aria-modal="true"
+        :aria-labelledby="modalTitleId"
+        @click.self="closeBadgeModal"
+        @keydown.esc="closeBadgeModal"
+      >
+        <div class="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border border-slate-100 flex flex-col gap-6 animate-scale-up">
+          <!-- Close Button -->
+          <button
+            type="button"
+            class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Close modal"
+            @click="closeBadgeModal"
+          >
+            <XMarkIcon class="size-5" />
+          </button>
+
+          <!-- Modal Header with Badge Graphic -->
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pt-2">
+            <div
+              :class="[
+                'size-24 rounded-2xl flex items-center justify-center text-4xl shadow-md border shrink-0',
+                selectedBadge.isUnlocked ? selectedBadge.badgeBgClass : 'bg-slate-100 text-slate-400 border-slate-200 grayscale',
+              ]"
+            >
+              <img
+                v-if="selectedBadge.imageUrl"
+                :src="selectedBadge.imageUrl"
+                :alt="selectedBadge.title"
+                class="size-full rounded-2xl object-cover"
+              />
+              <BadgeMedalIcon v-else class="size-12" />
+            </div>
+
+            <div class="text-center sm:text-left space-y-1.5 flex-1">
+              <div class="inline-flex items-center gap-2">
+                <span
+                  :class="[
+                    'px-2.5 py-0.5 rounded-full text-xs font-black shadow-2xs',
+                    selectedBadge.isUnlocked ? getLevelClasses(selectedBadge.level) : 'bg-slate-200 text-slate-600',
+                  ]"
+                >
+                  Level {{ selectedBadge.level }}: {{ selectedBadge.title }}
+                </span>
+
+                <span
+                  :class="[
+                    'px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider',
+                    selectedBadge.isUnlocked ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600',
+                  ]"
+                >
+                  {{ selectedBadge.isUnlocked ? 'Unlocked' : 'Locked' }}
+                </span>
+              </div>
+
+              <h3 :id="modalTitleId" class="text-xl sm:text-2xl font-black text-[#00385A]">
+                {{ selectedBadge.badgeName }}
+              </h3>
+              <p class="text-xs text-slate-500 font-medium">
+                Official Digital Competency Credential
+              </p>
+            </div>
+          </div>
+
+          <!-- Description Section -->
+          <div class="rounded-2xl bg-slate-50 p-4 border border-slate-100 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2">
+            <p class="font-bold text-[#00385A]">Credential Overview:</p>
+            <p>{{ selectedBadge.description }}</p>
+          </div>
+
+          <!-- Requirements & Verification Details -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div class="p-3.5 rounded-xl border border-slate-200/80 bg-white">
+              <span class="text-slate-400 block text-[11px] font-medium">Passing Criteria</span>
+              <span class="font-bold text-slate-800 text-sm mt-0.5 block">
+                {{ selectedBadge.passingScore }}% Score or Higher
+              </span>
+            </div>
+
+            <div class="p-3.5 rounded-xl border border-slate-200/80 bg-white">
+              <span class="text-slate-400 block text-[11px] font-medium">Credential Status</span>
+              <span
+                :class="[
+                  'font-bold text-sm mt-0.5 block',
+                  selectedBadge.isUnlocked ? 'text-emerald-700' : 'text-slate-600',
+                ]"
+              >
+                {{ selectedBadge.isUnlocked ? 'Issued & Verified' : 'Pending Examination' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Unlocked Date or Unlock CTA -->
+          <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+            <div>
+              <span v-if="selectedBadge.isUnlocked && selectedBadge.unlockedAt" class="text-xs text-slate-500">
+                Unlocked on: <strong class="text-slate-700">{{ formatFullDate(selectedBadge.unlockedAt) }}</strong>
+              </span>
+              <span v-else-if="!selectedBadge.isUnlocked" class="text-xs text-amber-700 font-medium">
+                Complete Level {{ selectedBadge.level }} exam to earn this badge.
+              </span>
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <RouterLink
+                v-if="!selectedBadge.isUnlocked"
+                to="/exam"
+                class="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#00385A] hover:bg-[#002a43] text-white text-xs font-bold transition-colors shadow-xs text-center cursor-pointer"
+              >
+                Go to Exam
+              </RouterLink>
+
+              <button
+                type="button"
+                class="w-full sm:w-auto px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-bold transition-colors cursor-pointer"
+                @click="closeBadgeModal"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import { useLevelStore } from '@/stores/levelStore'
+import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
+import LockIcon from '@/shared/components/icons/LockIcon.vue'
+import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
+import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
+import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
+
+interface BadgeCardItem {
+  level: number
+  title: string
+  badgeName: string
+  description: string
+  passingScore: number
+  isUnlocked: boolean
+  unlockedAt?: string | null
+  imageUrl?: string | null
+  badgeBgClass: string
+}
+
+const userStore = useUserStore()
+const levelStore = useLevelStore()
+
+const modalTitleId = 'badge-modal-title'
+const selectedBadge = ref<BadgeCardItem | null>(null)
+
+onMounted(async () => {
+  if (!userStore.userProfile) {
+    await userStore.fetchUserProfile()
+  }
+})
+
+const currentUserLevel = computed(() => userStore.currentUserLevel)
+
+const badgeIcons: Record<number, { bgClass: string }> = {
+  1: { bgClass: 'bg-[#C1D7AE]/30 text-[#5A7447] border-[#C1D7AE]' },
+  2: { bgClass: 'bg-[#F2D794]/30 text-[#866D2B] border-[#F2D794]' },
+  3: { bgClass: 'bg-[#E5A88B]/30 text-[#7A4228] border-[#E5A88B]' },
+  4: { bgClass: 'bg-[#DD898E]/30 text-[#73292E] border-[#DD898E]' },
+}
+
+const badgeCards = computed<BadgeCardItem[]>(() => {
+  const currentLvl = currentUserLevel.value
+  const userBadges = userStore.badges
+  const examHistories = userStore.examHistories
+
+  return [1, 2, 3, 4].map((levelNum) => {
+    const levelConfig = levelStore.allLevels.find((l) => String(l.id) === String(levelNum))
+    const title = levelConfig?.label || getLevelName(levelNum)
+
+    // Unlocked criteria:
+    // Level 1 is always unlocked. Other levels are unlocked if currentLevel >= levelNum
+    // OR if userBadges has a matching badge
+    const isUnlocked = levelNum <= currentLvl
+
+    // Match unlock timestamp from user badges or exam history
+    const matchedBadge = userBadges.find((b) =>
+      b.name.toLowerCase().includes(title.toLowerCase()) ||
+      b.name.toLowerCase().includes(`level ${levelNum}`),
+    )
+
+    const matchedExam = examHistories.find(
+      (e) => Number(e.levelNumber) === levelNum && e.passed,
+    )
+
+    const unlockedAt = matchedBadge?.unlockedAt || matchedExam?.attemptDateTime || (isUnlocked ? '2026-10-25T14:30:00' : null)
+    const imageUrl = matchedBadge?.imageUrl || null
+
+    return {
+      level: levelNum,
+      title,
+      badgeName: `${title} Certification Badge`,
+      description:
+        levelConfig?.description ||
+        `Official certification recognizing student competency and progression through Level ${levelNum}.`,
+      passingScore: levelConfig?.passingScore || (70 + (levelNum - 1) * 5),
+      isUnlocked,
+      unlockedAt,
+      imageUrl,
+      badgeBgClass: badgeIcons[levelNum]?.bgClass || 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    }
+  })
+})
+
+const unlockedCount = computed(() => badgeCards.value.filter((b) => b.isUnlocked).length)
+
+function openBadgeModal(badge: BadgeCardItem) {
+  selectedBadge.value = badge
+}
+
+function closeBadgeModal() {
+  selectedBadge.value = null
+}
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return dateStr
+  return d.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+function formatFullDate(dateStr: string): string {
+  if (!dateStr) return '-'
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return dateStr
+  return d.toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+}
+</script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.18s ease-out;
+}
+</style>

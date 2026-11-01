@@ -21,6 +21,7 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useExamStore } from '@/stores/examStore'
+import { useUserStore } from '@/stores/user'
 import { useToast } from '@/composables/useToast'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import Toast from '@/shared/components/Toast.vue'
@@ -30,6 +31,7 @@ import type { ExamRecord } from '@/types/ExamContent'
 
 const authStore = useAuthStore()
 const examStore = useExamStore()
+const userStore = useUserStore()
 const { showToast, toastMessage, triggerToast } = useToast()
 
 const phase = ref<'quiz' | 'result'>('quiz')
@@ -41,9 +43,9 @@ function handleSubmit(answers: number[]) {
   const level = authStore.currentUser?.level
   if (!userId || !level) return
 
-  const levelBefore = authStore.currentUser?.level
+  const levelBefore = userStore.currentUserLevel
   const result = examStore.submitExam(userId, level, answers)
-  const levelAfter = authStore.currentUser?.level
+  const levelAfter = userStore.currentUserLevel
 
   examResult.value = result
   leveledUp.value = levelBefore !== levelAfter

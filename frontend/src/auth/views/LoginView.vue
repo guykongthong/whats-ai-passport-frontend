@@ -1,26 +1,60 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { isUserAdmin } from '@/shared/utils/auth'
 import LoginForm from '@/auth/components/LoginForm.vue'
 import Footer from '@/shared/components/Footer.vue'
+import Toast from '@/shared/components/Toast.vue'
+import { useToast } from '@/composables/useToast'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const loginError = ref('')
+const { showToast, toastMessage, triggerToast } = useToast()
 
-const onLoginSubmit = (email: string) => {
+onMounted(() => {
+  if (route.query.registered === 'true') {
+    triggerToast('Registration successful! Please log in.', 4000)
+  }
+})
+
+const onLoginSubmit = async (username: string, password = '') => {
   loginError.value = ''
-  authStore.login(email)
+  try {
+    const result = await authStore.login(username, password)
 
-  if (authStore.currentUser) {
-    if (authStore.currentUser.role === 'admin') {
-      router.push('/admin')
-    } else {
-      router.push('/dashboard')
+    if (result === 'deactivated') {
+      loginError.value = 'This account has been deactivated. Please contact an administrator.'
+      return
     }
-  } else {
-    loginError.value = `"${email}" does not exist`
+
+    if (result === 'bad_credentials') {
+      loginError.value = 'Invalid username or password.'
+      return
+    }
+
+    if (result === 'not_found') {
+      loginError.value = `"${username}" does not exist`
+      return
+    }
+
+    if (authStore.currentUser) {
+      if (isUserAdmin(authStore.currentUser)) {
+        await router.push('/admin')
+      } else {
+        await router.push('/dashboard')
+      }
+    } else {
+      loginError.value = `"${username}" does not exist`
+    }
+  } catch (err: unknown) {
+    const message =
+      (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      (err as Error)?.message ||
+      'Login failed.'
+    loginError.value = message
   }
 }
 
@@ -31,6 +65,7 @@ const noAccount = () => {
 
 <template>
   <div class="flex min-h-screen flex-col bg-[#EEF2F7]">
+    <Toast :show="showToast" :message="toastMessage" />
     <main class="flex flex-1 items-center justify-center p-4">
       <LoginForm :login-error="loginError" @submit-login="onLoginSubmit" @no-account="noAccount" />
     </main>
