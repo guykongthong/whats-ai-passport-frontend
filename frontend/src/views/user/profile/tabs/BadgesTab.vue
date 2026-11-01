@@ -41,17 +41,28 @@
         <div class="mx-auto my-3 flex size-20 items-center justify-center rounded-2xl p-2.5 transition-transform">
           <div
             :class="[
-              'size-full rounded-2xl flex items-center justify-center text-3xl shadow-inner border',
+              'size-full rounded-2xl flex items-center justify-center text-3xl shadow-inner border overflow-hidden',
               badge.isUnlocked ? badge.badgeBgClass : 'bg-slate-200 text-slate-400 border-slate-300',
             ]"
           >
-            <img
-              v-if="badge.imageUrl"
-              :src="badge.imageUrl"
-              :alt="badge.title"
-              class="size-full rounded-2xl object-cover"
-            />
-            <BadgeMedalIcon v-else class="size-10" />
+            <!-- Level 1: Explorer (Compass) -->
+            <svg v-if="badge.level === 1" class="size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.828 9.172l-1.414 4.242-4.242 1.414 1.414-4.242 4.242-1.414z" />
+            </svg>
+            <!-- Level 2: Achiever (Medal) -->
+            <svg v-else-if="badge.level === 2" class="size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <circle cx="12" cy="8" r="5" stroke-width="1.8" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+            </svg>
+            <!-- Level 3: Innovator (Lightbulb) -->
+            <svg v-else-if="badge.level === 3" class="size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <!-- Level 4: Master (Crown) -->
+            <svg v-else class="size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 18h18M4 15l2.5-9 5.5 5 5.5-5L20 15H4z" />
+            </svg>
           </div>
         </div>
 
@@ -118,17 +129,28 @@
           <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 pt-2">
             <div
               :class="[
-                'size-24 rounded-2xl flex items-center justify-center text-4xl shadow-md border shrink-0',
+                'size-24 rounded-2xl flex items-center justify-center text-4xl shadow-md border shrink-0 overflow-hidden',
                 selectedBadge.isUnlocked ? selectedBadge.badgeBgClass : 'bg-slate-100 text-slate-400 border-slate-200 grayscale',
               ]"
             >
-              <img
-                v-if="selectedBadge.imageUrl"
-                :src="selectedBadge.imageUrl"
-                :alt="selectedBadge.title"
-                class="size-full rounded-2xl object-cover"
-              />
-              <BadgeMedalIcon v-else class="size-12" />
+              <!-- Level 1: Explorer (Compass) -->
+              <svg v-if="selectedBadge.level === 1" class="size-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 21a9 9 0 100-18 9 9 0 000 18z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14.828 9.172l-1.414 4.242-4.242 1.414 1.414-4.242 4.242-1.414z" />
+              </svg>
+              <!-- Level 2: Achiever (Medal) -->
+              <svg v-else-if="selectedBadge.level === 2" class="size-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <circle cx="12" cy="8" r="5" stroke-width="1.8" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+              </svg>
+              <!-- Level 3: Innovator (Lightbulb) -->
+              <svg v-else-if="selectedBadge.level === 3" class="size-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <!-- Level 4: Master (Crown) -->
+              <svg v-else class="size-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 18h18M4 15l2.5-9 5.5 5 5.5-5L20 15H4z" />
+              </svg>
             </div>
 
             <div class="text-center sm:text-left space-y-1.5 flex-1">
@@ -232,7 +254,6 @@ import { useLevelStore } from '@/stores/levelStore'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
-import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
 interface BadgeCardItem {
   level: number

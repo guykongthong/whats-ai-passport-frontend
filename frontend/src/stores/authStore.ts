@@ -286,11 +286,23 @@ export const useAuthStore = defineStore('auth', () => {
 
   function updateUser(
     userId: string,
-    patch: Partial<Pick<User, 'name' | 'surname' | 'nameTh' | 'surnameTh' | 'email' | 'province' | 'level'>>,
+    patch: Partial<User>,
   ) {
+    if (currentUser.value && currentUser.value.id === userId) {
+      Object.assign(currentUser.value, patch)
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
+        } catch {
+          // ignore
+        }
+      }
+    }
+
     const user = users.value.find((u) => u.id === userId)
-    if (!user) return
-    Object.assign(user, patch)
+    if (user) {
+      Object.assign(user, patch)
+    }
   }
 
   const filteredUsers = computed(() =>

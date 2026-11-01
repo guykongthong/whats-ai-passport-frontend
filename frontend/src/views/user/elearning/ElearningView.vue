@@ -369,6 +369,9 @@ const curriculumLessons = computed<LessonViewItem[]>(() => {
       status = 'completed'
     } else if (idx === currentVideoIndex.value) {
       status = 'in-progress'
+    } else if (idx === currentVideoIndex.value + 1) {
+      // The next lesson can be unlocked once watched or can be watched sequentially
+      status = 'in-progress'
     } else {
       status = 'locked'
     }
@@ -389,15 +392,15 @@ const activeVideo = computed<LessonViewItem | null>(() => {
 })
 
 const activeVideoDuration = computed<string>(() => {
-  return activeVideo.value?.duration || '45:00'
+  return activeVideo.value?.duration || '45 mins'
 })
 
 const playbackTime = computed<string>(() => {
-  return isPlayingVideo.value ? '28:15' : '12:45'
+  return isPlayingVideo.value ? activeVideoDuration.value : '0:00'
 })
 
 const progressPercentage = computed<number>(() => {
-  return isPlayingVideo.value ? 65 : 28
+  return isPlayingVideo.value ? 100 : 0
 })
 
 // YouTube Embed helper
@@ -463,6 +466,26 @@ async function fetchLevelVideos() {
       description: v.description || `Core course module for Level ${currentLvlStr}.`,
       videoUrl: v.url || 'https://www.youtube.com/watch?v=JMUxmLyrhSk',
     }))
+  } else {
+    // If backend seeded fake example.com URLs, map them to playable YouTube videos from our curriculum
+    const fallbackUrls = [
+      'https://www.youtube.com/watch?v=JMUxmLyrhSk',
+      'https://www.youtube.com/watch?v=jC4v5AS4RIM',
+      'https://www.youtube.com/watch?v=bEj301dD2jE',
+      'https://www.youtube.com/watch?v=aircAruvnKk',
+      'https://www.youtube.com/watch?v=ukzFI9rgwfU',
+    ]
+    rawVideos.value = rawVideos.value.map((v, idx) => {
+      let finalUrl = v.videoUrl
+      if (!finalUrl || finalUrl.includes('example.com')) {
+        const matchedMock = eLearningVideos.find((m) => m.title.toLowerCase() === v.title.toLowerCase())
+        finalUrl = matchedMock?.url || fallbackUrls[idx % fallbackUrls.length] || 'https://www.youtube.com/watch?v=JMUxmLyrhSk'
+      }
+      return {
+        ...v,
+        videoUrl: finalUrl,
+      }
+    })
   }
 
   // Seamlessly bridge any custom lessons added through Admin E-Learning portal for this level
