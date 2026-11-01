@@ -171,6 +171,9 @@ async function handleSave(formData: UserFormData) {
     }
 
     await userStore.updateUserProfile(payload)
+    if (userStore.userProfile) {
+      Object.assign(userStore.userProfile, payload)
+    }
     successMessage.value = 'Your profile details have been updated successfully.'
   } catch (err: unknown) {
     console.error('Failed to update profile:', err)

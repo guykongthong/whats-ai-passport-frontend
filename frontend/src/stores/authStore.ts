@@ -27,9 +27,35 @@ function getInitialUser(): User | null {
   return null
 }
 
+const STORAGE_KEY_USERS = 'all_users_storage_v1'
+
+function getInitialUsers(): User[] {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem(STORAGE_KEY_USERS)
+      if (saved) {
+        return JSON.parse(saved)
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return mockUsers
+}
+
+function persistUsers(userList: User[]) {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(userList))
+    }
+  } catch {
+    // ignore
+  }
+}
+
 export const useAuthStore = defineStore('auth', () => {
   const currentUser = ref<User | null>(getInitialUser())
-  const users = ref<User[]>(mockUsers)
+  const users = ref<User[]>(getInitialUsers())
 
   const filters = ref<UserFilters>({ level: null, province: null, name: '' })
   const currentPage = ref(1)
@@ -230,11 +256,6 @@ export const useAuthStore = defineStore('auth', () => {
     currentPage.value = page
   }
 
-  function deactivateUser(userId: string) {
-    const user = users.value.find((u) => u.id === userId)
-    if (user) user.isActive = false
-  }
-
   const currentUserLevel = computed<number>(() => {
     const lvl = Number(currentUser.value?.level || 1)
     return isNaN(lvl) || lvl < 1 ? 1 : lvl
@@ -258,6 +279,7 @@ export const useAuthStore = defineStore('auth', () => {
     const found = users.value.find((u) => u.id === currentUser.value?.id)
     if (found) {
       found.level = nextLevelStr
+      persistUsers(users.value)
     }
   }
 
@@ -277,20 +299,45 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
     }
+    persistUsers(users.value)
   }
 
   function activateUser(userId: string) {
     const user = users.value.find((u) => u.id === userId)
-    if (user) user.isActive = true
+    if (user) {
+      user.isActive = true
+      persistUsers(users.value)
+    }
+  }
+
+  function deactivateUser(userId: string) {
+    const user = users.value.find((u) => u.id === userId)
+    if (user) {
+      user.isActive = false
+      persistUsers(users.value)
+    }
   }
 
   function updateUser(
     userId: string,
-    patch: Partial<Pick<User, 'name' | 'surname' | 'nameTh' | 'surnameTh' | 'email' | 'province' | 'level'>>,
+    patch: Partial<User>,
   ) {
+    if (currentUser.value && currentUser.value.id === userId) {
+      Object.assign(currentUser.value, patch)
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
+        } catch {
+          // ignore
+        }
+      }
+    }
+
     const user = users.value.find((u) => u.id === userId)
-    if (!user) return
-    Object.assign(user, patch)
+    if (user) {
+      Object.assign(user, patch)
+      persistUsers(users.value)
+    }
   }
 
   const filteredUsers = computed(() =>
