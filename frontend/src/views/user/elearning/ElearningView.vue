@@ -438,6 +438,17 @@ const activeEmbedUrl = computed<string | null>(() => {
     return `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0`
   }
 
+  // Handle example.com placeholder video URLs from backend seeds with real educational lecture embeds
+  if (url.includes('example.com')) {
+    if (url.includes('first-prompt')) {
+      return 'https://www.youtube-nocookie.com/embed/aircAruvnKk?autoplay=1&rel=0'
+    }
+    if (url.includes('intro-to-ai') || url.includes('l1')) {
+      return 'https://www.youtube-nocookie.com/embed/ukzFI9rgwfU?autoplay=1&rel=0'
+    }
+    return 'https://www.youtube-nocookie.com/embed/HQnC3411xYg?autoplay=1&rel=0'
+  }
+
   return null
 })
 
