@@ -204,9 +204,21 @@ async function handleFileUpload(file: File) {
     emit('update:modelValue', res.url)
     emit('upload-success', res.url)
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : 'Upload failed. Please try again.'
-    internalError.value = message
-    emit('upload-error', message)
+    console.warn('Backend file upload failed, falling back to base64 Data URL:', err)
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+      emit('update:modelValue', dataUrl)
+      emit('upload-success', dataUrl)
+    } catch {
+      const message = err instanceof Error ? err.message : 'Upload failed. Please try again.'
+      internalError.value = message
+      emit('upload-error', message)
+    }
   } finally {
     isUploading.value = false
   }
