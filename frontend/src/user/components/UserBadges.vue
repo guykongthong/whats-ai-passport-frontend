@@ -19,15 +19,23 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useExamStore } from '@/stores/examStore'
+import { useUserStore } from '@/stores/user'
 import { useLevelStore } from '@/stores/levelStore'
 import type { Level } from '@/types/Level'
 
 const authStore = useAuthStore()
 const examStore = useExamStore()
 const levelStore = useLevelStore()
+const userStore = useUserStore()
+
+onMounted(async () => {
+  if (!userStore.userProfile) {
+    await userStore.fetchUserProfile()
+  }
+})
 
 const earnedBadges = computed<Level[]>(() => {
   const userId = authStore.currentUser?.id
