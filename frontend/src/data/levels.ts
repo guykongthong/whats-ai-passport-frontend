@@ -6,27 +6,27 @@ export const levels: Level[] = [
     name: 'Level 1',
     label: 'Explorer',
     passingScore: 70,
-    description: 'A foundational level for new students and members, focusing on basic digital knowledge and workflows within CAMT.'
+    description: 'Learn basic AI tools, prompt writing, and ethical AI usage.'
   },
   { 
     id: '2', 
     name: 'Level 2',
     label: 'Achiever',
     passingScore: 75,
-    description: 'A level for students who have developed specialized skills and can apply digital tools and technologies to create real-world projects.'
+    description: 'Build intermediate AI skills, data preparation, and practical project tools.'
   },
   { 
     id: '3', 
     name: 'Level 3',
     label: 'Innovator',
     passingScore: 80,
-    description: 'A level for students who create innovative projects and advanced technologies, with opportunities to compete or build startups.'
+    description: 'Access high-performance GPU resources and build advanced AI projects.'
   },
   { 
     id: '4', 
     name: 'Level 4',
     label: 'Master',
     passingScore: 85,
-    description: 'The highest level of CAMT Passport, recognizing outstanding students and personnel with academic and professional expertise at an international level.'
+    description: 'Expert level with full access to all AI tools, certifications, and mentoring.'
   }
 ]

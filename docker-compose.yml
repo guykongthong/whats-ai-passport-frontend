@@ -3,4 +3,6 @@ services:
     image: guykongthongcmu/se331-frontend-ai-passport:latest
     ports:
       - "8001:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     restart: unless-stopped

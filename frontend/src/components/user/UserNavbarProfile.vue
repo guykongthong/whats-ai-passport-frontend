@@ -42,10 +42,9 @@
         </span>
         <div class="mt-0.5">
           <span
-            class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
+            class="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold"
             :class="levelBadgeClasses"
           >
-            <span class="size-1.5 rounded-full bg-current"></span>
             Level {{ currentLevel }}
           </span>
         </div>
@@ -54,7 +53,7 @@
       <!-- Mobile Badge Pill -->
       <div class="sm:hidden">
         <span
-          class="inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold shadow-xs"
+          class="inline-flex items-center justify-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold"
           :class="levelBadgeClasses"
         >
           L{{ currentLevel }}
@@ -104,10 +103,9 @@
           <p :class="['text-xs truncate', theme === 'dark' ? 'text-white/60' : 'text-gray-500']">{{ currentUser.email }}</p>
           <div class="mt-1.5">
             <span
-              class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
+              class="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold"
               :class="levelBadgeClasses"
             >
-              <span class="size-1.5 rounded-full bg-current"></span>
               Level {{ currentLevel }}
             </span>
           </div>

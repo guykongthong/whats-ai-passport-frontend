@@ -1,19 +1,12 @@
 <template>
   <div class="space-y-6">
     <!-- Header / Summary Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-5">
+    <div class="border-b border-slate-200 pb-4">
       <div>
-        <h3 class="text-xl font-extrabold text-[#00385A]">Certification Badges Gallery</h3>
-        <p class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
-          Official digital passport credentials unlocked through verified examination progression.
+        <h3 class="text-xl font-bold text-slate-900">Certification Badges</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+          Digital badges unlocked through examination in The CA?T Passport.
         </p>
-      </div>
-
-      <div class="flex items-center gap-2 self-start sm:self-auto">
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-800 border border-amber-200 shadow-2xs">
-          <TrophyIcon class="size-4 text-amber-700" />
-          <span>{{ unlockedCount }} of 4 Badges Unlocked</span>
-        </span>
       </div>
     </div>
 
@@ -66,8 +59,8 @@
         <div class="mb-2">
           <span
             :class="[
-              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-2xs',
-              badge.isUnlocked ? getLevelClasses(badge.level) : 'bg-slate-200 text-slate-600',
+              'inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold',
+              badge.isUnlocked ? getLevelClasses(badge.level) : 'bg-slate-100 text-slate-600 border border-slate-200',
             ]"
           >
             Level {{ badge.level }}: {{ badge.title }}
@@ -83,27 +76,16 @@
         </p>
 
         <!-- Bottom Status Bar -->
-        <div class="mt-auto pt-4">
-          <div
-            v-if="badge.isUnlocked"
-            class="flex flex-col items-center gap-1.5"
-          >
-            <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#00385A] text-white text-[10px] font-bold shadow-2xs">
-              <CheckCircleIcon class="size-3 text-emerald-400" />
-              <span>Verified Credential</span>
-            </div>
-            <span v-if="badge.unlockedAt" class="text-[10px] font-medium text-slate-400">
+        <div class="mt-auto pt-3">
+          <div v-if="badge.isUnlocked" class="text-center">
+            <span v-if="badge.unlockedAt" class="text-xs font-medium text-slate-500">
               Unlocked: {{ formatDate(badge.unlockedAt) }}
             </span>
           </div>
 
-          <div
-            v-else
-            class="flex flex-col items-center gap-1 text-[11px] font-semibold text-slate-500"
-          >
-            <span class="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-              <LockIcon class="size-3" />
-              <span>Pass Level {{ badge.level }} exam to unlock</span>
+          <div v-else class="text-center">
+            <span class="text-xs text-slate-400 font-medium">
+              Pass Level {{ badge.level }} exam
             </span>
           </div>
         </div>
@@ -153,8 +135,8 @@
               <div class="inline-flex items-center gap-2">
                 <span
                   :class="[
-                    'px-2.5 py-0.5 rounded-full text-xs font-black shadow-2xs',
-                    selectedBadge.isUnlocked ? getLevelClasses(selectedBadge.level) : 'bg-slate-200 text-slate-600',
+                    'px-2.5 py-0.5 rounded-md text-xs font-semibold',
+                    selectedBadge.isUnlocked ? getLevelClasses(selectedBadge.level) : 'bg-slate-100 text-slate-600 border border-slate-200',
                   ]"
                 >
                   Level {{ selectedBadge.level }}: {{ selectedBadge.title }}
@@ -249,9 +231,7 @@ import { useUserStore } from '@/stores/user'
 import { useLevelStore } from '@/stores/levelStore'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
-import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
-import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
 interface BadgeCardItem {
@@ -281,10 +261,10 @@ onMounted(async () => {
 const currentUserLevel = computed(() => userStore.currentUserLevel)
 
 const badgeIcons: Record<number, { bgClass: string }> = {
-  1: { bgClass: 'bg-[#C1D7AE]/30 text-[#5A7447] border-[#C1D7AE]' },
-  2: { bgClass: 'bg-[#F2D794]/30 text-[#866D2B] border-[#F2D794]' },
-  3: { bgClass: 'bg-[#E5A88B]/30 text-[#7A4228] border-[#E5A88B]' },
-  4: { bgClass: 'bg-[#DD898E]/30 text-[#73292E] border-[#DD898E]' },
+  1: { bgClass: 'bg-slate-100 text-slate-700 border-slate-300' },
+  2: { bgClass: 'bg-sky-100 text-sky-800 border-sky-300' },
+  3: { bgClass: 'bg-blue-100 text-blue-900 border-blue-300' },
+  4: { bgClass: 'bg-blue-900 text-white border-blue-700' },
 }
 
 const badgeCards = computed<BadgeCardItem[]>(() => {
@@ -317,20 +297,18 @@ const badgeCards = computed<BadgeCardItem[]>(() => {
     return {
       level: levelNum,
       title,
-      badgeName: `${title} Certification Badge`,
+      badgeName: `CA?T AI ${title} Badge`,
       description:
         levelConfig?.description ||
-        `Official certification recognizing student competency and progression through Level ${levelNum}.`,
+        `Official The CA?T Passport certification recognizing student competency and privileges at Level ${levelNum}.`,
       passingScore: levelConfig?.passingScore || (70 + (levelNum - 1) * 5),
       isUnlocked,
       unlockedAt,
       imageUrl,
-      badgeBgClass: badgeIcons[levelNum]?.bgClass || 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      badgeBgClass: badgeIcons[levelNum]?.bgClass || 'bg-slate-100 text-slate-700 border-slate-300',
     }
   })
 })
-
-const unlockedCount = computed(() => badgeCards.value.filter((b) => b.isUnlocked).length)
 
 function openBadgeModal(badge: BadgeCardItem) {
   selectedBadge.value = badge
