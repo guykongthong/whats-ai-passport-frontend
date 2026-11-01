@@ -188,13 +188,13 @@
                 <span class="break-words">{{ choice }}</span>
               </div>
 
-              <!-- Correct Answer Badge with Checkmark -->
+              <!-- Correct Answer Indicator with Checkmark -->
               <div
                 v-if="cIndex === question.correctAnswer"
-                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 text-[11px] font-bold shrink-0 ml-2 border border-emerald-400/30 select-none"
+                class="size-6 rounded-md bg-emerald-400/20 text-emerald-300 flex items-center justify-center shrink-0 ml-2 border border-emerald-400/30 select-none shadow-xs"
+                title="Correct Answer"
               >
-                <CheckCircleMiniIcon class="size-3.5 text-emerald-300" />
-                <span>Correct</span>
+                <CheckCircleMiniIcon class="size-4 text-emerald-300" />
               </div>
             </div>
           </div>

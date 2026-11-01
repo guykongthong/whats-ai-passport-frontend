@@ -61,8 +61,10 @@
       <ImageUpload
         v-model="profileImageUrl"
         label="Profile image"
+        theme="light"
         :error-message="errors.profileImageUrl"
         required
+        @upload-success="() => validateField('profileImageUrl')"
       />
 
       <BaseButton type="submit" variant="primary" class="mt-6 w-full py-3 text-base">
@@ -238,7 +240,7 @@ const showConfirmPassword = ref(false)
 const alertMessage = ref('')
 const alertVariant = ref<'error' | 'warning' | 'info' | 'success'>('error')
 
-const { errors, defineField, handleSubmit, validate, setErrors } = useForm<RegisterFormValues>({
+const { errors, defineField, handleSubmit, validate, setErrors, validateField } = useForm<RegisterFormValues>({
   validationSchema: computed(() =>
     toTypedSchema(currentStep.value === 1 ? step1Schema : registerSchema)
   ),

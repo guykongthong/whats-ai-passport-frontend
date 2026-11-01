@@ -109,6 +109,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import Toast from '@/shared/components/Toast.vue'
 import UserFilterToolbar from '@/components/admin/UserFilterToolbar.vue'
@@ -119,9 +120,11 @@ import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
 import AdminUserService from '@/services/AdminUserService'
 import type { AdminUser } from '@/types/admin'
 import { useToast } from '@/composables/useToast'
+import { useAuthStore } from '@/stores/authStore'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
 const { showToast, toastMessage, triggerToast } = useToast()
 
 const users = ref<AdminUser[]>([])
@@ -245,6 +248,10 @@ function handleViewDetails(userId: number) {
 }
 
 function handleToggleStatus(user: AdminUser) {
+  if (authStore.currentUser && String(authStore.currentUser.id) === String(user.id) && user.enabled) {
+    triggerToast('You cannot deactivate your own account.')
+    return
+  }
   modalTargetUser.value = user
   isModalOpen.value = true
 }
@@ -273,10 +280,16 @@ async function confirmToggleStatus() {
     )
     isModalOpen.value = false
     modalTargetUser.value = null
-  } catch (err) {
+  } catch (err: unknown) {
     user.enabled = previousState
     console.error('Failed to toggle user status:', err)
-    triggerToast('Failed to update user status. Please try again.')
+    let msg = 'Failed to update user status. Please try again.'
+    if (axios.isAxiosError(err)) {
+      msg = err.response?.data?.message || err.response?.data?.error || err.message || msg
+    } else if (err instanceof Error) {
+      msg = err.message
+    }
+    triggerToast(msg)
   } finally {
     isToggling.value = false
   }

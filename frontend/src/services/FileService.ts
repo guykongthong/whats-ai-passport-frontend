@@ -38,7 +38,13 @@ export const FileService = {
 
     if (typeof localStorage !== 'undefined') {
       try {
-        localStorage.setItem('custom_admin_avatar', dataUrl)
+        const storedUser = localStorage.getItem('currentUser')
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser)
+          if (parsed?.roles?.includes('ROLE_ADMIN') || parsed?.username === 'admin') {
+            localStorage.setItem('custom_admin_avatar', dataUrl)
+          }
+        }
       } catch {
         // ignore
       }

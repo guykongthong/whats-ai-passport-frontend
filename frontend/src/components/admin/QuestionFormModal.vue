@@ -289,6 +289,16 @@ const questionSchema = yup.object({
         choices.length === 4 &&
         choices.every((c) => typeof c === 'string' && c.trim() !== '')
       )
+    })
+    .test('unique-choices', 'All 4 choice options must be different from each other.', (choices) => {
+      if (!Array.isArray(choices)) return true
+      const cleaned = choices
+        .filter((c): c is string => typeof c === 'string' && c.trim() !== '')
+        .map((c) => c.trim().toLowerCase())
+      if (cleaned.length === 4) {
+        return new Set(cleaned).size === 4
+      }
+      return true
     }),
   correctAnswer: yup
     .number()

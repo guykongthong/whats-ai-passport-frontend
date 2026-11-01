@@ -36,7 +36,11 @@ apiClient.interceptors.response.use(
         localStorage.removeItem('currentUser')
         localStorage.removeItem('custom_admin_avatar')
       }
-      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+      if (
+        typeof window !== 'undefined' &&
+        !window.location.pathname.startsWith('/login') &&
+        !window.location.pathname.startsWith('/register')
+      ) {
         window.location.href = '/login?sessionExpired=true'
       }
     }

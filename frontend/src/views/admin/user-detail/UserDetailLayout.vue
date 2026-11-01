@@ -76,16 +76,20 @@
               Level {{ user.currentLevel }}: {{ levelName }}
             </span>
 
+            <!-- Deactivate / Reactivate Action Button with Self-Account Guard -->
             <button
               type="button"
+              :disabled="isSelf && user.enabled"
               :class="[
-                'size-10 rounded-xl flex items-center justify-center transition-all cursor-pointer border shadow-sm shrink-0',
-                user.enabled
-                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/30 hover:bg-rose-500/30 hover:scale-105'
-                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 hover:scale-105',
+                'size-10 rounded-xl flex items-center justify-center transition-all border shadow-sm shrink-0',
+                isSelf && user.enabled
+                  ? 'opacity-40 cursor-not-allowed bg-rose-500/10 text-rose-300 border-rose-500/20'
+                  : user.enabled
+                    ? 'bg-rose-500/20 text-rose-300 border-rose-500/30 hover:bg-rose-500/30 hover:scale-105 cursor-pointer'
+                    : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 hover:scale-105 cursor-pointer',
               ]"
-              :title="user.enabled ? 'Deactivate User' : 'Reactivate User'"
-              :aria-label="user.enabled ? 'Deactivate User' : 'Reactivate User'"
+              :title="isSelf && user.enabled ? 'You cannot deactivate your own account' : (user.enabled ? 'Deactivate User' : 'Reactivate User')"
+              :aria-label="isSelf && user.enabled ? 'You cannot deactivate your own account' : (user.enabled ? 'Deactivate User' : 'Reactivate User')"
               @click="openConfirmModal"
             >
               <svg v-if="user.enabled" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -183,19 +187,23 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import axios from 'axios'
 import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import Toast from '@/shared/components/Toast.vue'
 import StatusBadge from '@/components/admin/StatusBadge.vue'
 import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
 import { useAdminUserStore } from '@/stores/adminUser'
+import { useAuthStore } from '@/stores/authStore'
 import { useToast } from '@/composables/useToast'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 
 const route = useRoute()
 const adminUserStore = useAdminUserStore()
+const authStore = useAuthStore()
 const { showToast, toastMessage, triggerToast } = useToast()
 
 const user = computed(() => adminUserStore.selectedUser)
+const isSelf = computed(() => !!authStore.currentUser && !!user.value && String(authStore.currentUser.id) === String(user.value.id))
 const avatarError = ref(false)
 
 const effectiveProfileImage = computed(() => {
@@ -241,6 +249,10 @@ const levelBadgeClass = computed(() =>
 )
 
 function openConfirmModal() {
+  if (isSelf.value && user.value?.enabled) {
+    triggerToast('You cannot deactivate your own account.')
+    return
+  }
   isModalOpen.value = true
 }
 
@@ -265,7 +277,13 @@ async function handleToggleStatus() {
     isModalOpen.value = false
   } catch (err: unknown) {
     console.error('Failed to toggle user status:', err)
-    triggerToast('Failed to update user status. Please try again.')
+    let msg = 'Failed to update user status. Please try again.'
+    if (axios.isAxiosError(err)) {
+      msg = err.response?.data?.message || err.response?.data?.error || err.message || msg
+    } else if (err instanceof Error) {
+      msg = err.message
+    }
+    triggerToast(msg)
   } finally {
     isToggling.value = false
   }
