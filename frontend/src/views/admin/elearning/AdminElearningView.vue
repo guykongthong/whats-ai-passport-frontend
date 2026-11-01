@@ -297,7 +297,7 @@ const errors = reactive({
   videoUrl: '',
 })
 
-const STORAGE_KEY = 'admin_elearning_videos_v1'
+const STORAGE_KEY = 'admin_elearning_videos_v2'
 
 const DEFAULT_CURRICULUM_VIDEOS: AdminVideoRecord[] = [
   {
@@ -370,6 +370,14 @@ const lessonVideos = ref<AdminVideoRecord[]>([])
 const isSaving = ref(false)
 
 async function loadInitialVideos() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('admin_elearning_videos_v1')
+    }
+  } catch {
+    // ignore
+  }
+
   try {
     const res = await ELearningService.adminGetVideos()
     if (res?.data && Array.isArray(res.data) && res.data.length > 0) {

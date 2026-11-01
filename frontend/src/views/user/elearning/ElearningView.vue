@@ -534,7 +534,7 @@ async function fetchLevelVideos() {
   // Seamlessly bridge any custom lessons added through Admin E-Learning portal for this level
   try {
     if (typeof localStorage !== 'undefined') {
-      const rawLocal = localStorage.getItem('admin_elearning_videos_v1')
+      const rawLocal = localStorage.getItem('admin_elearning_videos_v2')
       if (rawLocal) {
         const parsedLocal = JSON.parse(rawLocal)
         if (Array.isArray(parsedLocal)) {
