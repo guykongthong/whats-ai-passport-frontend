@@ -405,6 +405,31 @@ async function fetchLevelVideos() {
     }))
   }
 
+  // Seamlessly bridge any custom lessons added through Admin E-Learning portal for this level
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const rawLocal = localStorage.getItem('admin_elearning_videos_v1')
+      if (rawLocal) {
+        const parsedLocal = JSON.parse(rawLocal)
+        if (Array.isArray(parsedLocal)) {
+          const extraForLevel = parsedLocal.filter((v) => Number(v.level) === currentLevelNumber.value)
+          for (const extra of extraForLevel) {
+            if (!videos.value.some((existing) => existing.videoUrl === extra.videoUrl || existing.title === extra.title)) {
+              videos.value.push({
+                id: extra.id || `local-${Date.now()}`,
+                title: extra.title,
+                description: extra.description || '',
+                videoUrl: extra.videoUrl,
+              })
+            }
+          }
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+
   if (currentVideoIndex.value >= videos.value.length) {
     currentVideoIndex.value = 0
   }

@@ -334,6 +334,7 @@ async function handleSaveQuestion(data: QuestionFormData) {
   try {
     if (data.id !== undefined) {
       await AdminQuestionService.updateQuestion(data.id, {
+        levelNumber: data.levelNumber,
         questionText: data.questionText,
         choices: data.choices,
         correctAnswer: data.correctAnswer,

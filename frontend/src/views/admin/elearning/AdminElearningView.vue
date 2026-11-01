@@ -52,12 +52,12 @@
               <span v-if="errors.title" class="text-xs text-rose-300 font-medium">{{ errors.title }}</span>
             </div>
 
-            <!-- 2. Target Level Selection (Level 2, 3, 4) -->
+            <!-- 2. Target Level Selection (Level 1, 2, 3, 4) -->
             <div class="flex flex-col gap-1.5">
               <label class="text-xs sm:text-sm font-bold text-white">
                 Curriculum Level <span class="text-rose-400">*</span>
               </label>
-              <div class="grid grid-cols-3 gap-2">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <button
                   v-for="lvl in targetLevels"
                   :key="lvl.level"
@@ -275,6 +275,7 @@ interface AdminVideoRecord {
 }
 
 const targetLevels = [
+  { level: 1, name: 'Explorer' },
   { level: 2, name: 'Achiever' },
   { level: 3, name: 'Innovator' },
   { level: 4, name: 'Master' },
@@ -316,10 +317,10 @@ function loadInitialVideos() {
 
   // Fallback to seed data from user side eLearning videos
   lessonVideos.value = eLearningVideos
-    .filter((v) => Number(v.level) >= 2)
+    .filter((v) => Number(v.level) >= 1)
     .map((v, idx) => ({
       id: `seed-${idx + 1}`,
-      level: Number(v.level) || 2,
+      level: Number(v.level) || 1,
       title: v.title,
       description: `Comprehensive video instruction for Level ${v.level} certification curriculum.`,
       videoUrl: v.url.startsWith('http') ? v.url : `https://www.youtube.com/watch?v=dQw4w9WgXcQ`,

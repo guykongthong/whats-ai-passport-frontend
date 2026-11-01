@@ -4,6 +4,7 @@ import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
 import type { User, RegisterPayload } from '@/types'
 import { isUserDeactivated } from '@/shared/utils/auth'
+import { AuthService } from '@/services/AuthService'
 
 const MAX_LEVEL = levels.length
 
@@ -44,21 +45,24 @@ export const useAuthStore = defineStore('auth', () => {
     level: '1',
   })
 
-  function login(identifier: string): 'success' | 'deactivated' | 'not_found' {
+  function fallbackMockLogin(identifier: string): 'success' | 'deactivated' | 'not_found' {
     const isEmail = identifier.includes('@')
 
-    const found = ((users.value.find((u) => {
-      if (isEmail) {
-        return u.email === identifier
-      } else {
-        return u.username === identifier || u.email.split('@')[0] === identifier.split('@')[0]
-      }
-    }))) ?? null
+    const found =
+      users.value.find((u) => {
+        if (isEmail) {
+          return u.email === identifier
+        } else {
+          return u.username === identifier || u.email.split('@')[0] === identifier.split('@')[0]
+        }
+      }) ?? null
 
     if (found && isUserDeactivated(found)) {
       currentUser.value = null
       if (typeof localStorage !== 'undefined') {
         localStorage.removeItem('currentUser')
+        localStorage.removeItem('token')
+        localStorage.removeItem('access_token')
       }
       return 'deactivated'
     }
@@ -68,6 +72,76 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('currentUser', JSON.stringify(found))
     }
     return found ? 'success' : 'not_found'
+  }
+
+  async function login(
+    identifier: string,
+    password = '',
+  ): Promise<'success' | 'deactivated' | 'not_found' | 'bad_credentials'> {
+    try {
+      const res = await AuthService.login({
+        username: identifier.trim(),
+        password: password.trim(),
+      })
+
+      if (res?.data?.access_token) {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('access_token', res.data.access_token)
+          localStorage.setItem('token', res.data.access_token)
+        }
+
+        const data = res.data
+        const roles = Array.isArray(data.roles) ? data.roles : []
+        const isAdmin = roles.includes('ROLE_ADMIN')
+
+        const userObj: User = {
+          id: String(data.id),
+          username: data.username,
+          email: `${data.username}@example.com`,
+          name: data.firstname,
+          surname: data.lastname,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          level: String(data.currentLevel || 1),
+          province: '',
+          profileImageUrl: data.profileImageUrl,
+          role: isAdmin ? 'admin' : 'user',
+          roles,
+          isActive: data.enabled !== false,
+          enabled: data.enabled !== false,
+        }
+
+        currentUser.value = userObj
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(userObj))
+        }
+
+        return 'success'
+      }
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { message?: string } } }
+      if (
+        axiosErr?.response?.status === 403 ||
+        axiosErr?.response?.data?.message?.includes('deactivated')
+      ) {
+        currentUser.value = null
+        if (typeof localStorage !== 'undefined') {
+          localStorage.removeItem('currentUser')
+          localStorage.removeItem('token')
+          localStorage.removeItem('access_token')
+        }
+        return 'deactivated'
+      }
+
+      if (axiosErr?.response?.status === 401) {
+        return 'bad_credentials'
+      }
+
+      console.warn('Backend authentication unavailable, trying local fallback:', err)
+      return fallbackMockLogin(identifier)
+    }
+
+    return fallbackMockLogin(identifier)
   }
 
   function logout() {
@@ -80,17 +154,51 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function register(fields: RegisterPayload): Promise<User> {
+    try {
+      const res = await AuthService.register(fields)
+      if (res?.data) {
+        const data = res.data
+        const newUser: User = {
+          id: String(data.id),
+          username: data.username,
+          name: data.firstname,
+          surname: data.lastname,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          province: data.province,
+          email: data.email,
+          profileImageUrl: data.profileImageUrl,
+          level: String(data.currentLevel || 1),
+          role: 'user',
+          roles: ['ROLE_USER'],
+          isActive: data.enabled !== false,
+          enabled: data.enabled !== false,
+        }
+        users.value.push(newUser)
+        return newUser
+      }
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { status?: number; data?: { message?: string } } }
+      if (axiosErr?.response?.status === 409) {
+        throw new Error(axiosErr.response.data?.message || 'Username or email already taken.')
+      }
+      if (axiosErr?.response?.data?.message) {
+        throw new Error(axiosErr.response.data.message)
+      }
+      throw err
+    }
+
     const existingUsername = users.value.find(
       (u) =>
         (u.username && u.username.toLowerCase() === fields.username.toLowerCase()) ||
-        u.email.split('@')[0]?.toLowerCase() === fields.username.toLowerCase()
+        u.email.split('@')[0]?.toLowerCase() === fields.username.toLowerCase(),
     )
     if (existingUsername) {
       throw new Error('Username is already taken.')
     }
 
     const existingEmail = users.value.find(
-      (u) => u.email.toLowerCase() === fields.email.toLowerCase()
+      (u) => u.email.toLowerCase() === fields.email.toLowerCase(),
     )
     if (existingEmail) {
       throw new Error('Email is already registered.')

@@ -20,23 +20,41 @@ onMounted(() => {
   }
 })
 
-const onLoginSubmit = (email: string) => {
+const onLoginSubmit = async (username: string, password = '') => {
   loginError.value = ''
-  const result = authStore.login(email)
+  try {
+    const result = await authStore.login(username, password)
 
-  if (result === 'deactivated') {
-    loginError.value = 'This account has been deactivated. Please contact an administrator.'
-    return
-  }
-
-  if (authStore.currentUser) {
-    if (isUserAdmin(authStore.currentUser)) {
-      router.push('/admin')
-    } else {
-      router.push('/dashboard')
+    if (result === 'deactivated') {
+      loginError.value = 'This account has been deactivated. Please contact an administrator.'
+      return
     }
-  } else {
-    loginError.value = `"${email}" does not exist`
+
+    if (result === 'bad_credentials') {
+      loginError.value = 'Invalid username or password.'
+      return
+    }
+
+    if (result === 'not_found') {
+      loginError.value = `"${username}" does not exist`
+      return
+    }
+
+    if (authStore.currentUser) {
+      if (isUserAdmin(authStore.currentUser)) {
+        await router.push('/admin')
+      } else {
+        await router.push('/dashboard')
+      }
+    } else {
+      loginError.value = `"${username}" does not exist`
+    }
+  } catch (err: unknown) {
+    const message =
+      (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      (err as Error)?.message ||
+      'Login failed.'
+    loginError.value = message
   }
 }
 

@@ -1,18 +1,20 @@
 <template>
-  <form class="space-y-6" @submit.prevent="onSubmit">
+  <form class="flex flex-col gap-9 sm:gap-11" @submit.prevent="onSubmit">
     <!-- Profile Image Upload Field -->
-    <div class="space-y-2">
+    <div>
       <ImageUpload
         v-model="profileImageUrl"
         label="Profile Image"
+        label-class="block text-sm font-bold text-white mb-2.5"
+        theme="dark"
         :disabled="disabled || isSaving"
       />
     </div>
 
     <!-- Personal Names Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 sm:pt-6">
       <div>
-        <label class="block text-sm font-bold text-white mb-2">
+        <label class="block text-sm font-bold text-white mb-2.5">
           First Name <span class="text-rose-400">*</span>
         </label>
         <input
@@ -34,7 +36,7 @@
       </div>
 
       <div>
-        <label class="block text-sm font-bold text-white mb-2">
+        <label class="block text-sm font-bold text-white mb-2.5">
           Last Name <span class="text-rose-400">*</span>
         </label>
         <input
@@ -57,8 +59,8 @@
     </div>
 
     <!-- Email Field -->
-    <div>
-      <label class="block text-sm font-bold text-white mb-2">
+    <div class="pt-4 sm:pt-5">
+      <label class="block text-sm font-bold text-white mb-2.5">
         Email Address <span class="text-rose-400">*</span>
       </label>
       <input
@@ -81,8 +83,8 @@
     </div>
 
     <!-- Province Field -->
-    <div>
-      <label class="block text-sm font-bold text-white mb-2">
+    <div class="pt-4 sm:pt-5">
+      <label class="block text-sm font-bold text-white mb-2.5">
         Province <span class="text-rose-400">*</span>
       </label>
       <div class="relative">

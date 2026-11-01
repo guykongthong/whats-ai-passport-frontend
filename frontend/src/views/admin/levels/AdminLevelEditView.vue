@@ -4,7 +4,7 @@
       <Toast :show="showToast" :message="toastMessage" variant="dark" class="sticky top-[72px] backdrop-blur-sm" />
     </template>
 
-    <div class="w-full flex flex-col gap-6 -mt-3">
+    <div class="w-full flex flex-col gap-6 mt-1">
       <!-- Top Action Bar: Back Link & Breadcrumb Indicator -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
         <BackLink
@@ -107,7 +107,7 @@
         </div>
 
         <!-- Section 1: Pass Criteria Threshold -->
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 pt-2 sm:pt-3">
           <label for="passCriteriaInput" class="text-xs sm:text-sm font-semibold tracking-wide text-white">
             Pass Criteria (Passing Score Threshold)
             <span class="text-rose-400 ml-0.5">*</span>
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Section 2: Benefits Array (FE-ADMIN-20 Integration) -->
-        <div class="pt-2">
+        <div class="pt-4 sm:pt-5">
           <DynamicTagListInput
             v-model="form.benefits"
             label="Campus Benefits & Privileges"
@@ -154,7 +154,7 @@
         </div>
 
         <!-- Section 3: Services Array (FE-ADMIN-20 Integration) -->
-        <div class="pt-2">
+        <div class="pt-4 sm:pt-5">
           <DynamicTagListInput
             v-model="form.services"
             label="Available Student Services"

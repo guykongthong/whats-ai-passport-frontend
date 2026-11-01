@@ -73,10 +73,14 @@
         aria-label="Filter by Level"
       >
         <option value="" class="text-white bg-[#002742]">All Levels</option>
-        <option value="1" class="text-white bg-[#002742]">Level 1 (Explorer)</option>
-        <option value="2" class="text-white bg-[#002742]">Level 2 (Achiever)</option>
-        <option value="3" class="text-white bg-[#002742]">Level 3 (Innovator)</option>
-        <option value="4" class="text-white bg-[#002742]">Level 4 (Master)</option>
+        <option
+          v-for="lvl in LEVEL_NUMBERS"
+          :key="lvl"
+          :value="String(lvl)"
+          class="text-white bg-[#002742]"
+        >
+          Level {{ lvl }} ({{ getLevelName(lvl) }})
+        </option>
       </select>
       <div
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5"
@@ -141,6 +145,7 @@
 
 <script setup lang="ts">
 import { ref, watch, onBeforeUnmount } from 'vue'
+import { getLevelName, LEVEL_NUMBERS } from '@/utils/levelDisplay'
 
 export interface UserFilters {
   name?: string

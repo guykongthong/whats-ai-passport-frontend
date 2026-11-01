@@ -1,6 +1,6 @@
 <template>
   <AdminPageLayout title="Criteria of Levels" main-padding="!max-w-[1400px] px-4 sm:px-8">
-    <div class="w-full flex flex-col gap-6 -mt-3">
+    <div class="w-full flex flex-col gap-6 mt-1">
       <!-- Subheader (Tightened to PageTitle with 12px gap) -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
         <p class="text-xs sm:text-sm text-white/80">
