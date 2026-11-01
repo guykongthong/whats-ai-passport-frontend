@@ -106,17 +106,20 @@
           </svg>
         </button>
 
-        <!-- Toggle Status Icon Button -->
+        <!-- Toggle Status Icon Button with Self-Account Guard -->
         <button
           type="button"
+          :disabled="isSelf && user.enabled"
           :class="[
-            'size-10 rounded-xl flex items-center justify-center transition-all cursor-pointer border shadow-xs',
-            user.enabled
-              ? 'text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 border-rose-500/30 hover:scale-105'
-              : 'text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/30 hover:scale-105',
+            'size-10 rounded-xl flex items-center justify-center transition-all border shadow-xs',
+            isSelf && user.enabled
+              ? 'opacity-40 cursor-not-allowed bg-rose-500/10 text-rose-300 border-rose-500/20'
+              : user.enabled
+                ? 'text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 border-rose-500/30 hover:scale-105 cursor-pointer'
+                : 'text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/30 hover:scale-105 cursor-pointer',
           ]"
-          :title="user.enabled ? 'Deactivate User' : 'Reactivate User'"
-          :aria-label="user.enabled ? 'Deactivate User' : 'Reactivate User'"
+          :title="isSelf && user.enabled ? 'You cannot deactivate your own account' : (user.enabled ? 'Deactivate User' : 'Reactivate User')"
+          :aria-label="isSelf && user.enabled ? 'You cannot deactivate your own account' : (user.enabled ? 'Deactivate User' : 'Reactivate User')"
           @click="handleToggleStatus"
         >
           <svg v-if="user.enabled" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,6 +139,10 @@ import { ref, computed, watch } from 'vue'
 import StatusBadge from '@/components/admin/StatusBadge.vue'
 import type { AdminUser } from '@/types/admin'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
+const isSelf = computed(() => !!authStore.currentUser && String(authStore.currentUser.id) === String(props.user.id))
 
 const props = withDefaults(
   defineProps<{
@@ -183,6 +190,9 @@ function handleViewDetails() {
 }
 
 function handleToggleStatus() {
+  if (isSelf.value && props.user.enabled) {
+    return
+  }
   emit('toggle-status', props.user)
 }
 </script>
