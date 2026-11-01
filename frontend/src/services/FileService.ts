@@ -12,20 +12,27 @@ export const FileService = {
    * Response: { url: string }
    */
   async uploadImage(file: File): Promise<UploadResponse> {
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
+    const hasToken =
+      typeof localStorage !== 'undefined' &&
+      Boolean(localStorage.getItem('access_token') || localStorage.getItem('token'))
 
-      const response = await apiClient.post<UploadResponse>('/files/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      if (response.data?.url) {
-        return response.data
+    // When authenticated, attempt remote upload via backend
+    if (hasToken) {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const response = await apiClient.post<UploadResponse>('/files/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        if (response.data?.url) {
+          return response.data
+        }
+      } catch (err: unknown) {
+        console.warn('Backend cloud storage upload unavailable, falling back to local data URL:', err)
       }
-    } catch (err: unknown) {
-      console.warn('Backend cloud storage upload unavailable, falling back to local data URL:', err)
     }
 
     // High fidelity data URL fallback for preview and local storage
@@ -38,7 +45,13 @@ export const FileService = {
 
     if (typeof localStorage !== 'undefined') {
       try {
-        localStorage.setItem('custom_admin_avatar', dataUrl)
+        const storedUser = localStorage.getItem('currentUser')
+        if (storedUser) {
+          const parsed = JSON.parse(storedUser)
+          if (parsed?.roles?.includes('ROLE_ADMIN') || parsed?.username === 'admin') {
+            localStorage.setItem('custom_admin_avatar', dataUrl)
+          }
+        }
       } catch {
         // ignore
       }

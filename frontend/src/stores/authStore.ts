@@ -3,7 +3,6 @@ import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
 import type { User, RegisterPayload } from '@/types'
-import { isUserDeactivated } from '@/shared/utils/auth'
 import { AuthService } from '@/services/AuthService'
 import apiClient from '@/services/apiClient'
 

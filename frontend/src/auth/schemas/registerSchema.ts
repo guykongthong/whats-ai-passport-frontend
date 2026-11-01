@@ -13,7 +13,19 @@ export const step1Schema = yup.object({
     .string()
     .trim()
     .required('Profile image is required')
-    .url('Profile image must be a valid URL'),
+    .test(
+      'is-valid-image',
+      'Profile image must be a valid image file or URL',
+      (val) => {
+        if (!val) return false
+        return (
+          val.startsWith('data:image/') ||
+          val.startsWith('http://') ||
+          val.startsWith('https://') ||
+          val.startsWith('/')
+        )
+      },
+    ),
   email: yup.string().optional(),
   password: yup.string().optional(),
   confirmPassword: yup.string().optional(),
