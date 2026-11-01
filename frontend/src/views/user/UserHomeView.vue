@@ -18,118 +18,35 @@
             </p>
           </div>
 
-          <!-- Level Progression Roadmap -->
-          <div class="space-y-3 pt-2">
-            <div class="flex items-center justify-between text-xs">
-              <h2 class="font-bold text-slate-800 text-xs sm:text-sm">
-                Level Progression Roadmap
-              </h2>
-              <span class="text-slate-500 font-semibold">
-                Overall Progress: <strong class="text-slate-800 font-bold">{{ progressPercentage }}%</strong>
-              </span>
-            </div>
-
-            <!-- Progress Bar Track -->
-            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-              <div
-                class="h-full rounded-full bg-[#00385A] transition-all duration-700 ease-out"
-                :style="{ width: `${progressPercentage}%` }"
-              />
-            </div>
-
-            <!-- 4-Step Milestone Checklist (Horizontal) -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3">
-              <div
-                v-for="step in roadmapSteps"
-                :key="step.level"
-                class="flex items-center gap-2.5 min-w-0"
-              >
-                <!-- Milestone Circle Icon -->
-                <div
-                  class="size-6 rounded-full flex items-center justify-center shrink-0 transition-colors text-xs font-bold"
-                  :class="[
-                    step.isCompleted
-                      ? 'bg-[#002845] text-white'
-                      : step.isActive
-                        ? 'bg-[#002845] text-white ring-2 ring-[#002845]/20'
-                        : 'border border-slate-300 text-slate-400 bg-white'
-                  ]"
-                >
-                  <!-- Completed: Checkmark -->
-                  <svg v-if="step.isCompleted" class="size-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <!-- Active or Upcoming: Step Number -->
-                  <span v-else>{{ step.level }}</span>
-                </div>
-
-                <!-- Milestone Labels -->
-                <div class="min-w-0">
-                  <p
-                    class="text-xs font-bold truncate leading-tight"
-                    :class="step.isActive || step.isCompleted ? 'text-slate-900' : 'text-slate-500'"
-                  >
-                    {{ step.name }}
-                  </p>
-                  <p
-                    class="text-[11px] font-medium leading-tight mt-0.5"
-                    :class="[
-                      step.isCompleted
-                        ? 'text-emerald-700 font-semibold'
-                        : step.isActive
-                          ? 'text-slate-600 font-semibold'
-                          : 'text-slate-400'
-                    ]"
-                  >
-                    {{ step.statusLabel }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <!-- Action Buttons Bar -->
-          <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-100">
-            <div class="flex flex-wrap items-center gap-2.5">
-              <!-- Primary CTA: Take Upgrade Exam (If not Level 4) -->
-              <RouterLink
-                v-if="nextLevelNumber"
-                to="/exam"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#002845] hover:bg-[#001830] text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
-              >
-                <span>Take Upgrade Exam for Level {{ nextLevelNumber }}</span>
-                <span>&rarr;</span>
-              </RouterLink>
-
-              <!-- Level 4 Master Achieved Button -->
-              <RouterLink
-                v-else
-                to="/profile/badges"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
-              >
-                <TrophyIcon class="size-4 text-white" />
-                <span>View Master Badges</span>
-              </RouterLink>
-
-              <!-- Secondary CTA: Prepare via E-Learning -->
-              <RouterLink
-                to="/elearning"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#002845] border border-sky-100 px-4 py-2.5 text-xs sm:text-sm font-bold transition-all active:scale-95 cursor-pointer"
-              >
-                <DocumentTextIcon class="size-4 text-[#002845]" />
-                <span>Prepare via E-Learning</span>
-              </RouterLink>
-            </div>
-
-            <!-- Right Link: View Syllabus & Benefits -->
+          <div class="flex flex-wrap items-center gap-2.5 pt-4 border-t border-slate-100">
+            <!-- Primary CTA: Take Upgrade Exam (If not Level 4) -->
             <RouterLink
-              to="/profile/services"
-              class="inline-flex items-center justify-center sm:justify-start gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors py-1 cursor-pointer"
+              v-if="nextLevelNumber"
+              to="/exam"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#002845] hover:bg-[#001830] text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <span>View Syllabus Requirements</span>
-              <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
+              <span>Take Upgrade Exam for Level {{ nextLevelNumber }}</span>
+              <span>&rarr;</span>
+            </RouterLink>
+
+            <!-- Level 4 Master Achieved Button -->
+            <RouterLink
+              v-else
+              to="/profile/badges"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <TrophyIcon class="size-4 text-white" />
+              <span>View Master Badges</span>
+            </RouterLink>
+
+            <!-- Secondary CTA: Prepare via E-Learning -->
+            <RouterLink
+              to="/elearning"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#002845] border border-sky-100 px-4 py-2.5 text-xs sm:text-sm font-bold transition-all active:scale-95 cursor-pointer"
+            >
+              <DocumentTextIcon class="size-4 text-[#002845]" />
+              <span>Prepare via E-Learning</span>
             </RouterLink>
           </div>
         </section>
@@ -289,11 +206,6 @@ const levelTitle = computed<string>(() => {
   return getLevelName(currentLevel.value)
 })
 
-const progressPercentage = computed<number>(() => {
-  const lvl = Math.min(Math.max(currentLevel.value, 1), 4)
-  return Math.round((lvl / 4) * 100)
-})
-
 const nextLevelNumber = computed<number | null>(() => {
   return currentLevel.value < 4 ? currentLevel.value + 1 : null
 })
@@ -314,38 +226,6 @@ const levelDescription = computed<string>(() => {
     default:
       return 'Complete curriculum modules and pass competency examinations to advance your credential tier.'
   }
-})
-
-// Roadmap 4 steps
-const roadmapSteps = computed(() => {
-  const levelLabels = [
-    { level: 1, name: 'L1 Explorer' },
-    { level: 2, name: 'L2 Achiever' },
-    { level: 3, name: 'L3 Innovator' },
-    { level: 4, name: 'L4 Master' },
-  ]
-
-  const current = currentLevel.value
-
-  return levelLabels.map((item) => {
-    const isCompleted = item.level < current || (item.level === 4 && current === 4)
-    const isActive = item.level === current && current < 4
-
-    let statusLabel = 'Next Goal'
-    if (isCompleted) {
-      statusLabel = 'Completed'
-    } else if (isActive) {
-      statusLabel = 'Active • Current'
-    }
-
-    return {
-      level: item.level,
-      name: item.name,
-      isCompleted,
-      isActive,
-      statusLabel,
-    }
-  })
 })
 
 const currentBenefits = computed<string[]>(() => {
