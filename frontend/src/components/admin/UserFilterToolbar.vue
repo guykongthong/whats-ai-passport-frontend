@@ -33,10 +33,10 @@
         type="text"
         placeholder="Search by name, surname, or username..."
         :class="[
-          'w-full pl-10 pr-9 h-11 rounded-xl text-sm transition-all focus:outline-none focus:ring-2',
+          'w-full pl-10 pr-9 h-11 rounded-xl text-sm transition-all focus:outline-none focus:ring-1',
           theme === 'dark'
-            ? 'bg-white/10 border border-white/20 text-white placeholder-white/40 focus:bg-white/15 focus:ring-emerald-400/60 focus:border-emerald-400'
-            : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500',
+            ? 'bg-white/10 border border-white/20 text-white placeholder-white/40 focus:bg-white/15 focus:ring-white/30 focus:border-white/40'
+            : 'bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:bg-white focus:ring-slate-300 focus:border-slate-400',
         ]"
       />
 
@@ -65,10 +65,10 @@
       <select
         v-model="level"
         :class="[
-          'w-full h-11 pl-4 pr-10 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 cursor-pointer appearance-none',
+          'w-full h-11 pl-4 pr-10 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-1 cursor-pointer appearance-none',
           theme === 'dark'
-            ? 'bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md focus:bg-white/20 focus:ring-emerald-400/60 focus:border-emerald-400'
-            : 'bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500',
+            ? 'bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md focus:bg-white/15 focus:ring-white/30 focus:border-white/40'
+            : 'bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:ring-slate-300 focus:border-slate-400',
         ]"
         aria-label="Filter by Level"
       >
@@ -93,10 +93,10 @@
       <select
         v-model="province"
         :class="[
-          'w-full h-11 pl-4 pr-10 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 cursor-pointer appearance-none',
+          'w-full h-11 pl-4 pr-10 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-1 cursor-pointer appearance-none',
           theme === 'dark'
-            ? 'bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md focus:bg-white/20 focus:ring-emerald-400/60 focus:border-emerald-400'
-            : 'bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500',
+            ? 'bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md focus:bg-white/15 focus:ring-white/30 focus:border-white/40'
+            : 'bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:ring-slate-300 focus:border-slate-400',
         ]"
         aria-label="Filter by Province"
       >

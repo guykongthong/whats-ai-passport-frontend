@@ -46,7 +46,7 @@
                 v-model="form.title"
                 type="text"
                 placeholder="e.g. Understanding Machine Learning Basics"
-                class="w-full px-3.5 py-2.5 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm transition-colors"
+                class="w-full px-3.5 py-2.5 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/30 focus:border-white/40 text-sm transition-colors"
                 @input="errors.title = ''"
               />
               <span v-if="errors.title" class="text-xs text-rose-300 font-medium">{{ errors.title }}</span>
@@ -85,7 +85,7 @@
                 v-model="form.videoUrl"
                 type="url"
                 placeholder="e.g. https://www.youtube.com/watch?v=... or .mp4"
-                class="w-full px-3.5 py-2.5 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm transition-colors"
+                class="w-full px-3.5 py-2.5 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/30 focus:border-white/40 text-sm transition-colors"
                 @input="errors.videoUrl = ''"
               />
               <span v-if="errors.videoUrl" class="text-xs text-rose-300 font-medium">{{ errors.videoUrl }}</span>
@@ -114,7 +114,7 @@
                 v-model="form.description"
                 rows="3"
                 placeholder="Provide a comprehensive summary of this lesson to assist students in preparing for the exam..."
-                class="w-full px-3.5 py-2.5 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm transition-colors resize-none"
+                class="w-full px-3.5 py-2.5 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/30 focus:border-white/40 text-sm transition-colors resize-none"
               />
             </div>
 
