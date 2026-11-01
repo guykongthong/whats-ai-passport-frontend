@@ -182,10 +182,23 @@
           </div>
 
           <!-- Active Lesson Title & Details (Directly Below Video) -->
-          <div v-if="activeVideo" class="mt-4 px-2 pb-1 space-y-1">
-            <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
-              Module {{ currentVideoIndex + 1 }}: {{ activeVideo.title }}
-            </h2>
+          <div v-if="activeVideo" class="mt-4 px-2 pb-1 space-y-2">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                Module {{ currentVideoIndex + 1 }}: {{ activeVideo.title }}
+              </h2>
+
+              <!-- Action: Mark Completed & Unlock Next Lesson -->
+              <button
+                type="button"
+                @click="completeCurrentAndNext"
+                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer self-start sm:self-auto"
+              >
+                <CheckCircleIcon class="size-4 text-white" />
+                <span>{{ currentVideoIndex < rawVideos.length - 1 ? 'Mark Complete & Next Lesson →' : 'Complete All Lessons' }}</span>
+              </button>
+            </div>
+
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
               {{ activeVideo.description || 'Understanding core AI literacy principles, responsible prompting, and practical workflows for The CA?T Passport.' }}
             </p>
@@ -356,6 +369,7 @@ const userStore = useUserStore()
 const isLoading = ref(false)
 const rawVideos = ref<VideoItem[]>([])
 const currentVideoIndex = ref(0)
+const completedIndices = ref<number[]>([])
 const isPlayingVideo = ref(false)
 const levelTransitionAlert = ref<string | null>(null)
 
@@ -365,12 +379,12 @@ const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 
 const curriculumLessons = computed<LessonViewItem[]>(() => {
   return rawVideos.value.map((v, idx) => {
     let status: 'completed' | 'in-progress' | 'locked' = 'locked'
-    if (idx < currentVideoIndex.value) {
+    if (completedIndices.value.includes(idx)) {
       status = 'completed'
     } else if (idx === currentVideoIndex.value) {
       status = 'in-progress'
-    } else if (idx === currentVideoIndex.value + 1) {
-      // The next lesson can be unlocked once watched or can be watched sequentially
+    } else if (idx <= Math.max(...completedIndices.value, -1) + 1 || idx === 0) {
+      // Once previous is completed, next lesson unlocks and is ready in-progress
       status = 'in-progress'
     } else {
       status = 'locked'
@@ -386,6 +400,16 @@ const curriculumLessons = computed<LessonViewItem[]>(() => {
     }
   })
 })
+
+function completeCurrentAndNext() {
+  if (!completedIndices.value.includes(currentVideoIndex.value)) {
+    completedIndices.value.push(currentVideoIndex.value)
+  }
+  if (currentVideoIndex.value < rawVideos.value.length - 1) {
+    currentVideoIndex.value += 1
+    isPlayingVideo.value = true
+  }
+}
 
 const activeVideo = computed<LessonViewItem | null>(() => {
   return curriculumLessons.value[currentVideoIndex.value] ?? null

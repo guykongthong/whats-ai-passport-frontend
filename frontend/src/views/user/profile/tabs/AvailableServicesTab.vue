@@ -199,6 +199,19 @@ const serviceCatalog: ServiceItem[] = [
 
 // Current level allowed services (cumulative from level 1 up to current level)
 const currentActiveServices = computed<ServiceItem[]>(() => {
+  // If backend returns availableServices on userProfile or currentLevelDetails, prioritize real backend data
+  const backendServices = userStore.userProfile?.availableServices || userStore.currentLevelDetails?.services
+  if (backendServices && backendServices.length > 0) {
+    return backendServices.map((name) => {
+      const matched = serviceCatalog.find((s) => s.name.toLowerCase() === name.toLowerCase())
+      return {
+        level: matched?.level || String(currentLevel.value),
+        name,
+        description: matched?.description || `Privileged service access granted at Level ${currentLevel.value}.`,
+      }
+    })
+  }
+
   const lvl = currentLevel.value
   return serviceCatalog.filter((s) => Number(s.level) <= lvl)
 })
