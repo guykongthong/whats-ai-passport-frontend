@@ -213,9 +213,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { useUserStore } from '@/stores/user'
 import { getLevelClasses } from '@/utils/levelDisplay'
 
 interface Props {
@@ -232,11 +233,19 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
-const currentUser = computed(() => authStore.currentUser)
+const currentUser = computed(() => userStore.userProfile || authStore.currentUser)
 const isDropdownOpen = ref(false)
 const imageLoadError = ref(false)
 const profileDropdownRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => currentUser.value?.profileImageUrl,
+  () => {
+    imageLoadError.value = false
+  }
+)
 
 const fullName = computed(() => {
   const u = currentUser.value
