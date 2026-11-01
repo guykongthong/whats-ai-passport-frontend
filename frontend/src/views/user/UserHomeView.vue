@@ -10,10 +10,10 @@
         >
           <!-- Level Title & Description -->
           <div class="space-y-2">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-[#002845] tracking-tight">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-[#002845] tracking-tight">
               Level {{ currentLevel }} – {{ levelTitle }}
             </h1>
-            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
+            <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
               {{ levelDescription }}
             </p>
           </div>
@@ -57,15 +57,10 @@
           class="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs flex flex-col gap-5"
         >
           <!-- Section Header -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-100">
-            <div>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900">
-                Active Benefits & Resources
-              </h2>
-              <p class="text-xs text-slate-500 mt-0.5">
-                These privileges are unlocked for your current Level {{ currentLevel }} ({{ levelTitle }}) student status.
-              </p>
-            </div>
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900">
+              Active Benefits & Resources
+            </h2>
             <span class="text-xs text-slate-500 font-medium">
               {{ formattedBenefits.length }} benefits unlocked
             </span>
@@ -111,15 +106,10 @@
           class="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs flex flex-col gap-5"
         >
           <!-- Section Header -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4 border-b border-slate-100">
-            <div>
-              <h2 class="text-base sm:text-lg font-bold text-slate-900">
-                Accessible Campus Facilities & Services
-              </h2>
-              <p class="text-xs text-slate-500 mt-0.5">
-                Institutional facilities and workshops available to reserve under your tier.
-              </p>
-            </div>
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900">
+              Accessible Campus Facilities & Services
+            </h2>
             <span class="text-xs text-slate-500 font-medium">
               {{ activeServices.length }} facilities available
             </span>
@@ -201,15 +191,15 @@ const levelDescription = computed<string>(() => {
   }
   switch (currentLevel.value) {
     case 1:
-      return 'Foundational tier for new members, introducing core digital knowledge, university workflows, and basic digital tools.'
+      return 'Learn basic AI tools, prompt writing, and ethical AI usage.'
     case 2:
-      return 'Intermediate tier for students who have developed specialized domain skills and can apply digital tools to build real-world projects.'
+      return 'Build intermediate AI skills, data preparation, and practical project tools.'
     case 3:
-      return 'Awarded to students demonstrating applied innovation and independent research projects. Unlocks high-performance computing resources, dedicated research mentorship, and enterprise venture pathways.'
+      return 'Access high-performance GPU resources and build advanced AI projects.'
     case 4:
-      return 'Highest tier of The CA?T Passport, recognizing outstanding academic, professional, and international expertise.'
+      return 'Expert level with full access to all AI tools, certifications, and mentoring.'
     default:
-      return 'Complete curriculum modules and pass competency examinations to advance your credential tier.'
+      return 'Learn and take exams to unlock new levels and privileges.'
   }
 })
 

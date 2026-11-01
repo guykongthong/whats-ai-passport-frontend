@@ -95,18 +95,13 @@
           class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs flex flex-col gap-4 hover:border-slate-300 transition-all"
         >
           <!-- Card Header: Title and Attempt Pill -->
-          <div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <h4 class="text-sm sm:text-base font-bold text-slate-900">
-                Level {{ record.levelNumber }}: {{ getLevelName(record.levelNumber) }} Exam
-              </h4>
-              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                Attempt #{{ sortedHistory.length - index }}
-              </span>
-            </div>
-            <p class="text-xs text-slate-500 mt-0.5">
-              {{ getExamDescription(record.levelNumber) }}
-            </p>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <h4 class="text-base sm:text-lg font-bold text-slate-900">
+              Level {{ record.levelNumber }}: {{ getLevelName(record.levelNumber) }} Exam
+            </h4>
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600">
+              Attempt #{{ sortedHistory.length - index }}
+            </span>
           </div>
 
           <!-- 3-Column Metrics Grid -->
@@ -236,22 +231,6 @@ function getBadgeLevelLabel(badgeName: string): string {
   if (/level 3|innovator/i.test(badgeName)) return 'LEVEL 3'
   if (/level 4|master/i.test(badgeName)) return 'LEVEL 4'
   return 'CERTIFICATION'
-}
-
-// Helper to provide human-readable exam description matching design
-function getExamDescription(level: number): string {
-  switch (level) {
-    case 1:
-      return 'Foundational AI literacy, prompt writing, and ethical usage'
-    case 2:
-      return 'Applied machine learning concepts, data handling, and model reliability'
-    case 3:
-      return 'Advanced AI architectures, RAG knowledge retrieval, and evaluation metrics'
-    case 4:
-      return 'Enterprise AI governance, safety guardrails, and community leadership'
-    default:
-      return 'The CA?T Passport competency assessment'
-  }
 }
 
 function formatDateTime(dateStr: string): string {
