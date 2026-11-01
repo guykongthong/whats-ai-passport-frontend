@@ -56,12 +56,12 @@
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-white/10 border-b border-white/15 text-xs font-bold text-white uppercase tracking-wider">
-                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-left">User</th>
-                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-center">Province</th>
-                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-center">Level</th>
-                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-center">Status</th>
-                <th scope="col" class="px-4 py-3.5 sm:px-6 sm:py-4 text-center">Actions</th>
+              <tr class="bg-white/10 border-b border-white/15 text-sm font-bold text-white uppercase tracking-wider">
+                <th scope="col" class="px-4 py-4 sm:px-6 sm:py-4.5 text-left">User</th>
+                <th scope="col" class="px-4 py-4 sm:px-6 sm:py-4.5 text-center">Province</th>
+                <th scope="col" class="px-4 py-4 sm:px-6 sm:py-4.5 text-center">Level</th>
+                <th scope="col" class="px-4 py-4 sm:px-6 sm:py-4.5 text-center">Status</th>
+                <th scope="col" class="px-4 py-4 sm:px-6 sm:py-4.5 text-center">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-white/10">

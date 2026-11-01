@@ -1,15 +1,15 @@
 <template>
   <span
     :class="[
-      'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold select-none transition-colors',
+      'inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs sm:text-sm font-bold select-none transition-colors',
       badgeClasses,
     ]"
     role="status"
     :aria-label="enabled ? 'Active' : 'Deactivated'"
   >
     <!-- Indicator Dot (Static when Active, Static when Deactivated) -->
-    <span v-if="enabled" class="size-2 rounded-full bg-emerald-400 shrink-0" />
-    <span v-else class="size-2 rounded-full bg-rose-500 shrink-0" />
+    <span v-if="enabled" class="size-2.5 rounded-full bg-emerald-400 shrink-0" />
+    <span v-else class="size-2.5 rounded-full bg-rose-500 shrink-0" />
 
     <span>{{ labelText }}</span>
   </span>

@@ -560,6 +560,11 @@ Addressed complete administrative feedback and UI refactoring:
 - Unified "Try Again" Error Actions:
   - Standardized error card container padding (`p-8 sm:p-10`), typography, and spacing across `AdminLevelListView.vue`, `AdminQuestionListView.vue`, `AdminUserListView.vue`, and `AdminLevelEditView.vue`.
   - Harmonized "Try Again" button dimensions (`px-6 py-2.5 text-sm font-bold min-w-[130px] rounded-xl`) to ensure 100% visual parity across all administrative error states.
+- User Directory Table Typography & Sizing Scaling:
+  - Enlarged table headers to `text-sm font-bold tracking-wider` with increased cell vertical padding (`py-4 sm:py-5`).
+  - Enlarged user identity typography: Full name to `text-base sm:text-lg font-bold`, username and email to `text-xs sm:text-sm`, and avatar circle to `size-11 sm:size-12`.
+  - Scaled Province text to `text-base sm:text-lg font-medium`, Level badges to `text-xs sm:text-sm font-bold px-3.5 py-1.5`, Status badges to `text-xs sm:text-sm font-bold px-3.5 py-1`, and Action buttons to `size-10` with `size-5` SVG icons.
+  - Scaled pagination footer buttons to `size-9` and indicator text to `text-sm sm:text-base`.
 
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
