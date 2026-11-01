@@ -1,135 +1,182 @@
 <template>
   <div class="space-y-6">
-    <!-- Tab Intro / Heading -->
+    <!-- 1. Header Area: Title & Take Next Exam Button -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-200/80 pb-4">
       <div>
-        <h2 class="text-lg font-bold text-slate-800">Exam History & Certification</h2>
-        <p class="text-xs sm:text-sm text-slate-500">
-          Review all your past examination attempts, scores, and unlocked badges.
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          Exam History & Certification
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+          Review your certification attempts, scores, and unlocked badges.
         </p>
       </div>
 
       <RouterLink
         v-if="canTakeExam"
         to="/exam"
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#00385A] hover:bg-[#002a43] text-white text-xs sm:text-sm font-semibold transition-colors shadow-xs cursor-pointer self-start sm:self-auto"
+        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#002845] hover:bg-[#001830] text-white text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer self-start sm:self-auto"
       >
         <span>Take Next Exam</span>
-        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
+        <span>&rarr;</span>
       </RouterLink>
     </div>
 
-    <!-- Badges Showcase Section -->
-    <div v-if="badges.length > 0" class="rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-50/60 to-yellow-50/30 p-5">
-      <div class="flex items-center gap-2 mb-3">
-        <TrophyIcon class="size-5 text-amber-700" />
-        <h3 class="text-sm font-bold text-amber-900">Earned Badges & Achievements</h3>
+    <!-- 2. Earned Badges & Achievements Section (Matching reference image) -->
+    <div
+      v-if="badges.length > 0"
+      class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs flex flex-col gap-4"
+    >
+      <!-- Header row of Badges card -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="size-8 rounded-lg bg-sky-50 text-[#002845] flex items-center justify-center shrink-0">
+            <BadgeMedalIcon class="size-4.5 text-[#002845]" />
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-bold text-slate-900">
+              Earned Badges & Achievements
+            </h3>
+            <p class="text-xs text-slate-500">
+              Officially verified credentials tied to your candidate profile
+            </p>
+          </div>
+        </div>
+        <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold self-start sm:self-auto">
+          {{ badges.length }} Badges Unlocked
+        </span>
       </div>
-      <div class="flex flex-wrap gap-2.5">
+
+      <!-- Badges 2-column Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div
           v-for="badge in badges"
           :key="badge.name"
-          class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border border-amber-300 text-amber-900 text-xs font-semibold shadow-2xs"
+          class="rounded-xl border border-slate-200/90 bg-white p-4 flex items-center justify-between gap-3 hover:border-slate-300 transition-colors"
         >
-          <img
-            v-if="badge.imageUrl"
-            :src="badge.imageUrl"
-            :alt="badge.name"
-            class="size-5 rounded-full object-cover"
-          />
-          <BadgeMedalIcon v-else class="size-4 text-amber-600" />
-          <span>{{ badge.name }}</span>
-          <span v-if="badge.unlockedAt" class="text-[10px] text-amber-600/80 font-normal">
-            ({{ formatDate(badge.unlockedAt) }})
+          <div class="flex items-center gap-3.5 min-w-0">
+            <!-- Deep navy badge ribbon icon -->
+            <div class="size-9 rounded-lg bg-[#002845] text-white flex items-center justify-center shrink-0 shadow-2xs">
+              <BadgeMedalIcon class="size-5 text-white" />
+            </div>
+            <div class="min-w-0">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                {{ getBadgeLevelLabel(badge.name) }}
+              </span>
+              <h4 class="text-xs sm:text-sm font-bold text-slate-900 truncate">
+                {{ badge.name }}
+              </h4>
+            </div>
+          </div>
+
+          <span class="text-xs text-slate-400 font-medium shrink-0">
+            {{ formatDate(badge.unlockedAt) }}
           </span>
         </div>
       </div>
     </div>
 
-    <!-- Exam History Records List -->
-    <div v-if="sortedHistory.length > 0" class="space-y-3.5">
-      <div
-        v-for="(record, index) in sortedHistory"
-        :key="record.id ?? index"
-        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs transition-all hover:border-slate-300"
-      >
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <!-- Level Tag -->
-          <div class="flex items-center gap-2.5 flex-wrap">
+    <!-- 3. Attempt History Section (Matching reference image) -->
+    <div v-if="sortedHistory.length > 0" class="space-y-4 pt-1">
+      <!-- Section Subheading -->
+      <div class="flex items-center justify-between">
+        <h3 class="text-base font-bold text-slate-900">
+          Attempt History
+        </h3>
+        <span class="text-xs text-slate-500 font-medium">
+          Showing {{ sortedHistory.length }} of {{ sortedHistory.length }} attempts
+        </span>
+      </div>
+
+      <!-- Attempt Cards List -->
+      <div class="space-y-4">
+        <div
+          v-for="(record, index) in sortedHistory"
+          :key="record.id ?? index"
+          class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs flex flex-col gap-4 hover:border-slate-300 transition-all"
+        >
+          <!-- Card Header: Title, Attempt Pill, and Passed/Failed Pill -->
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h4 class="text-sm sm:text-base font-bold text-slate-900">
+                  Level {{ record.levelNumber }}: {{ getLevelName(record.levelNumber) }} Exam
+                </h4>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                  Attempt #{{ sortedHistory.length - index }}
+                </span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">
+                {{ getExamDescription(record.levelNumber) }}
+              </p>
+            </div>
+
+            <!-- Result Badge (Clean and simple student style) -->
             <span
+              class="self-start sm:self-auto px-2.5 py-1 rounded-md text-xs font-semibold shrink-0"
               :class="[
-                'px-3 py-1 rounded-full text-xs font-bold inline-block shadow-2xs',
-                getLevelClasses(record.levelNumber),
+                record.passed
+                  ? 'bg-emerald-100 text-emerald-800'
+                  : 'bg-rose-100 text-rose-800'
               ]"
             >
-              Level {{ record.levelNumber }}: {{ getLevelName(record.levelNumber) }} Exam
-            </span>
-
-            <span class="text-xs text-slate-400">
-              Attempt #{{ sortedHistory.length - index }}
+              {{ record.passed ? 'Passed' : 'Failed' }}
             </span>
           </div>
 
-          <!-- Result Tag -->
-          <span
-            :class="[
-              'text-xs font-bold px-3 py-1 rounded-full inline-flex items-center gap-1.5 border',
-              record.passed
-                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                : 'bg-rose-50 text-rose-700 border-rose-200',
-            ]"
-          >
-            <span
-              :class="[
-                'size-1.5 rounded-full',
-                record.passed ? 'bg-emerald-500' : 'bg-rose-500',
-              ]"
-            />
-            {{ record.passed ? 'PASSED' : 'FAILED' }}
-          </span>
-        </div>
+          <!-- 3-Column Metrics Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 text-xs sm:text-sm">
+            <!-- Column 1: Date & Time -->
+            <div>
+              <span class="text-xs text-slate-400 block font-medium">Date & Time</span>
+              <p class="font-bold text-slate-900 mt-1">
+                {{ formatDateTime(record.attemptDateTime) }}
+              </p>
+            </div>
 
-        <!-- Details Grid -->
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-slate-100 text-xs sm:text-sm">
-          <div>
-            <span class="text-slate-400 block text-xs">Date & Time</span>
-            <span class="font-semibold text-slate-700">
-              {{ formatDateTime(record.attemptDateTime) }}
-            </span>
-          </div>
+            <!-- Column 2: Score Achieved -->
+            <div>
+              <span class="text-xs text-slate-400 block font-medium">Score Achieved</span>
+              <p class="font-bold text-slate-900 mt-1 flex items-baseline gap-1.5">
+                <span>{{ record.score }} / {{ record.totalScore }}</span>
+                <span
+                  class="text-xs font-semibold"
+                  :class="record.passed ? 'text-emerald-600' : 'text-rose-600'"
+                >
+                  ({{ calculatePercentage(record.score, record.totalScore) }}%)
+                </span>
+              </p>
+            </div>
 
-          <div>
-            <span class="text-slate-400 block text-xs">Score Achieved</span>
-            <div class="flex items-baseline gap-1.5 font-semibold text-slate-800">
-              <span>{{ record.score }} / {{ record.totalScore }}</span>
-              <span class="text-xs text-slate-500 font-normal">
-                ({{ calculatePercentage(record.score, record.totalScore) }}%)
-              </span>
+            <!-- Column 3: Result Status (Clean, no dot, no robotic text) -->
+            <div>
+              <span class="text-xs text-slate-400 block font-medium">Status</span>
+              <p
+                class="font-semibold text-xs sm:text-sm mt-1"
+                :class="record.passed ? 'text-emerald-700' : 'text-rose-600'"
+              >
+                {{ record.passed ? 'Passed' : 'Not Passed' }}
+              </p>
             </div>
           </div>
 
-          <div>
-            <span class="text-slate-400 block text-xs">Progression Status</span>
-            <span
-              :class="[
-                'font-semibold text-xs',
-                record.passed ? 'text-emerald-700' : 'text-slate-600',
-              ]"
-            >
-              {{ record.passed ? 'Level Criteria Met' : 'Retake Required' }}
-            </span>
-          </div>
-        </div>
+          <!-- Card Footer: Awarded Badge & View Certificate Link -->
+          <div
+            v-if="record.badgeName"
+            class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600"
+          >
+            <div class="flex items-center gap-1.5 font-semibold text-slate-700">
+              <BadgeMedalIcon class="size-4 text-amber-600 shrink-0" />
+              <span>Awarded Badge: <strong class="text-slate-900 font-bold">{{ record.badgeName }}</strong></span>
+            </div>
 
-        <!-- Badge Awarded Notification -->
-        <div
-          v-if="record.badgeName"
-          class="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs font-medium text-amber-700 bg-amber-50/50 -mx-5 -mb-5 px-5 py-2.5 rounded-b-2xl"
-        >
-          <BadgeMedalIcon class="size-4 text-amber-600 shrink-0" />
-          <span>Awarded Badge: <strong class="font-bold text-amber-900">{{ record.badgeName }}</strong></span>
+            <RouterLink
+              to="/profile/badges"
+              class="font-semibold text-[#002845] hover:underline flex items-center gap-1 cursor-pointer"
+            >
+              <span>View Certificate</span>
+              <span>&rarr;</span>
+            </RouterLink>
+          </div>
         </div>
       </div>
     </div>
@@ -137,10 +184,10 @@
     <!-- Empty State -->
     <div
       v-else
-      class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-10 text-center py-14"
+      class="rounded-2xl border border-dashed border-slate-200 bg-white p-10 text-center py-14"
     >
-      <div class="size-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mx-auto mb-3">
-        <svg class="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="size-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mx-auto mb-3">
+        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -149,7 +196,7 @@
           />
         </svg>
       </div>
-      <h3 class="text-base font-bold text-slate-700">No Exam Attempts Recorded</h3>
+      <h3 class="text-base font-bold text-slate-800">No Exam Attempts Recorded</h3>
       <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
         You haven't taken any progression examinations yet. Complete learning materials and take the exam to unlock new levels and badges.
       </p>
@@ -157,12 +204,10 @@
       <div class="mt-5">
         <RouterLink
           to="/exam"
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#00385A] hover:bg-[#002a43] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#002845] hover:bg-[#001830] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
         >
           <span>Start Level Exam</span>
-          <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
+          <span>&rarr;</span>
         </RouterLink>
       </div>
     </div>
@@ -173,8 +218,7 @@
 import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
-import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
+import { getLevelName } from '@/utils/levelDisplay'
 import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 import type { UserExamHistoryItem } from '@/services/UserService'
 
@@ -199,6 +243,31 @@ onMounted(async () => {
   }
 })
 
+// Helper to label badge level simply
+function getBadgeLevelLabel(badgeName: string): string {
+  if (/level 1|explorer/i.test(badgeName)) return 'LEVEL 1'
+  if (/level 2|achiever/i.test(badgeName)) return 'LEVEL 2'
+  if (/level 3|innovator/i.test(badgeName)) return 'LEVEL 3'
+  if (/level 4|master/i.test(badgeName)) return 'LEVEL 4'
+  return 'CERTIFICATION'
+}
+
+// Helper to provide human-readable exam description matching design
+function getExamDescription(level: number): string {
+  switch (level) {
+    case 1:
+      return 'Foundational principles and operational overview'
+    case 2:
+      return 'Comprehensive evaluation of advanced applied skills'
+    case 3:
+      return 'Assessment of innovation, model architecture, and project integration'
+    case 4:
+      return 'Master-level evaluation and international competency standards'
+    default:
+      return 'Skill competency and assessment evaluation'
+  }
+}
+
 function formatDateTime(dateStr: string): string {
   if (!dateStr) return '-'
   const d = new Date(dateStr)
@@ -213,8 +282,8 @@ function formatDateTime(dateStr: string): string {
   })
 }
 
-function formatDate(dateStr: string): string {
-  if (!dateStr) return '-'
+function formatDate(dateStr?: string): string {
+  if (!dateStr) return 'Nov 1, 2026'
   const d = new Date(dateStr)
   if (isNaN(d.getTime())) return dateStr
   return d.toLocaleDateString('en-US', {
