@@ -1,19 +1,12 @@
 <template>
   <div class="space-y-6">
     <!-- Header / Summary Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-5">
+    <div class="border-b border-slate-200 pb-4">
       <div>
-        <h3 class="text-xl font-extrabold text-[#00385A]">Certification Badges Gallery</h3>
-        <p class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">
-          Official digital passport credentials unlocked through verified examination progression.
+        <h3 class="text-xl font-bold text-slate-900">Certification Badges</h3>
+        <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+          Digital badges unlocked through examination in The CA?T Passport.
         </p>
-      </div>
-
-      <div class="flex items-center gap-2 self-start sm:self-auto">
-        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-800 border border-amber-200 shadow-2xs">
-          <TrophyIcon class="size-4 text-amber-700" />
-          <span>{{ unlockedCount }} of 4 Badges Unlocked</span>
-        </span>
       </div>
     </div>
 
@@ -251,7 +244,6 @@ import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
-import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
 interface BadgeCardItem {
@@ -329,8 +321,6 @@ const badgeCards = computed<BadgeCardItem[]>(() => {
     }
   })
 })
-
-const unlockedCount = computed(() => badgeCards.value.filter((b) => b.isUnlocked).length)
 
 function openBadgeModal(badge: BadgeCardItem) {
   selectedBadge.value = badge
