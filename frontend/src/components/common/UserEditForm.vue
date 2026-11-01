@@ -186,6 +186,7 @@ import * as yup from 'yup'
 import { toTypedSchema } from '@vee-validate/yup'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import type { AdminUser } from '@/types/admin'
+import { provinces } from '@/data/provinces'
 
 interface Props {
   initialData?: AdminUser | Partial<AdminUser> | null
@@ -265,8 +266,6 @@ const isSubmitDisabled = computed(() => {
     !meta.value.valid
   )
 })
-
-import { provinces } from '@/data/provinces'
 
 watch(
   () => props.initialData,
