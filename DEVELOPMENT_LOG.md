@@ -552,6 +552,13 @@ Addressed complete administrative feedback and UI refactoring:
   - Created `AdminElearningView.vue` with course video publishing form (Title, Description, Video URL, Live Preview player, and Level 2/3/4 selector).
   - Built course video catalog cards with preview player, badges, and delete capabilities.
   - Registered `/admin/elearning` (with `/learning` alias) in router and navigation menu.
+- Dropdown & Form Controls Modernization:
+  - Replaced dark solid background in `UserFilterToolbar.vue` and `UserEditForm.vue` with frosted glass styling (`bg-white/10 hover:bg-white/15 border-white/20 backdrop-blur-md`) matching text inputs.
+  - Added `appearance-none` and integrated clean SVG chevron-down indicators to prevent OS-level shrinking and squished appearance.
+  - Standardized dropdown height to `h-11` in filter toolbar and `h-12` in user edit form.
+- Unified "Try Again" Error Actions:
+  - Standardized error card container padding (`p-8 sm:p-10`), typography, and spacing across `AdminLevelListView.vue`, `AdminQuestionListView.vue`, `AdminUserListView.vue`, and `AdminLevelEditView.vue`.
+  - Harmonized "Try Again" button dimensions (`px-6 py-2.5 text-sm font-bold min-w-[130px] rounded-xl`) to ensure 100% visual parity across all administrative error states.
 
 Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.

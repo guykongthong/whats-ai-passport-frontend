@@ -25,12 +25,13 @@
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="bg-rose-500/20 border border-rose-500/30 text-rose-200 rounded-2xl p-8 sm:p-10 text-center text-sm flex flex-col items-center justify-center gap-2"
+        class="bg-rose-500/20 border border-rose-500/30 text-rose-200 rounded-2xl p-8 sm:p-10 text-center text-sm shadow-xl flex flex-col items-center justify-center"
       >
-        <p class="font-bold text-base">{{ error }}</p>
+        <p class="font-bold text-base sm:text-lg text-white">{{ error }}</p>
+        <p class="text-xs sm:text-sm text-rose-300 mt-1.5">Please check your connection or session and try again.</p>
         <button
           type="button"
-          class="mt-6 px-6 py-2.5 text-xs sm:text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all shadow-md cursor-pointer active:scale-95"
+          class="mt-6 px-6 py-2.5 text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all shadow-md cursor-pointer active:scale-95 min-w-[130px] inline-flex items-center justify-center"
           @click="fetchLevels"
         >
           Try Again

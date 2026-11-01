@@ -61,13 +61,13 @@
     </div>
 
     <!-- Level Select Dropdown -->
-    <div class="w-full md:w-48">
+    <div class="relative w-full md:w-52 md:min-w-[190px]">
       <select
         v-model="level"
         :class="[
-          'w-full h-11 px-3.5 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 cursor-pointer',
+          'w-full h-11 pl-4 pr-10 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 cursor-pointer appearance-none',
           theme === 'dark'
-            ? 'bg-[#002742]/85 border border-white/20 text-white focus:ring-emerald-400/60 focus:border-emerald-400'
+            ? 'bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md focus:bg-white/20 focus:ring-emerald-400/60 focus:border-emerald-400'
             : 'bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500',
         ]"
         aria-label="Filter by Level"
@@ -78,16 +78,24 @@
         <option value="3" class="text-white bg-[#002742]">Level 3 (Innovator)</option>
         <option value="4" class="text-white bg-[#002742]">Level 4 (Master)</option>
       </select>
+      <div
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5"
+        :class="theme === 'dark' ? 'text-white/70' : 'text-slate-400'"
+      >
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
 
     <!-- Province Select Dropdown -->
-    <div class="w-full md:w-52">
+    <div class="relative w-full md:w-56 md:min-w-[210px]">
       <select
         v-model="province"
         :class="[
-          'w-full h-11 px-3.5 rounded-xl text-sm transition-all focus:outline-none focus:ring-2 cursor-pointer',
+          'w-full h-11 pl-4 pr-10 rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 cursor-pointer appearance-none',
           theme === 'dark'
-            ? 'bg-[#002742]/85 border border-white/20 text-white focus:ring-emerald-400/60 focus:border-emerald-400'
+            ? 'bg-white/10 hover:bg-white/15 border border-white/20 text-white backdrop-blur-md focus:bg-white/20 focus:ring-emerald-400/60 focus:border-emerald-400'
             : 'bg-slate-50 border border-slate-200 text-slate-800 focus:bg-white focus:ring-indigo-500 focus:border-indigo-500',
         ]"
         aria-label="Filter by Province"
@@ -102,6 +110,14 @@
           {{ prov }}
         </option>
       </select>
+      <div
+        class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5"
+        :class="theme === 'dark' ? 'text-white/70' : 'text-slate-400'"
+      >
+        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
     </div>
 
     <!-- Reset Filters Button -->

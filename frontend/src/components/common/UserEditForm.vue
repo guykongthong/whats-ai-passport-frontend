@@ -85,34 +85,42 @@
       <label class="block text-sm font-bold text-white mb-2">
         Province <span class="text-rose-400">*</span>
       </label>
-      <select
-        v-model="province"
-        :disabled="disabled || isSaving"
-        :class="[
-          'w-full px-4 py-3 rounded-xl border bg-[#002742]/85 border-white/20 text-white focus:outline-none focus:ring-2 text-base transition-colors cursor-pointer backdrop-blur-md',
-          provinceError
-            ? 'border-rose-400 focus:ring-rose-400/50'
-            : 'border-white/20 focus:ring-emerald-400/60 focus:border-emerald-400',
-        ]"
-        @blur="validateField('province')"
-      >
-        <option value="" class="text-white bg-[#002742]">Select Province</option>
-        <option
-          v-if="province && !provinces.includes(province)"
-          :value="province"
-          class="text-white bg-[#002742]"
+      <div class="relative">
+        <select
+          v-model="province"
+          :disabled="disabled || isSaving"
+          :class="[
+            'w-full h-12 pl-4 pr-10 rounded-xl border bg-white/10 hover:bg-white/15 border-white/20 text-white focus:outline-none focus:ring-2 focus:bg-white/15 text-base transition-all cursor-pointer backdrop-blur-md appearance-none',
+            provinceError
+              ? 'border-rose-400 focus:ring-rose-400/50'
+              : 'border-white/20 focus:ring-emerald-400/60 focus:border-emerald-400',
+            disabled || isSaving ? 'opacity-60 cursor-not-allowed' : '',
+          ]"
+          @blur="validateField('province')"
         >
-          {{ province }}
-        </option>
-        <option
-          v-for="prov in provinces"
-          :key="prov"
-          :value="prov"
-          class="text-white bg-[#002742]"
-        >
-          {{ prov }}
-        </option>
-      </select>
+          <option value="" class="text-white bg-[#002742]">Select Province</option>
+          <option
+            v-if="province && !provinces.includes(province)"
+            :value="province"
+            class="text-white bg-[#002742]"
+          >
+            {{ province }}
+          </option>
+          <option
+            v-for="prov in provinces"
+            :key="prov"
+            :value="prov"
+            class="text-white bg-[#002742]"
+          >
+            {{ prov }}
+          </option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/70">
+          <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
       <p v-if="provinceError" class="text-xs text-rose-300 font-medium mt-1.5">
         {{ provinceError }}
       </p>
