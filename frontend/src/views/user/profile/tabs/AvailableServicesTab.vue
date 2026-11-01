@@ -180,7 +180,7 @@
 import { computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { getLevelName } from '@/utils/levelDisplay'
+import { getLevelName, getLevelClasses } from '@/utils/levelDisplay'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
@@ -215,49 +215,49 @@ const nextLevelName = computed<string>(() => {
 })
 
 const serviceCatalog: ServiceItem[] = [
-  // Level 1
+  // Level 1: Explorer
   {
     level: '1',
     name: 'AI Literacy Orientation',
-    description: 'Introduction to CAMT digital equipment borrowing, student accounts, and basic digital tool guidelines.',
+    description: 'Comprehensive orientation covering The CA?T Passport services, student token quotas, and ethical AI usage policies.',
   },
   {
     level: '1',
     name: 'Basic Prompt Writing Clinic',
-    description: 'Hands-on guided sessions for students on writing clear prompts for academic coursework and study.',
+    description: 'Hands-on guided clinic on prompt structure, few-shot prompting, and academic verification of AI outputs.',
   },
-  // Level 2
+  // Level 2: Achiever
   {
     level: '2',
     name: 'Intermediate AI Tooling Workshop',
-    description: 'Practical workshop on using development tools, modern frameworks, and automation for student projects.',
+    description: 'Practical workshop on using AI coding assistants, generative design tools, and student project workflows.',
   },
   {
     level: '2',
     name: 'Data Handling Consultation',
-    description: 'Advisory consultation on data collection, dataset cleaning, and student project data privacy.',
+    description: 'Expert consultation on dataset cleaning, data anonymization, and privacy compliance for training AI models.',
   },
-  // Level 3
+  // Level 3: Innovator
   {
     level: '3',
-    name: 'Advanced Project Mentorship',
-    description: 'Consultation with faculty advisors and industry mentors for student project and capstone architecture.',
+    name: 'High-Performance GPU Cluster Access',
+    description: 'Access to CA?T GPU nodes (NVIDIA A100) and architecture guidance for deep learning and fine-tuning capstones.',
   },
   {
     level: '3',
     name: 'AI Ethics Review Session',
-    description: 'Review session and discussions on responsible and ethical use of technology in academic projects.',
+    description: 'Formal review and risk assessment session evaluating fairness, hallucination safeguards, and transparency in student AI applications.',
   },
-  // Level 4
+  // Level 4: Master
   {
     level: '4',
-    name: 'Expert Certification Support',
-    description: 'Institutional exam vouchers and preparation support for professional cloud and developer certifications.',
+    name: 'Expert AI Certification Support',
+    description: 'Institutional vouchers and preparation support for professional cloud AI and machine learning engineering certifications.',
   },
   {
     level: '4',
-    name: 'Community Speaker Placement',
-    description: 'Opportunity to share project experience and present in CAMT student technology sharing symposiums.',
+    name: 'Community AI Ambassador Placement',
+    description: 'Opportunities to present AI research and mentor incoming students at CA?T AI symposiums and events.',
   },
 ]
 
@@ -290,30 +290,19 @@ function getAccessTag(levelStr: string): string {
 }
 
 function getLevelBadgeClasses(levelStr: string): string {
-  switch (levelStr) {
-    case '1':
-      return 'bg-[#C1D7AE]/40 text-[#5A7447]'
-    case '2':
-      return 'bg-[#F2D794]/40 text-[#866D2B]'
-    case '3':
-      return 'bg-[#E5A88B]/40 text-[#7A4228]'
-    case '4':
-      return 'bg-[#DD898E]/40 text-[#73292E]'
-    default:
-      return 'bg-slate-100 text-slate-600'
-  }
+  return getLevelClasses(levelStr)
 }
 
 function getServiceTierColor(levelStr: string): string {
   switch (levelStr) {
     case '1':
-      return 'bg-[#C1D7AE]/25 text-[#5A7447] border-[#C1D7AE]/60'
+      return 'bg-slate-50 text-slate-700 border-slate-200'
     case '2':
-      return 'bg-[#F2D794]/25 text-[#866D2B] border-[#F2D794]/60'
+      return 'bg-sky-50 text-sky-800 border-sky-200'
     case '3':
-      return 'bg-[#E5A88B]/25 text-[#7A4228] border-[#E5A88B]/60'
+      return 'bg-blue-50 text-blue-900 border-blue-200'
     case '4':
-      return 'bg-[#DD898E]/25 text-[#73292E] border-[#DD898E]/60'
+      return 'bg-blue-900 text-white border-blue-700'
     default:
       return 'bg-slate-100 text-slate-700 border-slate-200'
   }

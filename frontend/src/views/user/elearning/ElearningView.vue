@@ -58,10 +58,10 @@
         <!-- Course Header Info -->
         <div class="space-y-1">
           <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-            Component-Based Development & AI Training
+            The CA?T Passport Training Program
           </h1>
           <p class="text-xs sm:text-sm text-slate-500">
-            Mandatory curriculum modules for Level {{ currentLevelNumber }} ({{ getLevelName(currentLevelNumber) }}) certification.
+            Essential eLearning modules for Level {{ currentLevelNumber }} ({{ getLevelName(currentLevelNumber) }}) competency advancement.
           </p>
         </div>
 
@@ -110,7 +110,7 @@
               <!-- Top bar watermark -->
               <div class="flex items-center justify-between text-xs text-slate-400">
                 <span class="font-medium bg-black/40 px-2.5 py-1 rounded-md backdrop-blur-xs">
-                  CAMT E-Learning Platform
+                  The CA?T Passport Platform
                 </span>
                 <span class="font-semibold text-slate-300">
                   Level {{ currentLevelNumber }} Module
@@ -187,7 +187,7 @@
               Module {{ currentVideoIndex + 1 }}: {{ activeVideo.title }}
             </h2>
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {{ activeVideo.description || 'Understanding core component-based development principles and practical applications for CAMT AI Passport.' }}
+              {{ activeVideo.description || 'Understanding core AI literacy principles, responsible prompting, and practical workflows for The CA?T Passport.' }}
             </p>
           </div>
         </section>
@@ -461,7 +461,7 @@ async function fetchLevelVideos() {
       id: idx + 1,
       title: v.title,
       description: v.description || `Core course module for Level ${currentLvlStr}.`,
-      videoUrl: v.url || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      videoUrl: v.url || 'https://www.youtube.com/watch?v=JMUxmLyrhSk',
     }))
   }
 

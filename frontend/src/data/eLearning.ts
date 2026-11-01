@@ -1,123 +1,123 @@
 import type { ELearningVideo } from "@/types/ExamContent"
 
 export const eLearningVideos: ELearningVideo[] = [
-  // Level 1: Explorer (Foundational Web & Component Concepts)
+  // Level 1: Explorer (AI Literacy & Responsible Prompting)
   {
     level: '1',
-    title: 'Fundamentals of Web Frameworks & Component Concepts',
-    description: 'Introduction to component-based development, modern web architecture, and digital tooling at CAMT.',
-    duration: '45 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    title: 'Introduction to AI & Large Language Models',
+    description: 'Foundational concepts of Artificial Intelligence, generative models, and how The CA?T Passport powers campus services.',
+    duration: '25 mins',
+    url: 'https://www.youtube.com/watch?v=JMUxmLyrhSk'
   },
   {
     level: '1',
-    title: 'Vue 3 & Vite Project Implementation',
-    description: 'Setting up Vue 3 with Vite, single-file components (SFCs), and basic reactive state bindings.',
-    duration: '60 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '1',
-    title: 'TypeScript Basics & Tailwind CSS Styling',
-    description: 'Typing components with TypeScript and applying utility-first classes with Tailwind CSS.',
+    title: 'Prompt Engineering for Academic Study',
+    description: 'Effective techniques for crafting structured prompts, context framing, and zero-shot reasoning for student coursework.',
     duration: '30 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    url: 'https://www.youtube.com/watch?v=jC4v5AS4RIM'
   },
   {
     level: '1',
-    title: 'Client-Side Routing with Vue Router',
-    description: 'Configuring single-page routes, navigation links, and parameter passing in Vue Router.',
-    duration: '45 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    title: 'CA?T Ethics & Academic Integrity Guidelines',
+    description: 'Understanding responsible AI use, avoiding academic dishonesty, hallucination awareness, and university privacy policies.',
+    duration: '20 mins',
+    url: 'https://www.youtube.com/watch?v=bEj301dD2jE'
+  },
+  {
+    level: '1',
+    title: 'Navigating The CA?T Passport Services',
+    description: 'Orientation on Level 1 AI services, token quota management, and verifying AI outputs before submission.',
+    duration: '15 mins',
+    url: 'https://www.youtube.com/watch?v=aircAruvnKk'
   },
 
-  // Level 2: Achiever (State Management & Backend Intro)
+  // Level 2: Achiever (Applied AI & Data Handling)
   {
     level: '2',
-    title: 'Centralized State Management with Pinia',
-    description: 'Structuring application stores, state getters, and actions for reactive data flow.',
-    duration: '45 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '2',
-    title: 'API Integration & Data Handling Safety',
-    description: 'Connecting Axios HTTP clients with backend endpoints and secure authentication interceptors.',
-    duration: '60 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '2',
-    title: 'Introduction to Spring Boot & Spring MVC',
-    description: 'Backend architecture fundamentals, Spring controller annotations, and RESTful service design.',
-    duration: '50 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '2',
-    title: 'Form Validation with VeeValidate & Yup',
-    description: 'Building accessible, schema-validated student forms with real-time feedback.',
+    title: 'Machine Learning Concepts & Training Data Workflows',
+    description: 'Understanding supervised learning, dataset preparation, and how algorithms extract patterns from training data.',
     duration: '35 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    url: 'https://www.youtube.com/watch?v=ukzFI9rgwfU'
+  },
+  {
+    level: '2',
+    title: 'Data Privacy & Secure AI Tooling in Practice',
+    description: 'Best practices for data minimization, preventing sensitive data leakage to public AI models, and CMU data compliance.',
+    duration: '30 mins',
+    url: 'https://www.youtube.com/watch?v=2eWuYf-aZE4'
+  },
+  {
+    level: '2',
+    title: 'Model Fine-Tuning & Custom Domain Adaptation',
+    description: 'Principles of adapting pre-trained foundation models to specific academic tasks and project domains.',
+    duration: '40 mins',
+    url: 'https://www.youtube.com/watch?v=e-gwvmhyU54'
+  },
+  {
+    level: '2',
+    title: 'Mitigating Bias & Evaluating Model Reliability',
+    description: 'Techniques for identifying algorithmic bias, demographic representation gaps, and evaluating confidence scores.',
+    duration: '25 mins',
+    url: 'https://www.youtube.com/watch?v=gV0_raKR2UQ'
   },
 
-  // Level 3: Innovator (Data Persistence & Architecture)
+  // Level 3: Innovator (Advanced AI Architecture & RAG)
   {
     level: '3',
-    title: 'Spring Data JPA & Repository Methods',
-    description: 'Database persistence, JPA entities, and creating custom database query methods.',
-    duration: '50 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '3',
-    title: 'Entity Relationships & Database Integrity',
-    description: 'Designing One-to-Many and Many-to-Many relationships with cascading rules and foreign keys.',
-    duration: '55 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '3',
-    title: 'Security Configuration & Role-Based Access Control',
-    description: 'Implementing token-based authentication and role-based route protection across frontend and backend.',
-    duration: '60 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '3',
-    title: 'Full-Stack Integration & Architecture Review',
-    description: 'End-to-end testing between Vue 3 client and Spring Boot services before deployment.',
+    title: 'Retrieval-Augmented Generation (RAG) & Vector Search',
+    description: 'Connecting LLMs to external document knowledge bases using vector embeddings and similarity search.',
     duration: '45 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    url: 'https://www.youtube.com/watch?v=T-D1OfcDW1M'
+  },
+  {
+    level: '3',
+    title: 'AI Evaluation Metrics & Benchmark Testing',
+    description: 'Using quantitative metrics (accuracy, precision, recall, F1) to benchmark model performance for student capstones.',
+    duration: '35 mins',
+    url: 'https://www.youtube.com/watch?v=H74tPjA7F8w'
+  },
+  {
+    level: '3',
+    title: 'Responsible AI Governance & Ethics Reviews',
+    description: 'Conducting algorithmic risk assessments, transparency audits, and safety mitigation prior to project deployment.',
+    duration: '40 mins',
+    url: 'https://www.youtube.com/watch?v=bEj301dD2jE'
+  },
+  {
+    level: '3',
+    title: 'High-Performance GPU Computing for AI Workloads',
+    description: 'Leveraging CA?T GPU clusters (NVIDIA A100/H100) effectively for training and large-scale model inference.',
+    duration: '30 mins',
+    url: 'https://www.youtube.com/watch?v=ukzFI9rgwfU'
   },
 
-  // Level 4: Master (Enterprise Architecture & Deployment)
+  // Level 4: Master (AI Leadership & Enterprise Governance)
   {
     level: '4',
-    title: 'Component Design Patterns & Scalable Composables',
-    description: 'Advanced reusable component design, composables patterns, and architectural decoupling.',
-    duration: '60 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '4',
-    title: 'Frontend Performance & Bundle Optimization',
-    description: 'Code splitting, dynamic imports, asset caching, and Vite build tuning.',
+    title: 'Enterprise AI Architecture & Microservices',
+    description: 'Designing distributed AI pipelines, scalable model serving, and fault-tolerant cloud deployments.',
     duration: '50 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    url: 'https://www.youtube.com/watch?v=T-D1OfcDW1M'
   },
   {
     level: '4',
-    title: 'Containerization with Docker & Cloud Deployment',
-    description: 'Containerizing frontend and backend microservices with multi-stage Docker builds.',
-    duration: '60 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-  },
-  {
-    level: '4',
-    title: 'Technical Leadership & Capstone Project Showcase',
-    description: 'Project presentation techniques, documentation standards, and code review mentorship.',
+    title: 'AI Safety, Red-Teaming & Guardrail Engineering',
+    description: 'Adversarial testing against prompt injection, jailbreaking defenses, and deploying production guardrails.',
     duration: '45 mins',
-    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    url: 'https://www.youtube.com/watch?v=gV0_raKR2UQ'
+  },
+  {
+    level: '4',
+    title: 'AI Mentorship & Community Leadership',
+    description: 'Guiding peers through responsible AI adoption, leading academic workshops, and mentoring capstone projects.',
+    duration: '30 mins',
+    url: 'https://www.youtube.com/watch?v=bEj301dD2jE'
+  },
+  {
+    level: '4',
+    title: 'Autonomous Agents & Multimodal Intelligence',
+    description: 'Advanced reasoning patterns, tool-calling agents, and integrating multimodal vision-language architectures.',
+    duration: '40 mins',
+    url: 'https://www.youtube.com/watch?v=2eWuYf-aZE4'
   }
 ]

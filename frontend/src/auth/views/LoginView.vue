@@ -20,9 +20,9 @@ onMounted(() => {
   }
 })
 
-const onLoginSubmit = (email: string) => {
+const onLoginSubmit = async (username: string, password?: string) => {
   loginError.value = ''
-  const result = authStore.login(email)
+  const result = await authStore.login(username, password)
 
   if (result === 'deactivated') {
     loginError.value = 'This account has been deactivated. Please contact an administrator.'
@@ -36,7 +36,7 @@ const onLoginSubmit = (email: string) => {
       router.push('/dashboard')
     }
   } else {
-    loginError.value = `"${email}" does not exist`
+    loginError.value = `"${username}" does not exist or invalid password`
   }
 }
 

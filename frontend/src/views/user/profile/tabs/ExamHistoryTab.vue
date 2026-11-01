@@ -256,15 +256,15 @@ function getBadgeLevelLabel(badgeName: string): string {
 function getExamDescription(level: number): string {
   switch (level) {
     case 1:
-      return 'Foundational principles and operational overview'
+      return 'Foundational AI literacy, prompt writing, and ethical usage'
     case 2:
-      return 'Comprehensive evaluation of advanced applied skills'
+      return 'Applied machine learning concepts, data handling, and model reliability'
     case 3:
-      return 'Assessment of innovation, model architecture, and project integration'
+      return 'Advanced AI architectures, RAG knowledge retrieval, and evaluation metrics'
     case 4:
-      return 'Master-level evaluation and international competency standards'
+      return 'Enterprise AI governance, safety guardrails, and community leadership'
     default:
-      return 'Skill competency and assessment evaluation'
+      return 'The CA?T Passport competency assessment'
   }
 }
 

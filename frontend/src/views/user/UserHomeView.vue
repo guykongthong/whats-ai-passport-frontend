@@ -237,7 +237,7 @@
                     {{ service.name }}
                   </h3>
                   <span class="text-[11px] text-slate-500 font-medium">
-                    CAMT Student Service
+                    CA?T Student Service
                   </span>
                 </div>
               </div>
@@ -310,7 +310,7 @@ const levelDescription = computed<string>(() => {
     case 3:
       return 'Awarded to students demonstrating applied innovation and independent research projects. Unlocks high-performance computing resources, dedicated research mentorship, and enterprise venture pathways.'
     case 4:
-      return 'Highest tier of CAMT Passport, recognizing outstanding academic, professional, and international expertise.'
+      return 'Highest tier of The CA?T Passport, recognizing outstanding academic, professional, and international expertise.'
     default:
       return 'Complete curriculum modules and pass competency examinations to advance your credential tier.'
   }
@@ -319,8 +319,8 @@ const levelDescription = computed<string>(() => {
 // Roadmap 4 steps
 const roadmapSteps = computed(() => {
   const levelLabels = [
-    { level: 1, name: 'L1 Foundation' },
-    { level: 2, name: 'L2 Practitioner' },
+    { level: 1, name: 'L1 Explorer' },
+    { level: 2, name: 'L2 Achiever' },
     { level: 3, name: 'L3 Innovator' },
     { level: 4, name: 'L4 Master' },
   ]
@@ -376,7 +376,7 @@ const formattedBenefits = computed(() => {
 
     return {
       title: desc,
-      description: 'Active institutional entitlement under your authenticated passport level.',
+      description: 'Active The CA?T Passport service entitlement for your certified level.',
       tag,
     }
   })

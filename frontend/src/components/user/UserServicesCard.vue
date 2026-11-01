@@ -142,7 +142,7 @@ const serviceDescriptions: Record<string, string> = {
   'Advanced Project Mentorship': 'Technical guidance and project acceleration with faculty and tech industry veterans.',
   'AI Ethics Review Session': 'Structured compliance and algorithm bias check for student capstones and applications.',
   'Expert Certification Support': 'Exam preparation packages and institutional testing vouchers for industry certifications.',
-  'Community Speaker Placement': 'Platform to showcase your student projects and research at regional CAMT tech conferences.',
+  'Community Speaker Placement': 'Platform to showcase your student projects and research at regional CA?T tech conferences.',
 }
 
 const displayedServices = computed<ServiceWithDesc[]>(() => {

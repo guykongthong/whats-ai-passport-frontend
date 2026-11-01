@@ -281,10 +281,10 @@ onMounted(async () => {
 const currentUserLevel = computed(() => userStore.currentUserLevel)
 
 const badgeIcons: Record<number, { bgClass: string }> = {
-  1: { bgClass: 'bg-[#C1D7AE]/30 text-[#5A7447] border-[#C1D7AE]' },
-  2: { bgClass: 'bg-[#F2D794]/30 text-[#866D2B] border-[#F2D794]' },
-  3: { bgClass: 'bg-[#E5A88B]/30 text-[#7A4228] border-[#E5A88B]' },
-  4: { bgClass: 'bg-[#DD898E]/30 text-[#73292E] border-[#DD898E]' },
+  1: { bgClass: 'bg-slate-100 text-slate-700 border-slate-300' },
+  2: { bgClass: 'bg-sky-100 text-sky-800 border-sky-300' },
+  3: { bgClass: 'bg-blue-100 text-blue-900 border-blue-300' },
+  4: { bgClass: 'bg-blue-900 text-white border-blue-700' },
 }
 
 const badgeCards = computed<BadgeCardItem[]>(() => {
@@ -317,15 +317,15 @@ const badgeCards = computed<BadgeCardItem[]>(() => {
     return {
       level: levelNum,
       title,
-      badgeName: `${title} Certification Badge`,
+      badgeName: `CA?T AI ${title} Badge`,
       description:
         levelConfig?.description ||
-        `Official certification recognizing student competency and progression through Level ${levelNum}.`,
+        `Official The CA?T Passport certification recognizing student competency and privileges at Level ${levelNum}.`,
       passingScore: levelConfig?.passingScore || (70 + (levelNum - 1) * 5),
       isUnlocked,
       unlockedAt,
       imageUrl,
-      badgeBgClass: badgeIcons[levelNum]?.bgClass || 'bg-indigo-50 text-indigo-700 border-indigo-200',
+      badgeBgClass: badgeIcons[levelNum]?.bgClass || 'bg-slate-100 text-slate-700 border-slate-300',
     }
   })
 })
