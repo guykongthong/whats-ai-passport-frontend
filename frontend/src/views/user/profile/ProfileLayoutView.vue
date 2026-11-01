@@ -1,7 +1,7 @@
 <template>
   <UserPageLayout>
-    <main class="flex-1 bg-[#EEF2F7] px-4 py-8 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-4xl space-y-6">
+    <main class="flex-1 w-full bg-[#EEF2F7] px-4 py-8 sm:px-6 lg:px-8 flex flex-col items-center">
+      <div class="mx-auto w-full max-w-4xl space-y-6">
 
         <!-- Back Link / Breadcrumb -->
         <div>

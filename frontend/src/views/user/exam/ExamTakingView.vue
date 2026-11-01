@@ -1,6 +1,6 @@
 <template>
   <UserPageLayout>
-    <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8 flex flex-col items-center">
       <div class="mx-auto flex w-full max-w-4xl flex-col gap-6">
         <!-- Exam Results Modal / Overlay (#43) -->
         <ExamResultModal

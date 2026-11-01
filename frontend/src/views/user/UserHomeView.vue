@@ -1,6 +1,6 @@
 <template>
   <UserPageLayout>
-    <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <main class="flex-1 w-full bg-[#EEF2F7] px-4 sm:px-6 lg:px-8 py-8 sm:py-10 flex flex-col items-center">
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-8">
         
         <!-- Hero Banner: Level, Progression, and Direct CTA -->
