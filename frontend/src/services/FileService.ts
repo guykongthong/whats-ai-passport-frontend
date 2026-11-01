@@ -12,27 +12,20 @@ export const FileService = {
    * Response: { url: string }
    */
   async uploadImage(file: File): Promise<UploadResponse> {
-    const hasToken =
-      typeof localStorage !== 'undefined' &&
-      Boolean(localStorage.getItem('access_token') || localStorage.getItem('token'))
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
 
-    // When authenticated, attempt remote upload via backend
-    if (hasToken) {
-      try {
-        const formData = new FormData()
-        formData.append('file', file)
-
-        const response = await apiClient.post<UploadResponse>('/files/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        if (response.data?.url) {
-          return response.data
-        }
-      } catch (err: unknown) {
-        console.warn('Backend cloud storage upload unavailable, falling back to local data URL:', err)
+      const response = await apiClient.post<UploadResponse>('/files/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      if (response.data?.url) {
+        return response.data
       }
+    } catch (err: unknown) {
+      console.warn('Backend cloud storage upload unavailable, falling back to local data URL:', err)
     }
 
     // High fidelity data URL fallback for preview and local storage
