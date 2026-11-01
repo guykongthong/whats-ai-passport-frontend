@@ -48,10 +48,26 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(identifier: string, password?: string): Promise<'success' | 'deactivated' | 'not_found'> {
     // 1. Try backend POST /api/auth/login (Baseline API Contract)
     try {
-      const res = await AuthService.login({
-        username: identifier,
-        password: password || '',
-      })
+      const usernameAttempt = identifier.trim()
+      let res
+      try {
+        res = await AuthService.login({
+          username: usernameAttempt,
+          password: password || '',
+        })
+      } catch (firstErr: unknown) {
+        // If email was provided (e.g. user1@example.com), retry with username prefix (e.g. user1)
+        if (usernameAttempt.includes('@')) {
+          const usernameOnly = usernameAttempt.split('@')[0] || usernameAttempt
+          res = await AuthService.login({
+            username: usernameOnly,
+            password: password || '',
+          })
+        } else {
+          throw firstErr
+        }
+      }
+
       if (res?.data && res.data.access_token) {
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('access_token', res.data.access_token)
@@ -93,6 +109,8 @@ export const useAuthStore = defineStore('auth', () => {
         currentUser.value = null
         if (typeof localStorage !== 'undefined') {
           localStorage.removeItem('currentUser')
+          localStorage.removeItem('access_token')
+          localStorage.removeItem('token')
         }
         return 'deactivated'
       }
