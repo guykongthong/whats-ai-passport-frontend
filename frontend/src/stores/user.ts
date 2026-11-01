@@ -345,6 +345,19 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
+  /**
+   * Action: clearUserData()
+   * Clears cached user profile and level data upon logout to prevent cross-account leaks.
+   */
+  function clearUserData() {
+    userProfile.value = null
+    currentLevelDetails.value = null
+    loading.value = false
+    error.value = null
+    isProfileLoading.value = false
+    profileError.value = null
+  }
+
   return {
     currentUserLevel,
     currentLevelDetails,
@@ -361,5 +374,6 @@ export const useUserStore = defineStore('user', () => {
     updateUserProfile,
     upgradeUserLevel,
     recordExamAttempt,
+    clearUserData,
   }
 })

@@ -61,7 +61,7 @@
                   ]"
                 >
                   <img
-                    v-if="level.badgeImageUrl || level.badge?.imageUrl"
+                    v-if="hasCustomBadgeImage(level.badgeImageUrl || level.badge?.imageUrl)"
                     :src="level.badgeImageUrl || level.badge?.imageUrl"
                     :alt="level.badgeName || level.badge?.name || level.name"
                     class="size-9 rounded-xl object-cover"
@@ -306,6 +306,13 @@ function normalizeStringList(items: unknown[] | undefined): string[] {
     }
     return String(item)
   })
+}
+
+function hasCustomBadgeImage(url?: string): boolean {
+  if (!url) return false
+  const trimmed = url.trim()
+  if (!trimmed) return false
+  return !trimmed.includes('placehold.co')
 }
 
 /**
