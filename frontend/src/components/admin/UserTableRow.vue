@@ -30,25 +30,28 @@
           {{ userInitials }}
         </div>
 
-        <!-- Name, Username, and Email (responsive layout) -->
+        <!-- Name, Username, and Email (each on its own distinct line) -->
         <div class="flex flex-col min-w-0">
-          <div class="flex items-center gap-2">
-            <span
-              :class="[
-                'text-sm font-semibold truncate',
-                theme === 'dark' ? 'text-white' : 'text-slate-900',
-              ]"
-            >
-              {{ fullName }}
-            </span>
-            <span class="text-xs text-slate-400 font-mono">
-              @{{ user.username }}
-            </span>
-          </div>
           <span
             :class="[
-              'text-xs truncate',
-              theme === 'dark' ? 'text-white/60' : 'text-slate-500',
+              'text-sm font-bold truncate leading-tight',
+              theme === 'dark' ? 'text-white' : 'text-slate-900',
+            ]"
+          >
+            {{ fullName }}
+          </span>
+          <span
+            :class="[
+              'text-xs font-mono mt-0.5',
+              theme === 'dark' ? 'text-white/60' : 'text-slate-400',
+            ]"
+          >
+            @{{ user.username }}
+          </span>
+          <span
+            :class="[
+              'text-xs truncate mt-0.5',
+              theme === 'dark' ? 'text-white/80' : 'text-slate-500',
             ]"
           >
             {{ user.email }}
@@ -57,18 +60,18 @@
       </div>
     </td>
 
-    <!-- Province -->
-    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap text-sm">
+    <!-- Province (Centered) -->
+    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap text-sm text-center">
       <span :class="theme === 'dark' ? 'text-white/80' : 'text-slate-600'">
         {{ user.province || '-' }}
       </span>
     </td>
 
-    <!-- Current Level Badge -->
-    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap">
+    <!-- Current Level Badge (Centered) -->
+    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap text-center">
       <span
         :class="[
-          'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold shadow-xs',
+          'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold shadow-xs select-none',
           levelBadgeClass,
         ]"
       >
@@ -76,39 +79,52 @@
       </span>
     </td>
 
-    <!-- Account Status (Active / Deactivated) with StatusBadge -->
-    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap">
+    <!-- Account Status (Active / Deactivated) (Centered) -->
+    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap text-center">
       <StatusBadge :enabled="user.enabled" />
     </td>
 
-    <!-- Action Buttons -->
-    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap text-right text-sm">
-      <div class="flex items-center justify-end gap-2">
+    <!-- Action Icon Buttons (Centered) -->
+    <td class="px-4 py-3.5 sm:px-6 sm:py-4 whitespace-nowrap text-center text-sm">
+      <div class="flex items-center justify-center gap-2">
+        <!-- View Details Icon Button -->
         <button
           type="button"
           :class="[
-            'inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer border',
+            'size-9 rounded-xl flex items-center justify-center transition-all cursor-pointer border shadow-xs',
             theme === 'dark'
-              ? 'text-white bg-white/10 hover:bg-white/20 border-white/20'
-              : 'text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border-indigo-200',
+              ? 'text-white bg-white/10 hover:bg-white/20 border-white/20 hover:scale-105'
+              : 'text-slate-700 bg-slate-100 hover:bg-slate-200 border-slate-200',
           ]"
+          title="View Details"
+          aria-label="View Details"
           @click="handleViewDetails"
         >
-          View Details
+          <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
         </button>
 
-        <!-- Toggle Status Button (Criteria #13 & #14) -->
+        <!-- Toggle Status Icon Button -->
         <button
           type="button"
           :class="[
-            'inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 cursor-pointer',
+            'size-9 rounded-xl flex items-center justify-center transition-all cursor-pointer border shadow-xs',
             user.enabled
-              ? 'text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 focus:ring-rose-500'
-              : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 focus:ring-emerald-500',
+              ? 'text-rose-300 bg-rose-500/20 hover:bg-rose-500/30 border-rose-500/30 hover:scale-105'
+              : 'text-emerald-300 bg-emerald-500/20 hover:bg-emerald-500/30 border-emerald-500/30 hover:scale-105',
           ]"
+          :title="user.enabled ? 'Deactivate User' : 'Reactivate User'"
+          :aria-label="user.enabled ? 'Deactivate User' : 'Reactivate User'"
           @click="handleToggleStatus"
         >
-          {{ user.enabled ? 'Deactivate User' : 'Reactivate User' }}
+          <svg v-if="user.enabled" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
+          <svg v-else class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </button>
       </div>
     </td>
@@ -127,7 +143,7 @@ const props = withDefaults(
     theme?: 'light' | 'dark'
   }>(),
   {
-    theme: 'light',
+    theme: 'dark',
   },
 )
 

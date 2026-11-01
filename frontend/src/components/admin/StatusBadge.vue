@@ -7,14 +7,8 @@
     role="status"
     :aria-label="enabled ? 'Active' : 'Deactivated'"
   >
-    <!-- Indicator Dot (Pulsing when Active, Static when Deactivated) -->
-    <span v-if="enabled" class="relative flex size-2 shrink-0">
-      <span
-        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"
-      />
-      <span class="relative inline-flex size-2 rounded-full bg-emerald-500" />
-    </span>
-
+    <!-- Indicator Dot (Static when Active, Static when Deactivated) -->
+    <span v-if="enabled" class="size-2 rounded-full bg-emerald-400 shrink-0" />
     <span v-else class="size-2 rounded-full bg-rose-500 shrink-0" />
 
     <span>{{ labelText }}</span>
