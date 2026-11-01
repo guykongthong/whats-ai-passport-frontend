@@ -250,7 +250,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { useLevelStore } from '@/stores/levelStore'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
@@ -268,7 +267,6 @@ interface BadgeCardItem {
 }
 
 const userStore = useUserStore()
-const levelStore = useLevelStore()
 
 const modalTitleId = 'badge-modal-title'
 const selectedBadge = ref<BadgeCardItem | null>(null)
@@ -294,8 +292,7 @@ const badgeCards = computed<BadgeCardItem[]>(() => {
   const examHistories = userStore.examHistories
 
   return [1, 2, 3, 4].map((levelNum) => {
-    const levelConfig = levelStore.allLevels.find((l) => String(l.id) === String(levelNum))
-    const title = levelConfig?.label || getLevelName(levelNum)
+    const title = getLevelName(levelNum)
 
     // Unlocked criteria:
     // Level 1 is always unlocked. Other levels are unlocked if currentLevel >= levelNum
@@ -312,17 +309,15 @@ const badgeCards = computed<BadgeCardItem[]>(() => {
       (e) => Number(e.levelNumber) === levelNum && e.passed,
     )
 
-    const unlockedAt = matchedBadge?.unlockedAt || matchedExam?.attemptDateTime || (isUnlocked ? '2026-10-25T14:30:00' : null)
+    const unlockedAt = matchedBadge?.unlockedAt || matchedExam?.attemptDateTime || null
     const imageUrl = matchedBadge?.imageUrl || null
 
     return {
       level: levelNum,
       title,
-      badgeName: `CA?T AI ${title} Badge`,
-      description:
-        levelConfig?.description ||
-        `Official The CA?T Passport certification recognizing student competency and privileges at Level ${levelNum}.`,
-      passingScore: levelConfig?.passingScore || (70 + (levelNum - 1) * 5),
+      badgeName: `CAMT AI ${title} Badge`,
+      description: `Official CAMT Passport certification recognizing student competency and privileges at Level ${levelNum}.`,
+      passingScore: 70 + (levelNum - 1) * 5,
       isUnlocked,
       unlockedAt,
       imageUrl,

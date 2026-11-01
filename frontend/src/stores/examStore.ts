@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { questions } from '@/data/questions'
-import { examRecords } from '@/data/examRecords'
 import { useAuthStore } from '@/stores/authStore'
 import { useLevelStore } from '@/stores/levelStore'
 import { useUserStore } from '@/stores/user'
@@ -10,8 +8,8 @@ import type { AnsweredQuestion, ExamQuestion, ExamRecord } from '@/types/ExamCon
 const DEFAULT_PASS_CRITERIA = 60
 
 export const useExamStore = defineStore('exam', () => {
-  const examQuestions = ref<ExamQuestion[]>(questions)
-  const records = ref<ExamRecord[]>(examRecords)
+  const examQuestions = ref<ExamQuestion[]>([])
+  const records = ref<ExamRecord[]>([])
 
   function getQuestionsForLevel(level: string) {
     return examQuestions.value.filter((q) => q.id.startsWith(`l${level}-`))

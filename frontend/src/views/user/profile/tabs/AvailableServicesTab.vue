@@ -102,8 +102,8 @@
       v-else
       class="rounded-xl border border-slate-200 bg-white p-5 flex items-center gap-3.5 text-slate-700"
     >
-      <div class="size-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0 text-slate-700">
-        <TrophyIcon class="size-5" />
+      <div class="size-10 rounded-lg bg-slate-100 flex items-center justify-center shrink-0">
+        <TrophyIcon class="size-5" :level="4" />
       </div>
       <div>
         <h5 class="text-sm font-bold text-slate-900">All Services Unlocked</h5>
@@ -210,8 +210,7 @@ const currentActiveServices = computed<ServiceItem[]>(() => {
       }
     })
   }
-  const lvl = currentLevel.value
-  return serviceCatalog.filter((s) => Number(s.level) <= lvl)
+  return []
 })
 
 // Upcoming services strictly unlocked at the next level

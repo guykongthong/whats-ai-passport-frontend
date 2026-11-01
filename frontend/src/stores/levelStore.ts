@@ -1,16 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { levels } from '@/data/levels'
-import { benefits } from '@/data/benefits'
-import { services } from '@/data/services'
 import type { Level } from '@/types/Level'
 import type { Benefit } from '@/types/Benefit'
 import type { Service } from '@/types/Service'
 
 export const useLevelStore = defineStore('level', () => {
-  const allLevels = ref<Level[]>(levels)
-  const allBenefits = ref<Benefit[]>(benefits)
-  const allServices = ref<Service[]>(services)
+  const allLevels = ref<Level[]>([])
+  const allBenefits = ref<Benefit[]>([])
+  const allServices = ref<Service[]>([])
 
   function getBenefitsForLevel(level: string) {
     return allBenefits.value.filter((b) => b.level === level)

@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useAuthStore } from './authStore'
-import { useLevelStore } from './levelStore'
-import { useExamStore } from './examStore'
 import type { User } from '@/types/User'
 import UserService, {
   type UserProfile,
@@ -14,7 +12,6 @@ import { getLevelName } from '@/utils/levelDisplay'
 
 export const useUserStore = defineStore('user', () => {
   const authStore = useAuthStore()
-  const levelStore = useLevelStore()
 
   // Reactive state: currentLevelDetails
   const currentLevelDetails = ref<UserLevelDetails | null>(null)
@@ -60,47 +57,23 @@ export const useUserStore = defineStore('user', () => {
     error.value = null
   }
 
-  // Computed badges with single-fetch cache & offline fallback
+  // Computed badges from userProfile
   const badges = computed<BadgeItem[]>(() => {
     if (userProfile.value?.badges && userProfile.value.badges.length > 0) {
       return userProfile.value.badges
     }
-    const examStore = useExamStore()
-    const currentUserId = authStore.currentUser?.id
-    if (!currentUserId) return []
-    const passed = examStore.records.filter((r) => r.userId === currentUserId && r.pass)
-    const passedLevels = new Set(passed.map((r) => String(r.level)))
-    return levelStore.allLevels
-      .filter((l) => passedLevels.has(String(l.id)))
-      .map((l) => ({
-        name: `Level ${l.id} - ${l.label || l.name}`,
-        imageUrl: '',
-        unlockedAt: new Date().toISOString(),
-      }))
+    return []
   })
 
-  // Computed exam histories with single-fetch cache & offline fallback
+  // Computed exam histories from userProfile
   const examHistories = computed<UserExamHistoryItem[]>(() => {
     if (userProfile.value?.examHistories && userProfile.value.examHistories.length > 0) {
       return userProfile.value.examHistories
     }
-    const examStore = useExamStore()
-    const currentUserId = authStore.currentUser?.id
-    if (!currentUserId) return []
-    return examStore.records
-      .filter((r) => r.userId === currentUserId)
-      .map((r) => ({
-        id: r.id,
-        levelNumber: Number(r.level) || 1,
-        score: r.score,
-        totalScore: 100,
-        passed: r.pass,
-        attemptDateTime: r.completedAt,
-        badgeName: r.pass ? `Level ${r.level}` : null,
-      }))
+    return []
   })
 
-  // Computed available services with single-fetch cache & offline fallback
+  // Computed available services from userProfile / currentLevelDetails
   const availableServices = computed<string[]>(() => {
     if (userProfile.value?.availableServices && userProfile.value.availableServices.length > 0) {
       return userProfile.value.availableServices
@@ -108,45 +81,41 @@ export const useUserStore = defineStore('user', () => {
     if (currentLevelDetails.value?.services && currentLevelDetails.value.services.length > 0) {
       return currentLevelDetails.value.services
     }
-    const lvl = currentUserLevel.value
-    return levelStore.allServices.filter((s) => Number(s.level) <= lvl).map((s) => s.name)
+    return []
   })
 
   // Helper to normalize backend API response (supports GET /me/level baseline contract)
   function normalizeLevelDetails(data: UserLevelDetails): UserLevelDetails {
     const rawLevel = data.currentLevel ?? (data.level ? Number(data.level) : currentUserLevel.value)
     const levelNum = Number(rawLevel) || 1
-    const foundLevel = levelStore.allLevels.find((l) => String(l.id) === String(levelNum))
 
     return {
       level: String(levelNum),
       currentLevel: levelNum,
-      label: data.levelName || data.label || foundLevel?.label || getLevelName(levelNum),
-      levelName: data.levelName || data.label || foundLevel?.label || getLevelName(levelNum),
-      passingScore: data.passingScore ?? foundLevel?.passingScore ?? 70,
+      label: data.levelName || data.label || getLevelName(levelNum),
+      levelName: data.levelName || data.label || getLevelName(levelNum),
+      passingScore: data.passingScore ?? 70,
       benefits: Array.isArray(data.benefits) ? data.benefits : [],
       services: Array.isArray(data.services) ? data.services : [],
-      description: data.description || foundLevel?.description || `Benefits and privileges for Level ${levelNum}.`,
+      description: data.description || `Benefits and privileges for Level ${levelNum}.`,
     }
   }
 
-  // Helper to generate fallback UserLevelDetails from levelStore
+  // Helper to generate fallback UserLevelDetails without mock data
   function getFallbackLevelDetails(level: number): UserLevelDetails {
-    const foundLevel = levelStore.allLevels.find((l) => String(l.id) === String(level))
-    const benefits = levelStore.getBenefitsForLevel(String(level)).map((b) => b.description)
     return {
       level: String(level),
       currentLevel: level,
-      label: foundLevel?.label || getLevelName(level),
-      levelName: foundLevel?.label || getLevelName(level),
-      passingScore: foundLevel?.passingScore ?? 70,
-      benefits,
-      services: levelStore.allServices.filter((s) => Number(s.level) <= level).map((s) => s.name),
-      description: foundLevel?.description || `Benefits and privileges for Level ${level}.`,
+      label: getLevelName(level),
+      levelName: getLevelName(level),
+      passingScore: 70,
+      benefits: [],
+      services: [],
+      description: `Benefits and privileges for Level ${level}.`,
     }
   }
 
-  // Fetch level details from backend with store fallback
+  // Fetch level details from backend with fallback
   async function fetchLevelDetails(forceLevel?: number): Promise<UserLevelDetails> {
     loading.value = true
     error.value = null
@@ -160,19 +129,16 @@ export const useUserStore = defineStore('user', () => {
         if (!normalized.currentLevel || normalized.currentLevel !== targetLevel) {
           normalized.currentLevel = targetLevel
           normalized.level = String(targetLevel)
-          const foundLevel = levelStore.allLevels.find((l) => String(l.id) === String(targetLevel))
-          if (foundLevel) {
-            normalized.label = foundLevel.label || getLevelName(targetLevel)
-            normalized.levelName = foundLevel.label || getLevelName(targetLevel)
-            normalized.description =
-              foundLevel.description || `Benefits and privileges for Level ${targetLevel}.`
-          }
+          normalized.label = normalized.label || getLevelName(targetLevel)
+          normalized.levelName = normalized.levelName || getLevelName(targetLevel)
+          normalized.description =
+            normalized.description || `Benefits and privileges for Level ${targetLevel}.`
         }
         currentLevelDetails.value = normalized
         return normalized
       }
     } catch (err: unknown) {
-      console.info('Backend getUserLevelDetails offline or unavailable, fallback to local store:', err)
+      console.info('Backend getUserLevelDetails offline or unavailable:', err)
     } finally {
       loading.value = false
     }
@@ -212,7 +178,7 @@ export const useUserStore = defineStore('user', () => {
       isProfileLoading.value = false
     }
 
-    // Fallback for mock environment
+    // Fallback to active session user if offline
     const cu = authStore.currentUser
     if (cu) {
       userProfile.value = {
@@ -370,20 +336,6 @@ export const useUserStore = defineStore('user', () => {
 
     // Prepend attempt to the top of the history
     userProfile.value.examHistories.unshift({ ...attempt })
-
-    // Also sync with examStore for offline records
-    const examStore = useExamStore()
-    const currentUserId = String(authStore.currentUser?.id || userProfile.value.id || '1')
-    examStore.records.unshift({
-      id: String(attempt.id || Date.now()),
-      userId: currentUserId,
-      level: String(attempt.levelNumber),
-      score: attempt.score,
-      completedAt: attempt.attemptDateTime,
-      questionsAsked: [],
-      passCriteria: 3,
-      pass: attempt.passed,
-    })
 
     // If a new badge was unlocked and passed, record into badges array
     if (attempt.passed && badgeUnlocked) {

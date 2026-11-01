@@ -75,17 +75,13 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useExamStore } from '@/stores/examStore'
 import BaseButton from '@/shared/components/BaseButton.vue'
+import type { ExamQuestion } from '@/types/ExamContent'
 
 const emit = defineEmits<{ submit: [answers: number[]] }>()
 
-const authStore = useAuthStore()
-const examStore = useExamStore()
-
-const userLevel = computed(() => authStore.currentUser?.level ?? '1')
-const questions = computed(() => examStore.getQuestionsForLevel(userLevel.value))
+const userLevel = ref('1')
+const questions = ref<ExamQuestion[]>([])
 
 const currentIndex = ref(0)
 const selectedAnswers = ref<number[]>([])

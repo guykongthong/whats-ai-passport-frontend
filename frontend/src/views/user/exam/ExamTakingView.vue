@@ -38,8 +38,8 @@
           v-if="isTopLevel"
           class="rounded-3xl border border-amber-200 bg-amber-50/80 p-8 text-center space-y-4 shadow-xs"
         >
-          <div class="size-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center text-amber-700 shadow-inner">
-            <TrophyIcon class="size-8" />
+          <div class="size-16 mx-auto rounded-full bg-amber-100 flex items-center justify-center shadow-inner">
+            <TrophyIcon class="size-8" :level="4" />
           </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-[#00385A]">
             Maximum Level Reached

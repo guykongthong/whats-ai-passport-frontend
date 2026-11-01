@@ -102,10 +102,10 @@
               Your browser does not support the video tag.
             </video>
 
-            <!-- Video Poster / Preview Player Interface (Matching reference image) -->
+            <!-- Video Poster / Preview Player Interface (Centered layout) -->
             <div
               v-else
-              class="absolute inset-0 flex flex-col justify-between bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-950 p-4 sm:p-6 text-white select-none"
+              class="absolute inset-0 flex flex-col bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-950 p-4 sm:p-6 text-white select-none"
             >
               <!-- Top bar watermark -->
               <div class="flex items-center justify-between text-xs text-slate-400">
@@ -118,101 +118,19 @@
               </div>
 
               <!-- Center Big Play Button -->
-              <div class="flex flex-col items-center justify-center gap-3">
+              <div class="flex-1 flex flex-col items-center justify-center gap-3 -mt-3">
                 <button
                   type="button"
                   @click="startPlaying"
-                  class="group flex size-16 sm:size-20 items-center justify-center rounded-full bg-[#00385A]/90 hover:bg-[#002d4a] text-white shadow-xl hover:scale-105 active:scale-95 transition-all cursor-pointer ring-4 ring-white/20"
+                  class="flex size-16 sm:size-20 items-center justify-center rounded-full bg-[#00385A]/90 hover:bg-[#002d4a] text-white shadow-xl cursor-pointer ring-4 ring-white/20 transition-transform hover:scale-105"
                   aria-label="Play Lesson Video"
                 >
-                  <PlayIcon class="size-8 sm:size-9 ml-1 text-white group-hover:scale-110 transition-transform" />
+                  <PlayIcon class="size-8 sm:size-9 ml-1 text-white" />
                 </button>
                 <span class="text-xs sm:text-sm font-semibold text-slate-200 drop-shadow-sm">
                   Click to start lesson
                 </span>
               </div>
-
-              <!-- Bottom Video Controls Mock Bar -->
-              <div class="space-y-2 bg-gradient-to-t from-black/80 to-transparent pt-4">
-                <div class="flex items-center justify-between text-xs text-slate-300">
-                  <div class="flex items-center gap-3">
-                    <button
-                      type="button"
-                      @click="startPlaying"
-                      class="hover:text-white transition-colors cursor-pointer"
-                      title="Play"
-                    >
-                      <svg class="size-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </button>
-                    <span class="text-[11px] font-mono text-slate-400">
-                      {{ playbackTime }}
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs font-mono font-bold text-sky-400">
-                      {{ progressPercentage }}%
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Scrubber Progress Bar -->
-                <div
-                  class="h-1.5 w-full rounded-full bg-slate-700/80 overflow-hidden cursor-pointer"
-                  @click="seekProgress"
-                >
-                  <div
-                    class="h-full bg-[#005a92] rounded-full transition-all duration-300"
-                    :style="{ width: progressPercentage + '%' }"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Interactive Playback Progress & Control Bar (Always visible) -->
-          <div class="mt-3 rounded-xl bg-slate-900 px-4 py-3 text-white flex flex-col gap-2.5 shadow-sm">
-            <div class="flex items-center justify-between text-xs text-slate-300">
-              <div class="flex items-center gap-3">
-                <button
-                  type="button"
-                  @click="togglePlayPause"
-                  class="flex items-center justify-center size-8 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                  :title="isPlayingVideo ? 'Pause' : 'Play'"
-                >
-                  <svg v-if="isPlayingVideo" class="size-3.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                  </svg>
-                  <svg v-else class="size-3.5 fill-current ml-0.5" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </button>
-                <span class="text-xs font-mono font-medium text-slate-200">
-                  {{ playbackTime }}
-                </span>
-              </div>
-
-              <div class="flex items-center gap-3">
-                <span class="text-[11px] font-semibold text-slate-400">
-                  Lesson {{ currentVideoIndex + 1 }} of {{ rawVideos.length }}
-                </span>
-                <span class="text-xs font-mono font-bold text-sky-400">
-                  {{ progressPercentage }}%
-                </span>
-              </div>
-            </div>
-
-            <!-- Interactive Scrubber Progress Bar -->
-            <div
-              class="relative h-2 w-full rounded-full bg-slate-700/80 overflow-hidden cursor-pointer"
-              @click="seekProgress"
-              title="Click to seek playback"
-            >
-              <div
-                class="h-full bg-gradient-to-r from-sky-500 to-[#005a92] rounded-full transition-all duration-150"
-                :style="{ width: progressPercentage + '%' }"
-              />
             </div>
           </div>
 
@@ -223,19 +141,19 @@
                 Module {{ currentVideoIndex + 1 }}: {{ activeVideo.title }}
               </h2>
 
-              <!-- Action: Mark Completed & Unlock Next Lesson -->
+              <!-- Action: Complete Lesson -->
               <button
                 type="button"
                 @click="completeCurrentAndNext"
-                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer self-start sm:self-auto"
+                class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs cursor-pointer self-start sm:self-auto"
               >
                 <CheckCircleIcon class="size-4 text-white" />
-                <span>{{ currentVideoIndex < rawVideos.length - 1 ? 'Mark Complete & Next Lesson →' : 'Complete All Lessons' }}</span>
+                <span>Complete</span>
               </button>
             </div>
 
             <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {{ activeVideo.description || 'Understanding core AI literacy principles, responsible prompting, and practical workflows for The CA?T Passport.' }}
+              {{ activeVideo.description || 'Understanding core AI literacy principles, responsible prompting, and practical workflows for CAMT Passport.' }}
             </p>
           </div>
         </section>
@@ -330,9 +248,7 @@
                   >
                     {{ lesson.title }}
                   </h4>
-                  <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
-                    <span>{{ lesson.duration || '30 mins' }}</span>
-                    <span>&bull;</span>
+                  <p class="text-xs text-slate-500 mt-0.5">
                     <span
                       class="font-semibold"
                       :class="[
@@ -343,7 +259,7 @@
                             : 'text-slate-500'
                       ]"
                     >
-                      {{ completedIndices.includes(idx) ? 'Completed' : idx === currentVideoIndex ? (isPlayingVideo ? 'In Progress' : 'Paused') : 'Ready to start' }}
+                      {{ completedIndices.includes(idx) ? 'Completed' : idx === currentVideoIndex ? 'In Progress' : 'Ready to start' }}
                     </span>
                   </p>
                 </div>
@@ -354,22 +270,22 @@
                 <button
                   type="button"
                   @click="selectVideo(idx)"
-                  class="px-4 py-2 rounded-lg text-white text-xs font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer flex items-center gap-1.5"
+                  class="px-4 py-2 rounded-lg text-white text-xs font-semibold shadow-2xs cursor-pointer flex items-center gap-1.5"
                   :class="[
                     completedIndices.includes(idx)
                       ? 'bg-emerald-700 hover:bg-emerald-800'
                       : idx === currentVideoIndex
-                        ? 'bg-[#00385A] hover:bg-[#002840] ring-2 ring-[#00385A]/30'
+                        ? 'bg-[#00385A] hover:bg-[#002840]'
                         : 'bg-slate-700 hover:bg-slate-800'
                   ]"
                 >
-                  <svg v-if="idx === currentVideoIndex && isPlayingVideo" class="size-3.5 animate-pulse text-sky-300" fill="currentColor" viewBox="0 0 24 24">
+                  <svg v-if="idx === currentVideoIndex" class="size-3.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
                   </svg>
                   <svg v-else class="size-3.5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
-                  <span>{{ completedIndices.includes(idx) ? 'Watch again' : idx === currentVideoIndex ? (isPlayingVideo ? 'Playing' : 'Resume') : 'Start Lesson' }}</span>
+                  <span>{{ completedIndices.includes(idx) ? 'Watch again' : idx === currentVideoIndex ? 'Playing' : 'Start Lesson' }}</span>
                 </button>
               </div>
             </div>
@@ -392,7 +308,7 @@
             v-else
             class="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm font-bold shadow-2xs"
           >
-            <TrophyIcon class="size-5 text-amber-700" />
+            <TrophyIcon class="size-5" :level="4" />
             <span>Level 4 Master Achieved — All Curriculum Modules Completed</span>
           </div>
         </div>
@@ -403,14 +319,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useAuthStore } from '@/stores/authStore'
 import ELearningService, { type VideoItem, type UserVideosResponse } from '@/services/ELearningService'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
-import { eLearningVideos } from '@/data/eLearning'
 import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import PlayIcon from '@/shared/components/icons/PlayIcon.vue'
@@ -430,8 +345,6 @@ const currentVideoIndex = ref(0)
 const completedIndices = ref<number[]>([])
 const isPlayingVideo = ref(false)
 const levelTransitionAlert = ref<string | null>(null)
-const currentPlaybackSeconds = ref(0)
-let playbackInterval: ReturnType<typeof setInterval> | null = null
 
 const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 1)
 
@@ -535,82 +448,6 @@ const activeVideo = computed<LessonViewItem | null>(() => {
   return curriculumLessons.value[currentVideoIndex.value] ?? null
 })
 
-const activeVideoDuration = computed<string>(() => {
-  return activeVideo.value?.duration || '30 mins'
-})
-
-function parseDurationSeconds(durationStr: string): number {
-  const match = durationStr.match(/(\d+)\s*mins?/i)
-  if (match && match[1]) {
-    return parseInt(match[1], 10) * 60
-  }
-  return 1800 // default 30 mins
-}
-
-const totalDurationSeconds = computed<number>(() => {
-  return parseDurationSeconds(activeVideoDuration.value)
-})
-
-function formatSeconds(totalSec: number): string {
-  const m = Math.floor(totalSec / 60)
-  const s = Math.floor(totalSec % 60)
-  return `${m}:${s < 10 ? '0' : ''}${s}`
-}
-
-const playbackTime = computed<string>(() => {
-  return `${formatSeconds(currentPlaybackSeconds.value)} / ${formatSeconds(totalDurationSeconds.value)}`
-})
-
-const progressPercentage = computed<number>(() => {
-  if (totalDurationSeconds.value <= 0) return 0
-  return Math.min(100, Math.round((currentPlaybackSeconds.value / totalDurationSeconds.value) * 100))
-})
-
-function startPlaybackTimer() {
-  if (playbackInterval) clearInterval(playbackInterval)
-  playbackInterval = setInterval(() => {
-    if (isPlayingVideo.value) {
-      if (currentPlaybackSeconds.value < totalDurationSeconds.value) {
-        currentPlaybackSeconds.value += 1
-      } else {
-        // Video finished!
-        if (!completedIndices.value.includes(currentVideoIndex.value)) {
-          completedIndices.value.push(currentVideoIndex.value)
-          saveCompletedLessons()
-        }
-      }
-    }
-  }, 1000)
-}
-
-function stopPlaybackTimer() {
-  if (playbackInterval) {
-    clearInterval(playbackInterval)
-    playbackInterval = null
-  }
-}
-
-function togglePlayPause() {
-  if (isPlayingVideo.value) {
-    isPlayingVideo.value = false
-    stopPlaybackTimer()
-  } else {
-    isPlayingVideo.value = true
-    startPlaybackTimer()
-  }
-}
-
-function seekProgress(event: MouseEvent) {
-  const target = event.currentTarget as HTMLElement
-  if (!target) return
-  const rect = target.getBoundingClientRect()
-  const clickX = event.clientX - rect.left
-  const ratio = Math.max(0, Math.min(1, clickX / rect.width))
-  currentPlaybackSeconds.value = Math.round(ratio * totalDurationSeconds.value)
-  isPlayingVideo.value = true
-  startPlaybackTimer()
-}
-
 function completeCurrentAndNext() {
   if (!completedIndices.value.includes(currentVideoIndex.value)) {
     completedIndices.value.push(currentVideoIndex.value)
@@ -618,9 +455,7 @@ function completeCurrentAndNext() {
   }
   if (currentVideoIndex.value < rawVideos.value.length - 1) {
     currentVideoIndex.value += 1
-    currentPlaybackSeconds.value = 0
     isPlayingVideo.value = true
-    startPlaybackTimer()
   }
 }
 
@@ -657,15 +492,12 @@ const isHtml5Video = computed<boolean>(() => {
 function selectVideo(index: number) {
   if (index >= 0 && index < rawVideos.value.length) {
     currentVideoIndex.value = index
-    currentPlaybackSeconds.value = 0
     isPlayingVideo.value = true
-    startPlaybackTimer()
   }
 }
 
 function startPlaying() {
   isPlayingVideo.value = true
-  startPlaybackTimer()
 }
 
 async function fetchLevelVideos() {
@@ -686,23 +518,13 @@ async function fetchLevelVideos() {
       }
     }
   } catch (err: unknown) {
-    console.info('Backend getCurrentLevelVideos offline, fallback to mock data:', err)
+    console.info('Backend getCurrentLevelVideos offline or unavailable:', err)
   } finally {
     isLoading.value = false
   }
 
-  // Fallback to local course curriculum if API response is empty
-  if (rawVideos.value.length === 0) {
-    const currentLvlStr = String(currentLevelNumber.value)
-    const filtered = eLearningVideos.filter((v) => v.level === currentLvlStr)
-    rawVideos.value = filtered.map((v, idx) => ({
-      id: idx + 1,
-      title: v.title,
-      description: v.description || `Core course module for Level ${currentLvlStr}.`,
-      videoUrl: resolvePlayableUrl(v.url, idx, currentLevelNumber.value),
-    }))
-  } else {
-    // Map any backend seeded example.com URLs to real playable YouTube videos
+  // Map any backend URLs to playable format if applicable
+  if (rawVideos.value.length > 0) {
     rawVideos.value = rawVideos.value.map((v, idx) => ({
       ...v,
       videoUrl: resolvePlayableUrl(v.videoUrl, idx, currentLevelNumber.value),
@@ -712,7 +534,7 @@ async function fetchLevelVideos() {
   // Seamlessly bridge any custom lessons added through Admin E-Learning portal for this level
   try {
     if (typeof localStorage !== 'undefined') {
-      const rawLocal = localStorage.getItem('admin_elearning_videos_v1')
+      const rawLocal = localStorage.getItem('admin_elearning_videos_v2')
       if (rawLocal) {
         const parsedLocal = JSON.parse(rawLocal)
         if (Array.isArray(parsedLocal)) {
@@ -737,7 +559,6 @@ async function fetchLevelVideos() {
   // Start at the first uncompleted lesson in the list
   const firstUncompleted = rawVideos.value.findIndex((_, i) => !completedIndices.value.includes(i))
   currentVideoIndex.value = firstUncompleted >= 0 ? firstUncompleted : 0
-  currentPlaybackSeconds.value = 0
 }
 
 // Watch for level upgrades
@@ -749,7 +570,6 @@ watch(
       levelTransitionAlert.value = `Level updated to Level ${newLevel}: ${levelName}! Curriculum refreshed.`
       currentVideoIndex.value = 0
       isPlayingVideo.value = false
-      stopPlaybackTimer()
       await fetchLevelVideos()
     }
   }
@@ -760,9 +580,5 @@ onMounted(async () => {
     await userStore.fetchUserProfile()
   }
   await fetchLevelVideos()
-})
-
-onUnmounted(() => {
-  stopPlaybackTimer()
 })
 </script>

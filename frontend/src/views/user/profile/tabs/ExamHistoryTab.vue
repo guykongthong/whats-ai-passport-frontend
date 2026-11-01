@@ -248,7 +248,7 @@ function formatDateTime(dateStr: string): string {
 }
 
 function formatDate(dateStr?: string): string {
-  if (!dateStr) return 'Nov 1, 2026'
+  if (!dateStr) return '-'
   const d = new Date(dateStr)
   if (isNaN(d.getTime())) return dateStr
   return d.toLocaleDateString('en-US', {

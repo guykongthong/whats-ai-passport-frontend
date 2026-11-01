@@ -53,7 +53,7 @@
               class="size-20 mx-auto rounded-3xl flex items-center justify-center text-3xl shadow-inner transition-transform duration-300 hover:scale-105"
               :class="result.passed ? 'bg-emerald-100 text-emerald-600 ring-4 ring-emerald-50' : 'bg-rose-100 text-rose-600 ring-4 ring-rose-50'"
             >
-              <TrophyIcon v-if="result.passed" class="size-10" />
+              <TrophyIcon v-if="result.passed" class="size-10" :level="result.newLevel" />
               <DocumentTextIcon v-else class="size-10" />
             </div>
 
@@ -152,7 +152,7 @@
                   to="/profile/services"
                   class="flex-1 py-3 px-4 rounded-xl bg-[#00385A] hover:bg-[#002840] text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                 >
-                  <span>New Benefits</span>
+                  <span>Benefits</span>
                   <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>

@@ -2,15 +2,10 @@
   <AdminPageLayout title="Criteria of Levels" main-padding="!max-w-[1400px] px-4 sm:px-8">
     <div class="w-full flex flex-col gap-6 mt-1">
       <!-- Subheader (Tightened to PageTitle with 12px gap) -->
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
+      <div class="pb-3 border-b border-white/10">
         <p class="text-xs sm:text-sm text-white/80">
           Overview of all 4 certification tiers, required pass criteria, campus privileges, and student services.
         </p>
-        <div class="flex items-center gap-2 shrink-0">
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-white/10 border border-white/20 text-white/90">
-            4 Progression Tiers
-          </span>
-        </div>
       </div>
 
       <!-- Loading State -->
@@ -113,14 +108,11 @@
               </RouterLink>
             </div>
 
-            <!-- Level Title & Subtitle (ระดับ 1: 4px gap-1, ระดับ 2: 12px mt-3 from icons) -->
+            <!-- Level Title (ระดับ 1: 4px gap-1, ระดับ 2: 12px mt-3 from icons) -->
             <div class="mt-3 flex flex-col gap-1">
               <h3 class="text-base sm:text-lg font-bold text-white tracking-tight leading-snug truncate" :title="`${level.name || getLevelName(level.levelNumber)} Certification`">
                 {{ level.name || getLevelName(level.levelNumber) }} Certification
               </h3>
-              <p class="text-[11px] text-white/70 truncate">
-                Competency Level {{ level.levelNumber }} &bull; CAMT Passport
-              </p>
             </div>
 
             <!-- Pass Criteria Box (ระดับ 2: 12px mt-3 from subtitle) -->
@@ -152,9 +144,6 @@
                   </svg>
                   <span>BENEFITS</span>
                 </span>
-                <span class="text-[11px] text-white/70 bg-white/10 px-2 py-0.5 rounded-full font-medium shrink-0">
-                  {{ normalizeStringList(level.benefits).length }} items
-                </span>
               </div>
 
               <!-- Benefits List with 12px inter-item spacing (space-y-3) and baseline-aligned checkmark -->
@@ -168,13 +157,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                   </svg>
                   <div class="flex-1 min-w-0 leading-relaxed text-white/90">
-                    <span
-                      v-if="isExclusiveBenefit(level.levelNumber, benefit)"
-                      class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/30 uppercase tracking-wider mr-1.5 align-baseline whitespace-nowrap"
-                    >
-                      Exclusive
-                    </span>
-                    <span class="break-words">{{ displayBenefitText(benefit) }}</span>
+                    <span class="break-words">{{ benefit }}</span>
                   </div>
                 </li>
                 <li
@@ -194,9 +177,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                   <span>SERVICES</span>
-                </span>
-                <span class="text-[11px] text-white/70 bg-white/10 px-2 py-0.5 rounded-full font-medium shrink-0">
-                  {{ normalizeStringList(level.services).length }} services
                 </span>
               </div>
 
@@ -313,21 +293,6 @@ function hasCustomBadgeImage(url?: string): boolean {
   const trimmed = url.trim()
   if (!trimmed) return false
   return !trimmed.includes('placehold.co')
-}
-
-/**
- * Checks if a benefit should display the exclusive badge.
- * Dynamic: detects [Exclusive] tag prefix or "exclusive" keyword instead of hardcoded strings.
- */
-function isExclusiveBenefit(_levelNumber: number, benefit: string): boolean {
-  if (!benefit) return false
-  const trimmed = benefit.trim()
-  return trimmed.toLowerCase().includes('exclusive') || trimmed.startsWith('[Exclusive]')
-}
-
-function displayBenefitText(benefit: string): string {
-  if (!benefit) return ''
-  return benefit.replace(/^\[Exclusive\]\s*/i, '').trim()
 }
 
 async function fetchLevels() {

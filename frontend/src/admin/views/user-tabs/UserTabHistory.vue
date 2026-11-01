@@ -33,8 +33,10 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores'
-import { examRecords } from '@/data/examRecords'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
+import type { ExamRecord } from '@/types/ExamContent'
+
+const examRecords: ExamRecord[] = []
 
 
 

@@ -21,10 +21,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { useLevelStore } from '@/stores/levelStore'
-import type { Level } from '@/types/Level'
+import { getLevelName } from '@/utils/levelDisplay'
 
-const levelStore = useLevelStore()
 const userStore = useUserStore()
 
 onMounted(async () => {
@@ -33,10 +31,30 @@ onMounted(async () => {
   }
 })
 
-const earnedBadges = computed<Level[]>(() => {
-  const passedLevelIds = new Set(
-    userStore.examHistories.filter(h => h.passed).map(h => String(h.levelNumber)),
-  )
-  return levelStore.allLevels.filter(l => passedLevelIds.has(String(l.id)))
+interface BadgeDisplay {
+  id: string
+  label: string
+  name: string
+}
+
+const earnedBadges = computed<BadgeDisplay[]>(() => {
+  if (userStore.badges && userStore.badges.length > 0) {
+    return userStore.badges.map((b, idx) => ({
+      id: String(idx + 1),
+      label: b.name,
+      name: b.name,
+    }))
+  }
+  const currentLvl = userStore.currentUserLevel
+  const list: BadgeDisplay[] = []
+  for (let i = 1; i <= currentLvl; i++) {
+    const title = getLevelName(i)
+    list.push({
+      id: String(i),
+      label: title,
+      name: title,
+    })
+  }
+  return list
 })
 </script>
