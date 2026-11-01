@@ -88,17 +88,9 @@
                 </svg>
 
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between gap-2">
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
-                      {{ benefit.title }}
-                    </h3>
-                    <span
-                      v-if="benefit.tag"
-                      class="px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide bg-sky-100 text-sky-800 shrink-0"
-                    >
-                      {{ benefit.tag }}
-                    </span>
-                  </div>
+                  <h3 class="text-xs sm:text-sm font-bold text-slate-900 leading-snug">
+                    {{ benefit.title }}
+                  </h3>
                   <p class="text-xs text-slate-600 mt-1 leading-relaxed">
                     {{ benefit.description }}
                   </p>
@@ -143,20 +135,13 @@
               :key="idx"
               class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 sm:p-5 flex items-center justify-between gap-3 transition-all hover:border-slate-300"
             >
-              <div class="flex items-center gap-3 min-w-0">
-                <!-- Clean Building/Facility Line Icon (No heavy purple box) -->
-                <svg class="size-4.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-
-                <div class="min-w-0">
-                  <h3 class="text-xs sm:text-sm font-bold text-slate-800 truncate">
-                    {{ service.name }}
-                  </h3>
-                  <span class="text-[11px] text-slate-500 font-medium">
-                    CA?T Student Service
-                  </span>
-                </div>
+              <div class="min-w-0">
+                <h3 class="text-xs sm:text-sm font-bold text-slate-800 truncate">
+                  {{ service.name }}
+                </h3>
+                <span class="text-[11px] text-slate-500 font-medium">
+                  CA?T Student Service
+                </span>
               </div>
 
               <!-- Simple Clean Unlocked Label (No heavy pill with borders) -->
@@ -235,29 +220,20 @@ const currentBenefits = computed<string[]>(() => {
   return levelStore.getBenefitsForLevel(String(currentLevel.value)).map((b) => b.description)
 })
 
-// Format raw benefits string into title, description, and tags
+// Format raw benefits string into title and description
 const formattedBenefits = computed(() => {
   return currentBenefits.value.map((desc) => {
-    let tag: string | null = null
-    if (/quota|50 hours/i.test(desc)) tag = 'QUOTA'
-    else if (/funding|10,000|grant/i.test(desc)) tag = 'GRANT'
-    else if (/certificate/i.test(desc)) tag = 'CERTIFIED'
-    else if (/mentoring|mentor/i.test(desc)) tag = 'ADVISORY'
-    else if (/gpu|a100|h100/i.test(desc)) tag = 'QUOTA'
-
     const parts = desc.split(':')
     if (parts.length > 1) {
       return {
         title: parts[0]?.trim() || '',
         description: parts.slice(1).join(':').trim(),
-        tag,
       }
     }
 
     return {
       title: desc,
-      description: 'Active The CA?T Passport service entitlement for your certified level.',
-      tag,
+      description: 'Active The CA?T Passport entitlement for your certified level.',
     }
   })
 })

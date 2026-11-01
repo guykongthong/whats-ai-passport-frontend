@@ -94,33 +94,19 @@
           :key="record.id ?? index"
           class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs flex flex-col gap-4 hover:border-slate-300 transition-all"
         >
-          <!-- Card Header: Title, Attempt Pill, and Passed/Failed Pill -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h4 class="text-sm sm:text-base font-bold text-slate-900">
-                  Level {{ record.levelNumber }}: {{ getLevelName(record.levelNumber) }} Exam
-                </h4>
-                <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
-                  Attempt #{{ sortedHistory.length - index }}
-                </span>
-              </div>
-              <p class="text-xs text-slate-500 mt-0.5">
-                {{ getExamDescription(record.levelNumber) }}
-              </p>
+          <!-- Card Header: Title and Attempt Pill -->
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h4 class="text-sm sm:text-base font-bold text-slate-900">
+                Level {{ record.levelNumber }}: {{ getLevelName(record.levelNumber) }} Exam
+              </h4>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                Attempt #{{ sortedHistory.length - index }}
+              </span>
             </div>
-
-            <!-- Result Badge (Clean and simple student style) -->
-            <span
-              class="self-start sm:self-auto px-2.5 py-1 rounded-md text-xs font-semibold shrink-0"
-              :class="[
-                record.passed
-                  ? 'bg-emerald-100 text-emerald-800'
-                  : 'bg-rose-100 text-rose-800'
-              ]"
-            >
-              {{ record.passed ? 'Passed' : 'Failed' }}
-            </span>
+            <p class="text-xs text-slate-500 mt-0.5">
+              {{ getExamDescription(record.levelNumber) }}
+            </p>
           </div>
 
           <!-- 3-Column Metrics Grid -->
