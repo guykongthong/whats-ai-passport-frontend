@@ -1,129 +1,139 @@
 <template>
-  <form class="space-y-6" @submit.prevent="onSubmit">
+  <form class="flex flex-col gap-9 sm:gap-11" @submit.prevent="onSubmit">
     <!-- Profile Image Upload Field -->
-    <div class="space-y-2">
+    <div>
       <ImageUpload
         v-model="profileImageUrl"
         label="Profile Image"
+        label-class="block text-sm font-bold text-white mb-2.5"
+        theme="dark"
         :disabled="disabled || isSaving"
       />
     </div>
 
     <!-- Personal Names Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 sm:pt-6">
       <div>
-        <label class="block text-xs font-semibold text-slate-700 dark:text-white/80 mb-1.5">
-          First Name <span class="text-rose-500">*</span>
+        <label class="block text-sm font-bold text-white mb-2.5">
+          First Name <span class="text-rose-400">*</span>
         </label>
         <input
           v-model="firstname"
           type="text"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+            'w-full px-4 py-3 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base transition-colors backdrop-blur-md',
             firstnameError
-              ? 'border-rose-500 focus:ring-rose-500/30'
-              : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+              ? 'border-rose-400 focus:ring-rose-400/50'
+              : 'border-white/20 focus:ring-white/30 focus:border-white/40',
           ]"
           placeholder="Enter first name"
           @blur="validateField('firstname')"
         />
-        <p v-if="firstnameError" class="text-xs text-rose-500 font-medium mt-1">
+        <p v-if="firstnameError" class="text-xs text-rose-300 font-medium mt-1.5">
           {{ firstnameError }}
         </p>
       </div>
 
       <div>
-        <label class="block text-xs font-semibold text-slate-700 dark:text-white/80 mb-1.5">
-          Last Name <span class="text-rose-500">*</span>
+        <label class="block text-sm font-bold text-white mb-2.5">
+          Last Name <span class="text-rose-400">*</span>
         </label>
         <input
           v-model="lastname"
           type="text"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+            'w-full px-4 py-3 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base transition-colors backdrop-blur-md',
             lastnameError
-              ? 'border-rose-500 focus:ring-rose-500/30'
-              : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+              ? 'border-rose-400 focus:ring-rose-400/50'
+              : 'border-white/20 focus:ring-white/30 focus:border-white/40',
           ]"
           placeholder="Enter last name"
           @blur="validateField('lastname')"
         />
-        <p v-if="lastnameError" class="text-xs text-rose-500 font-medium mt-1">
+        <p v-if="lastnameError" class="text-xs text-rose-300 font-medium mt-1.5">
           {{ lastnameError }}
         </p>
       </div>
     </div>
 
     <!-- Email Field -->
-    <div>
-      <label class="block text-xs font-semibold text-slate-700 dark:text-white/80 mb-1.5">
-        Email Address <span class="text-rose-500">*</span>
+    <div class="pt-4 sm:pt-5">
+      <label class="block text-sm font-bold text-white mb-2.5">
+        Email Address <span class="text-rose-400">*</span>
       </label>
       <input
         v-model="email"
         type="email"
         :disabled="disabled || isSaving || disableEmail"
         :class="[
-          'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-white/40 focus:outline-none focus:ring-2 text-sm transition-colors',
+          'w-full px-4 py-3 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base transition-colors backdrop-blur-md',
           emailError
-            ? 'border-rose-500 focus:ring-rose-500/30'
-            : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
+            ? 'border-rose-400 focus:ring-rose-400/50'
+            : 'border-white/20 focus:ring-white/30 focus:border-white/40',
           disabled || isSaving || disableEmail ? 'opacity-60 cursor-not-allowed' : '',
         ]"
         placeholder="Enter email address"
         @blur="validateField('email')"
       />
-      <p v-if="emailError" class="text-xs text-rose-500 font-medium mt-1">
+      <p v-if="emailError" class="text-xs text-rose-300 font-medium mt-1.5">
         {{ emailError }}
       </p>
     </div>
 
     <!-- Province Field -->
-    <div>
-      <label class="block text-xs font-semibold text-slate-700 dark:text-white/80 mb-1.5">
-        Province <span class="text-rose-500">*</span>
+    <div class="pt-4 sm:pt-5">
+      <label class="block text-sm font-bold text-white mb-2.5">
+        Province <span class="text-rose-400">*</span>
       </label>
-      <select
-        v-model="province"
-        :disabled="disabled || isSaving"
-        :class="[
-          'w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-white/10 text-gray-900 dark:text-white focus:outline-none focus:ring-2 text-sm transition-colors cursor-pointer',
-          provinceError
-            ? 'border-rose-500 focus:ring-rose-500/30'
-            : 'border-gray-300 dark:border-white/20 focus:ring-indigo-500/50',
-        ]"
-        @blur="validateField('province')"
-      >
-        <option value="" class="text-slate-900 bg-white">Select Province</option>
-        <option
-          v-if="province && !provinces.includes(province)"
-          :value="province"
-          class="text-slate-900 bg-white"
+      <div class="relative">
+        <select
+          v-model="province"
+          :disabled="disabled || isSaving"
+          :class="[
+            'w-full h-12 pl-4 pr-10 rounded-xl border bg-white/10 hover:bg-white/15 border-white/20 text-white focus:outline-none focus:ring-1 focus:bg-white/15 text-base transition-all cursor-pointer backdrop-blur-md appearance-none',
+            provinceError
+              ? 'border-rose-400 focus:ring-rose-400/50'
+              : 'border-white/20 focus:ring-white/30 focus:border-white/40',
+            disabled || isSaving ? 'opacity-60 cursor-not-allowed' : '',
+          ]"
+          @blur="validateField('province')"
         >
-          {{ province }}
-        </option>
-        <option
-          v-for="prov in provinces"
-          :key="prov"
-          :value="prov"
-          class="text-slate-900 bg-white"
-        >
-          {{ prov }}
-        </option>
-      </select>
-      <p v-if="provinceError" class="text-xs text-rose-500 font-medium mt-1">
+          <option value="" class="text-white bg-[#002742]">Select Province</option>
+          <option
+            v-if="province && !provinces.includes(province)"
+            :value="province"
+            class="text-white bg-[#002742]"
+          >
+            {{ province }}
+          </option>
+          <option
+            v-for="prov in provinces"
+            :key="prov"
+            :value="prov"
+            class="text-white bg-[#002742]"
+          >
+            {{ prov }}
+          </option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-white/70">
+          <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </div>
+      <p v-if="provinceError" class="text-xs text-rose-300 font-medium mt-1.5">
         {{ provinceError }}
       </p>
     </div>
 
     <!-- Action Buttons (Save Changes & Cancel) -->
-    <div class="pt-4 flex items-center justify-end gap-3 border-t border-gray-200 dark:border-white/10">
+    <div class="pt-5 flex items-center justify-end gap-3 border-t border-white/10">
       <button
         type="button"
         :disabled="disabled || isSaving"
-        class="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-white/30 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 text-xs sm:text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50"
+        class="px-5 py-2.5 rounded-xl border border-white/30 text-white hover:bg-white/10 text-sm font-semibold transition-colors cursor-pointer disabled:opacity-50 select-none"
         @click="handleCancel"
       >
         {{ cancelLabel }}
@@ -133,15 +143,15 @@
         type="submit"
         :disabled="isSubmitDisabled"
         :class="[
-          'px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm flex items-center gap-2',
+          'px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md flex items-center gap-2 select-none',
           isSubmitDisabled
-            ? 'bg-indigo-600/50 text-white/70 cursor-not-allowed opacity-60'
-            : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-indigo-500/20',
+            ? 'bg-[#C1D7AE]/50 text-[#00385e]/70 cursor-not-allowed opacity-60'
+            : 'bg-[#C1D7AE] hover:bg-[#b2cb9d] text-[#00385e] cursor-pointer active:scale-95',
         ]"
       >
         <span
           v-if="isSaving"
-          class="size-3.5 rounded-full border-2 border-white border-t-transparent animate-spin"
+          class="size-3.5 rounded-full border-2 border-[#00385e] border-t-transparent animate-spin"
         />
         <span>{{ isSaving ? 'Saving...' : submitLabel }}</span>
       </button>

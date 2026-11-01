@@ -1,6 +1,12 @@
 <template>
   <div class="flex flex-col gap-2">
-    <label v-if="label" class="text-sm font-semibold text-button-primary">
+    <label
+      v-if="label"
+      :class="[
+        'text-sm font-bold tracking-wide',
+        labelClass || (theme === 'dark' ? 'text-white' : 'text-button-primary'),
+      ]"
+    >
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
@@ -109,6 +115,8 @@ import { FileService } from '@/services'
 interface Props {
   modelValue?: string
   label?: string
+  labelClass?: string
+  theme?: 'light' | 'dark'
   required?: boolean
   disabled?: boolean
   errorMessage?: string
@@ -118,6 +126,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   label: 'Profile image',
+  labelClass: '',
+  theme: 'dark',
   required: false,
   disabled: false,
   errorMessage: '',

@@ -4,7 +4,7 @@
       <Toast :show="showToast" :message="toastMessage" variant="dark" class="sticky top-[72px] backdrop-blur-sm" />
     </template>
 
-    <div class="w-full flex flex-col gap-6 -mt-3">
+    <div class="w-full flex flex-col gap-6 mt-1">
       <!-- Top Action Bar: Back Link & Breadcrumb Indicator -->
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-white/10 gap-3">
         <BackLink
@@ -36,21 +36,21 @@
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="bg-rose-500/20 border border-rose-500/30 text-rose-200 rounded-2xl p-8 text-center text-sm shadow-xl"
+        class="bg-rose-500/20 border border-rose-500/30 text-rose-200 rounded-2xl p-8 sm:p-10 text-center text-sm shadow-xl flex flex-col items-center justify-center"
       >
-        <p class="font-semibold text-base">{{ error }}</p>
-        <p class="text-xs text-rose-300 mt-1">Unable to retrieve level data from the backend server.</p>
-        <div class="mt-5 flex items-center justify-center gap-3">
+        <p class="font-bold text-base sm:text-lg text-white">{{ error }}</p>
+        <p class="text-xs sm:text-sm text-rose-300 mt-1.5">Unable to retrieve level data from the backend server.</p>
+        <div class="mt-6 flex items-center justify-center gap-3">
           <button
             type="button"
-            class="px-4 py-2 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors cursor-pointer shadow-sm"
+            class="px-6 py-2.5 text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all shadow-md cursor-pointer active:scale-95 min-w-[130px] inline-flex items-center justify-center"
             @click="fetchLevel"
           >
             Try Again
           </button>
           <RouterLink
             to="/admin/levels"
-            class="px-4 py-2 text-xs font-semibold bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/15"
+            class="px-6 py-2.5 text-sm font-bold bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all border border-white/20 shadow-md inline-flex items-center justify-center"
           >
             Back to Levels
           </RouterLink>
@@ -107,7 +107,7 @@
         </div>
 
         <!-- Section 1: Pass Criteria Threshold -->
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 pt-2 sm:pt-3">
           <label for="passCriteriaInput" class="text-xs sm:text-sm font-semibold tracking-wide text-white">
             Pass Criteria (Passing Score Threshold)
             <span class="text-rose-400 ml-0.5">*</span>
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Section 2: Benefits Array (FE-ADMIN-20 Integration) -->
-        <div class="pt-2">
+        <div class="pt-4 sm:pt-5">
           <DynamicTagListInput
             v-model="form.benefits"
             label="Campus Benefits & Privileges"
@@ -154,7 +154,7 @@
         </div>
 
         <!-- Section 3: Services Array (FE-ADMIN-20 Integration) -->
-        <div class="pt-2">
+        <div class="pt-4 sm:pt-5">
           <DynamicTagListInput
             v-model="form.services"
             label="Available Student Services"

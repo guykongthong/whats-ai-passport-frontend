@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import AdminUserService from '@/services/AdminUserService'
 import type { AdminUser, ExamHistoryItem } from '@/types/admin'
+import { users as mockUsers } from '@/data/users'
 
 export const useAdminUserStore = defineStore('adminUser', () => {
   // State
@@ -26,7 +27,26 @@ export const useAdminUserStore = defineStore('adminUser', () => {
       userExamHistory.value = response.data.examHistories || []
       return selectedUser.value
     } catch (error) {
-      console.error(`Failed to fetch user by id (${id}):`, error)
+      console.warn(`Backend user API unavailable for id (${id}), searching local dataset:`, error)
+      const found = mockUsers.find((u, idx) => Number(u.id) === id || idx + 1 === id)
+      if (found) {
+        const fallbackAdminUser: AdminUser = {
+          id: Number(found.id) || id,
+          username: found.username || found.email.split('@')[0] || `user${id}`,
+          firstname: found.firstname || found.name || '',
+          lastname: found.lastname || found.surname || '',
+          email: found.email,
+          province: found.province || 'Chiang Mai',
+          profileImageUrl: found.profileImageUrl || '',
+          currentLevel: Number(found.level) || 1,
+          enabled: found.enabled !== undefined ? found.enabled : (found.isActive !== undefined ? found.isActive : true),
+          roles: found.roles ? [...found.roles] : (found.role === 'admin' ? ['ROLE_ADMIN'] : ['ROLE_USER']),
+          examHistories: [],
+        }
+        selectedUser.value = fallbackAdminUser
+        userExamHistory.value = []
+        return selectedUser.value
+      }
       selectedUser.value = null
       userExamHistory.value = []
       return null

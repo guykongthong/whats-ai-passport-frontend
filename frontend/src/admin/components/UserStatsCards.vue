@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { UserRow } from '@/admin/components/UserListTable.vue'
+import { LEVEL_NUMBERS, getLevelName } from '@/utils/levelDisplay'
 
 const props = defineProps<{
   users: UserRow[]
@@ -30,17 +31,19 @@ const props = defineProps<{
 
 const totalUsers = computed(() => props.users.length)
 
-const levelBreakdown = computed(() => {
-  const levels = [
-    { level: 1, name: 'Explorer', dotColor: 'bg-[#b8d4a3]' },
-    { level: 2, name: 'Achiever', dotColor: 'bg-[#f5e6a3]' },
-    { level: 3, name: 'Innovator', dotColor: 'bg-[#f5c4a3]' },
-    { level: 4, name: 'Master', dotColor: 'bg-[#f5a3a3]' },
-  ]
+const dotColors: Record<number, string> = {
+  1: 'bg-[#b8d4a3]',
+  2: 'bg-[#f5e6a3]',
+  3: 'bg-[#f5c4a3]',
+  4: 'bg-[#f5a3a3]',
+}
 
-  return levels.map(l => ({
-    ...l,
-    count: props.users.filter(u => u.level === l.level).length
+const levelBreakdown = computed(() => {
+  return LEVEL_NUMBERS.map((lvl) => ({
+    level: lvl,
+    name: getLevelName(lvl),
+    dotColor: dotColors[lvl] || 'bg-slate-400',
+    count: props.users.filter((u) => u.level === lvl).length,
   }))
 })
 </script>

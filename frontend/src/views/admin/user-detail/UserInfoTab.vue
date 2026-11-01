@@ -12,7 +12,7 @@
         class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white text-slate-800 hover:bg-slate-100 shadow-sm transition-colors cursor-pointer"
         @click="goToEditTab"
       >
-        <svg class="size-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="size-4 text-[#00385e]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -40,26 +40,26 @@
           <h4 class="font-bold text-sm tracking-wide uppercase text-white/90">Personal Details</h4>
         </div>
 
-        <div class="space-y-4 text-sm">
+        <div class="space-y-6 text-sm">
           <div>
-            <span class="text-xs text-white/50 block font-medium">Full Name</span>
-            <span class="font-semibold text-white text-base">{{ fullName }}</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Full Name</span>
+            <span class="font-bold text-white text-lg sm:text-xl">{{ fullName }}</span>
           </div>
 
           <div>
-            <span class="text-xs text-white/50 block font-medium">Email Address</span>
-            <span class="font-semibold text-white break-all">{{ user.email }}</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Email Address</span>
+            <span class="font-bold text-white text-base sm:text-lg break-all">{{ user.email }}</span>
           </div>
 
           <div>
-            <span class="text-xs text-white/50 block font-medium">Province</span>
-            <span class="font-semibold text-white">{{ user.province || '-' }}</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Province</span>
+            <span class="font-bold text-white text-base sm:text-lg">{{ user.province || '-' }}</span>
           </div>
         </div>
       </div>
 
       <!-- 2. System Details Card -->
-      <div class="bg-white/10 rounded-2xl p-5 sm:p-6 border border-white/10 flex flex-col gap-4">
+      <div class="bg-white/10 rounded-2xl p-6 sm:p-7 border border-white/10 flex flex-col gap-5">
         <div class="flex items-center gap-2.5 pb-3 border-b border-white/10">
           <svg class="size-5 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -72,17 +72,17 @@
           <h4 class="font-bold text-sm tracking-wide uppercase text-white/90">System Details</h4>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
           <div>
-            <span class="text-xs text-white/50 block font-medium">User ID</span>
-            <span class="font-semibold text-white font-mono">#{{ user.id }}</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">User ID</span>
+            <span class="font-bold text-white font-mono text-base sm:text-lg">#{{ user.id }}</span>
           </div>
 
           <div>
-            <span class="text-xs text-white/50 block font-medium">Current Level</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Current Level</span>
             <span
               :class="[
-                'inline-block mt-0.5 px-2.5 py-0.5 rounded-full text-xs font-bold',
+                'inline-block mt-0.5 px-3 py-1 rounded-full text-xs font-bold shadow-xs',
                 levelBadgeClass,
               ]"
             >
@@ -91,15 +91,15 @@
           </div>
 
           <div>
-            <span class="text-xs text-white/50 block font-medium">Role</span>
-            <span class="font-semibold text-white">{{ roleText }}</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Role</span>
+            <span class="font-bold text-white text-base">{{ roleText }}</span>
           </div>
 
           <div>
-            <span class="text-xs text-white/50 block font-medium">Account Status</span>
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Account Status</span>
             <span
               :class="[
-                'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold mt-0.5',
+                'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold mt-0.5',
                 user.enabled
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                   : 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
@@ -112,9 +112,9 @@
             </span>
           </div>
 
-          <div class="col-span-2">
-            <span class="text-xs text-white/50 block font-medium">Registration Date</span>
-            <span class="font-semibold text-white">{{ registrationDateText }}</span>
+          <div class="sm:col-span-2">
+            <span class="text-xs sm:text-sm text-white/60 block font-semibold mb-1.5">Registration Date</span>
+            <span class="font-bold text-white text-base">{{ registrationDateText }}</span>
           </div>
         </div>
       </div>

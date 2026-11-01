@@ -11,7 +11,7 @@
       @logout="handleLogout"
     />
 
-    <main :class="['max-w-[1200px] mx-auto py-10 flex-1 w-full flex flex-col gap-6', mainPadding]">
+    <main :class="['max-w-[1400px] mx-auto py-8 sm:py-10 flex-1 w-full flex flex-col gap-6', mainPadding]">
       <PageTitle class="text-white">
         {{ title }}
       </PageTitle>
