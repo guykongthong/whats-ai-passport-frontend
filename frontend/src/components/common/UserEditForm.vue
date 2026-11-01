@@ -266,29 +266,7 @@ const isSubmitDisabled = computed(() => {
   )
 })
 
-const provinces = [
-  'Bangkok',
-  'Chiang Mai',
-  'Chiang Rai',
-  'Chonburi',
-  'Khon Kaen',
-  'Krabi',
-  'Lampang',
-  'Lamphun',
-  'Mae Hong Son',
-  'Nakhon Pathom',
-  'Nakhon Ratchasima',
-  'Nonthaburi',
-  'Pathum Thani',
-  'Phayao',
-  'Phitsanulok',
-  'Phuket',
-  'Rayong',
-  'Samut Prakan',
-  'Songkhla',
-  'Surat Thani',
-  'Udon Thani',
-]
+import { provinces } from '@/data/provinces'
 
 watch(
   () => props.initialData,
