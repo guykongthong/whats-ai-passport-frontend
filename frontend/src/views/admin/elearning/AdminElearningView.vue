@@ -265,6 +265,7 @@ import Toast from '@/shared/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import { eLearningVideos } from '@/data/eLearning'
+import ELearningService from '@/services/ELearningService'
 
 interface AdminVideoRecord {
   id: string | number
@@ -301,7 +302,26 @@ const STORAGE_KEY = 'admin_elearning_videos_v1'
 
 const lessonVideos = ref<AdminVideoRecord[]>([])
 
-function loadInitialVideos() {
+const isSaving = ref(false)
+
+async function loadInitialVideos() {
+  try {
+    const res = await ELearningService.adminGetVideos()
+    if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+      lessonVideos.value = res.data.map((v, idx) => ({
+        id: v.id ?? `server-${idx + 1}`,
+        level: (v as unknown as { level?: number }).level || 1,
+        title: v.title,
+        description: v.description || '',
+        videoUrl: v.videoUrl,
+      }))
+      saveToStorage()
+      return
+    }
+  } catch (err) {
+    console.info('Backend adminGetVideos offline, loading from local cache:', err)
+  }
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
@@ -365,7 +385,7 @@ function resetForm() {
   errors.videoUrl = ''
 }
 
-function handleSubmit() {
+async function handleSubmit() {
   errors.title = ''
   errors.videoUrl = ''
 
@@ -378,21 +398,52 @@ function handleSubmit() {
     return
   }
 
-  const newLesson: AdminVideoRecord = {
-    id: `custom-${Date.now()}`,
-    level: form.level,
-    title: form.title.trim(),
-    description: form.description.trim(),
-    videoUrl: form.videoUrl.trim(),
-  }
+  isSaving.value = true
+  try {
+    const res = await ELearningService.adminCreateVideo({
+      level: form.level,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      videoUrl: form.videoUrl.trim(),
+    })
 
-  lessonVideos.value.unshift(newLesson)
-  saveToStorage()
-  triggerToast(`Level ${form.level} eLearning lesson published successfully!`)
-  resetForm()
+    const newLesson: AdminVideoRecord = {
+      id: res?.data?.id ?? `server-${Date.now()}`,
+      level: form.level,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      videoUrl: form.videoUrl.trim(),
+    }
+
+    lessonVideos.value.unshift(newLesson)
+    saveToStorage()
+    triggerToast(`Level ${form.level} eLearning lesson published to server successfully!`)
+    resetForm()
+  } catch (err) {
+    console.warn('Server createVideo offline, storing locally:', err)
+    const newLesson: AdminVideoRecord = {
+      id: `custom-${Date.now()}`,
+      level: form.level,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      videoUrl: form.videoUrl.trim(),
+    }
+
+    lessonVideos.value.unshift(newLesson)
+    saveToStorage()
+    triggerToast(`Level ${form.level} eLearning lesson saved successfully!`)
+    resetForm()
+  } finally {
+    isSaving.value = false
+  }
 }
 
-function deleteVideo(id: string | number) {
+async function deleteVideo(id: string | number) {
+  try {
+    await ELearningService.adminDeleteVideo(id)
+  } catch (err) {
+    console.info('Backend deleteVideo offline, removing locally:', err)
+  }
   lessonVideos.value = lessonVideos.value.filter((v) => v.id !== id)
   saveToStorage()
   triggerToast('Lesson video removed successfully.')

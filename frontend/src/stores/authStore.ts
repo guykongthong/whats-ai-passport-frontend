@@ -3,8 +3,8 @@ import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
 import type { User, RegisterPayload } from '@/types'
-import { isUserDeactivated } from '@/shared/utils/auth'
 import { AuthService } from '@/services/AuthService'
+import { useUserStore } from './user'
 import apiClient from '@/services/apiClient'
 
 const MAX_LEVEL = levels.length
@@ -83,6 +83,7 @@ export const useAuthStore = defineStore('auth', () => {
     identifier: string,
     password = '',
   ): Promise<'success' | 'deactivated' | 'not_found' | 'bad_credentials'> {
+    useUserStore().resetUserState()
     try {
       const res = await AuthService.login({
         username: identifier.trim(),
@@ -158,6 +159,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function logout() {
     currentUser.value = null
+    useUserStore().resetUserState()
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('currentUser')
       localStorage.removeItem('token')
@@ -184,6 +186,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function register(fields: RegisterPayload): Promise<User> {
+    useUserStore().resetUserState()
     try {
       const res = await AuthService.register(fields)
       if (res?.data) {
@@ -326,8 +329,8 @@ export const useAuthStore = defineStore('auth', () => {
     userId: string,
     patch: Partial<User>,
   ) {
-    if (currentUser.value && currentUser.value.id === userId) {
-      Object.assign(currentUser.value, patch)
+    if (currentUser.value && String(currentUser.value.id) === String(userId)) {
+      currentUser.value = { ...currentUser.value, ...patch }
       if (typeof localStorage !== 'undefined') {
         try {
           localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
@@ -337,11 +340,13 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
 
-    const user = users.value.find((u) => u.id === userId)
-    if (user) {
-      Object.assign(user, patch)
-      persistUsers(users.value)
-    }
+    users.value = users.value.map((u) => {
+      if (String(u.id) === String(userId)) {
+        return { ...u, ...patch }
+      }
+      return u
+    })
+    persistUsers(users.value)
   }
 
   const filteredUsers = computed(() =>

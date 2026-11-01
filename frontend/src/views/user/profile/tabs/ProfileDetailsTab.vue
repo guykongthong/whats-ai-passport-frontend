@@ -7,8 +7,8 @@
           Update your personal details and contact information.
         </p>
       </div>
-      <span class="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
-        <span class="size-1.5 rounded-full bg-indigo-600"></span>
+      <span class="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-full bg-sky-50 px-3 py-1 text-xs font-bold text-[#00385A]">
+        <span class="size-1.5 rounded-full bg-[#00385A]"></span>
         Level {{ userLevel }} Account
       </span>
     </div>

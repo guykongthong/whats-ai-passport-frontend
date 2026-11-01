@@ -180,12 +180,13 @@
                 <div class="size-9 shrink-0 overflow-hidden rounded-full bg-slate-100">
                   <img
                     v-if="currentUser.profileImageUrl"
+                    :key="currentUser.profileImageUrl"
                     :src="currentUser.profileImageUrl"
-                    :alt="currentUser.name"
+                    :alt="currentUser.name || currentUser.firstname || 'User'"
                     class="size-full object-cover"
                   />
                   <div v-else class="flex size-full items-center justify-center font-bold text-xs text-button-primary bg-indigo-50">
-                    {{ (currentUser.name?.[0] || 'U').toUpperCase() }}
+                    {{ (currentUser.name?.[0] || currentUser.firstname?.[0] || 'U').toUpperCase() }}
                   </div>
                 </div>
                 <div class="truncate">
@@ -232,6 +233,7 @@
 import { ref, computed, onMounted, onUnmounted, watch, provide } from 'vue'
 import { useRoute, useRouter, RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { useUserStore } from '@/stores/user'
 import { useToast } from '@/composables/useToast'
 import Toast from '@/shared/components/Toast.vue'
 import Footer from '@/shared/components/Footer.vue'
@@ -249,10 +251,11 @@ interface NavItem {
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 const { showToast, toastMessage } = useToast()
 
 const isDrawerOpen = ref(false)
-const currentUser = computed(() => authStore.currentUser)
+const currentUser = computed(() => userStore.userProfile || authStore.currentUser)
 const footerLinks = userFooterLinks
 
 const navLinks: NavItem[] = [

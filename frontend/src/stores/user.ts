@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useAuthStore } from './authStore'
 import { useLevelStore } from './levelStore'
 import { useExamStore } from './examStore'
+import type { User } from '@/types/User'
 import UserService, {
   type UserProfile,
   type UserLevelDetails,
@@ -27,17 +28,37 @@ export const useUserStore = defineStore('user', () => {
 
   // Reactive state / getter: currentUserLevel
   const currentUserLevel = computed<number>(() => {
-    const raw =
+    // 1. Prioritize userProfile from /api/me
+    const profileLvl =
       userProfile.value?.currentLevel ??
-      currentLevelDetails.value?.currentLevel ??
-      currentLevelDetails.value?.level
-    if (raw !== undefined && raw !== null) {
-      const parsed = Number(raw)
-      if (!isNaN(parsed) && parsed > 0) return parsed
+      (userProfile.value?.level ? Number(userProfile.value.level) : undefined)
+    if (profileLvl !== undefined && !isNaN(profileLvl) && profileLvl > 0) {
+      return profileLvl
     }
-    const authLvl = Number(authStore.currentUser?.level || 1)
-    return isNaN(authLvl) || authLvl < 1 ? 1 : authLvl
+
+    // 2. Prioritize authenticated current user from authStore
+    const authLvl = Number(authStore.currentUser?.level)
+    if (!isNaN(authLvl) && authLvl > 0) {
+      return authLvl
+    }
+
+    // 3. Fallback to currentLevelDetails
+    const raw =
+      currentLevelDetails.value?.currentLevel ??
+      (currentLevelDetails.value?.level ? Number(currentLevelDetails.value.level) : undefined)
+    if (raw !== undefined && !isNaN(raw) && raw > 0) {
+      return raw
+    }
+
+    return 1
   })
+
+  function resetUserState() {
+    userProfile.value = null
+    currentLevelDetails.value = null
+    profileError.value = null
+    error.value = null
+  }
 
   // Computed badges with single-fetch cache & offline fallback
   const badges = computed<BadgeItem[]>(() => {
@@ -136,6 +157,17 @@ export const useUserStore = defineStore('user', () => {
       const response = await UserService.getUserLevelDetails()
       if (response?.data) {
         const normalized = normalizeLevelDetails(response.data)
+        if (!normalized.currentLevel || normalized.currentLevel !== targetLevel) {
+          normalized.currentLevel = targetLevel
+          normalized.level = String(targetLevel)
+          const foundLevel = levelStore.allLevels.find((l) => String(l.id) === String(targetLevel))
+          if (foundLevel) {
+            normalized.label = foundLevel.label || getLevelName(targetLevel)
+            normalized.levelName = foundLevel.label || getLevelName(targetLevel)
+            normalized.description =
+              foundLevel.description || `Benefits and privileges for Level ${targetLevel}.`
+          }
+        }
         currentLevelDetails.value = normalized
         return normalized
       }
@@ -214,39 +246,63 @@ export const useUserStore = defineStore('user', () => {
 
     try {
       const res = await UserService.updateUserProfile(data)
-      if (res?.data) {
-        userProfile.value = { ...userProfile.value, ...res.data }
+      const updatedData = res?.data || data
+
+      if (userProfile.value) {
+        userProfile.value = { ...userProfile.value, ...updatedData }
+      } else if (authStore.currentUser) {
+        userProfile.value = {
+          id: authStore.currentUser.id,
+          username: authStore.currentUser.username || authStore.currentUser.email,
+          firstname: updatedData.firstname || authStore.currentUser.firstname || authStore.currentUser.name || '',
+          lastname: updatedData.lastname || authStore.currentUser.lastname || authStore.currentUser.surname || '',
+          name: updatedData.firstname || authStore.currentUser.name || '',
+          surname: updatedData.lastname || authStore.currentUser.surname || '',
+          nameTh: updatedData.nameTh || authStore.currentUser.nameTh,
+          surnameTh: updatedData.surnameTh || authStore.currentUser.surnameTh,
+          email: updatedData.email || authStore.currentUser.email,
+          province: updatedData.province || authStore.currentUser.province,
+          profileImageUrl: updatedData.profileImageUrl || authStore.currentUser.profileImageUrl,
+          currentLevel: Number(authStore.currentUser.level) || 1,
+          role: authStore.currentUser.role,
+          isActive: authStore.currentUser.isActive,
+          enabled: authStore.currentUser.enabled ?? authStore.currentUser.isActive,
+          ...updatedData,
+        } as UserProfile
       }
+
+      if (authStore.currentUser) {
+        const currentUserId = String(authStore.currentUser.id)
+        const patch: Partial<User> = {}
+        if (updatedData.firstname !== undefined) {
+          patch.name = updatedData.firstname
+          patch.firstname = updatedData.firstname
+        }
+        if (updatedData.name !== undefined) patch.name = updatedData.name
+        if (updatedData.lastname !== undefined) {
+          patch.surname = updatedData.lastname
+          patch.lastname = updatedData.lastname
+        }
+        if (updatedData.surname !== undefined) patch.surname = updatedData.surname
+        if (updatedData.nameTh !== undefined) patch.nameTh = updatedData.nameTh
+        if (updatedData.surnameTh !== undefined) patch.surnameTh = updatedData.surnameTh
+        if (updatedData.email !== undefined) patch.email = updatedData.email
+        if (updatedData.province !== undefined) patch.province = updatedData.province
+        if (updatedData.profileImageUrl !== undefined) patch.profileImageUrl = updatedData.profileImageUrl
+
+        authStore.currentUser = { ...authStore.currentUser, ...patch }
+        authStore.updateUser(currentUserId, patch)
+      }
+
+      return userProfile.value
     } catch (err: unknown) {
-      console.info('Backend updateUserProfile offline, updating local state:', err)
+      const errMsg = err instanceof Error ? err.message : 'Failed to update profile'
+      console.error('updateUserProfile error:', err)
+      profileError.value = errMsg
+      throw err
     } finally {
       isProfileLoading.value = false
     }
-
-    if (userProfile.value) {
-      userProfile.value = { ...userProfile.value, ...data }
-    }
-    if (authStore.currentUser) {
-      const patch: Record<string, unknown> = {}
-      if (data.firstname !== undefined) {
-        patch.name = data.firstname
-        patch.firstname = data.firstname
-      }
-      if (data.name !== undefined) patch.name = data.name
-      if (data.lastname !== undefined) {
-        patch.surname = data.lastname
-        patch.lastname = data.lastname
-      }
-      if (data.surname !== undefined) patch.surname = data.surname
-      if (data.nameTh !== undefined) patch.nameTh = data.nameTh
-      if (data.surnameTh !== undefined) patch.surnameTh = data.surnameTh
-      if (data.email !== undefined) patch.email = data.email
-      if (data.province !== undefined) patch.province = data.province
-      if (data.profileImageUrl !== undefined) patch.profileImageUrl = data.profileImageUrl
-      authStore.updateUser(authStore.currentUser.id, patch)
-    }
-
-    return userProfile.value
   }
 
   /**
@@ -374,6 +430,7 @@ export const useUserStore = defineStore('user', () => {
     updateUserProfile,
     upgradeUserLevel,
     recordExamAttempt,
+    resetUserState,
     clearUserData,
   }
 })
