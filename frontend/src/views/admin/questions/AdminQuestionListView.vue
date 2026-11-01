@@ -187,15 +187,6 @@
                 </span>
                 <span class="break-words">{{ choice }}</span>
               </div>
-
-              <!-- Correct Answer Indicator with Checkmark -->
-              <div
-                v-if="cIndex === question.correctAnswer"
-                class="size-6 rounded-md bg-emerald-400/20 text-emerald-300 flex items-center justify-center shrink-0 ml-2 border border-emerald-400/30 select-none shadow-xs"
-                title="Correct Answer"
-              >
-                <CheckCircleMiniIcon class="size-4 text-emerald-300" />
-              </div>
             </div>
           </div>
         </div>
@@ -235,7 +226,6 @@ import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
 import QuestionFormModal, { type QuestionFormData } from '@/components/admin/QuestionFormModal.vue'
 import PencilSquareIcon from '@/shared/components/icons/PencilSquareIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
-import CheckCircleMiniIcon from '@/shared/components/icons/CheckCircleMiniIcon.vue'
 import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
 import AdminQuestionService from '@/services/AdminQuestionService'
 import type { QuestionAdmin } from '@/types/admin'
