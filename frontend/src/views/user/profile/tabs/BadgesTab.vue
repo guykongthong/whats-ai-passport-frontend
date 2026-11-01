@@ -76,27 +76,16 @@
         </p>
 
         <!-- Bottom Status Bar -->
-        <div class="mt-auto pt-4">
-          <div
-            v-if="badge.isUnlocked"
-            class="flex flex-col items-center gap-1.5"
-          >
-            <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#00385A] text-white text-[10px] font-bold shadow-2xs">
-              <CheckCircleIcon class="size-3 text-emerald-400" />
-              <span>Verified Credential</span>
-            </div>
-            <span v-if="badge.unlockedAt" class="text-[10px] font-medium text-slate-400">
+        <div class="mt-auto pt-3">
+          <div v-if="badge.isUnlocked" class="text-center">
+            <span v-if="badge.unlockedAt" class="text-xs font-medium text-slate-500">
               Unlocked: {{ formatDate(badge.unlockedAt) }}
             </span>
           </div>
 
-          <div
-            v-else
-            class="flex flex-col items-center gap-1 text-[11px] font-semibold text-slate-500"
-          >
-            <span class="inline-flex items-center gap-1 text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
-              <LockIcon class="size-3" />
-              <span>Pass Level {{ badge.level }} exam to unlock</span>
+          <div v-else class="text-center">
+            <span class="text-xs text-slate-400 font-medium">
+              Pass Level {{ badge.level }} exam
             </span>
           </div>
         </div>
@@ -242,7 +231,6 @@ import { useUserStore } from '@/stores/user'
 import { useLevelStore } from '@/stores/levelStore'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import LockIcon from '@/shared/components/icons/LockIcon.vue'
-import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
 import BadgeMedalIcon from '@/shared/components/icons/BadgeMedalIcon.vue'
 
