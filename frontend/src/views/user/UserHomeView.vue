@@ -36,7 +36,7 @@
               to="/profile/badges"
               class="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 text-xs sm:text-sm font-bold shadow-sm transition-all active:scale-95 cursor-pointer"
             >
-              <TrophyIcon class="size-4 text-white" />
+              <TrophyIcon class="size-4" :level="4" />
               <span>View Master Badges</span>
             </RouterLink>
 
@@ -161,7 +161,6 @@
 <script setup lang="ts">
 import { computed, onMounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useLevelStore } from '@/stores/levelStore'
 import { useUserStore } from '@/stores/user'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelName } from '@/utils/levelDisplay'
@@ -169,7 +168,6 @@ import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
 
 const userStore = useUserStore()
-const levelStore = useLevelStore()
 
 const currentLevel = computed<number>(() => userStore.currentUserLevel || 1)
 const levelDetails = computed(() => userStore.currentLevelDetails)
@@ -207,7 +205,7 @@ const currentBenefits = computed<string[]>(() => {
   if (levelDetails.value?.benefits && levelDetails.value.benefits.length > 0) {
     return levelDetails.value.benefits
   }
-  return levelStore.getBenefitsForLevel(String(currentLevel.value)).map((b) => b.description)
+  return []
 })
 
 // Format raw benefits string into title and description
@@ -223,22 +221,19 @@ const formattedBenefits = computed(() => {
 
     return {
       title: desc,
-      description: 'Active The CA?T Passport entitlement for your certified level.',
+      description: 'Active CAMT Passport entitlement for your certified level.',
     }
   })
 })
 
 const activeServices = computed(() => {
   if (levelDetails.value?.services && levelDetails.value.services.length > 0) {
-    return levelDetails.value.services.map((name) => {
-      const match = levelStore.allServices.find((s) => s.name === name)
-      return {
-        name,
-        level: match ? match.level : String(currentLevel.value),
-      }
-    })
+    return levelDetails.value.services.map((name) => ({
+      name,
+      level: String(currentLevel.value),
+    }))
   }
-  return levelStore.allServices.filter((s) => Number(s.level) <= currentLevel.value)
+  return []
 })
 
 onMounted(async () => {

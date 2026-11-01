@@ -35,7 +35,7 @@
               Next: Level {{ nextLevelNumber }} – {{ nextLevelTitle }}
             </span>
             <span v-else class="text-amber-300 font-bold inline-flex items-center gap-1">
-              <TrophyIcon class="size-3.5" />
+              <TrophyIcon class="size-3.5" :level="numericLevel" />
               <span>Highest Level Reached</span>
             </span>
           </div>

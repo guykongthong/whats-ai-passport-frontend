@@ -45,9 +45,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch} from 'vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useExamStore } from '@/stores/examStore'
+import { ref, computed, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
 import BasePagination from '@/shared/components/BasePagination.vue'
 import StatusBadge from '@/shared/components/StatusBadge.vue'
 import type { ExamRecord } from '@/types/ExamContent'
@@ -56,17 +55,20 @@ const props = defineProps<{
   userId?: string
 }>()
 
-const authStore = useAuthStore()
-const examStore = useExamStore()
-
-const targetUserId = computed(() => props.userId || authStore.currentUser?.id)
+const userStore = useUserStore()
 
 // get all records for this user, sorted by newest first
 const userRecords = computed<ExamRecord[]>(() => {
-  if (!targetUserId.value) return []
-  return examStore.records
-    .filter((r) => r.userId === targetUserId.value)
-    .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+  return userStore.examHistories.map((h) => ({
+    id: String(h.id),
+    userId: String(props.userId || ''),
+    level: String(h.levelNumber),
+    score: h.score,
+    completedAt: h.attemptDateTime,
+    questionsAsked: [],
+    passCriteria: 3,
+    pass: h.passed,
+  }))
 })
 
 // Pagination

@@ -101,11 +101,13 @@
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
-import { eLearningVideos } from '@/data/eLearning'
+import type { ELearningVideo } from '@/types/ExamContent'
 import VideoOffIcon from '@/shared/components/icons/VideoOffIcon.vue'
 import PlayIcon from '@/shared/components/icons/PlayIcon.vue'
 import PlayCircleIcon from '@/shared/components/icons/PlayCircleIcon.vue'
 import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
+
+const eLearningVideos: ELearningVideo[] = []
 
 const authStore = useAuthStore()
 const selectedIndex = ref(0)

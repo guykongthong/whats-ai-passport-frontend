@@ -76,7 +76,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useLevelStore } from '@/stores/levelStore'
 import type { Benefit } from '@/types/Benefit'
 
 interface Props {
@@ -91,16 +90,12 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const levelStore = useLevelStore()
-
 const normalizedBenefits = computed<string[]>(() => {
   // If explicitly passed through props and non-empty
   if (props.benefits && props.benefits.length > 0) {
     return props.benefits.map((b) => (typeof b === 'string' ? b : b.description))
   }
 
-  // Fallback to store
-  const fromStore = levelStore.getBenefitsForLevel(String(props.currentLevel))
-  return fromStore.map((b) => b.description)
+  return []
 })
 </script>

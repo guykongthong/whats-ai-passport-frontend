@@ -8,7 +8,7 @@
         </p>
       </div>
       <span class="text-xs font-bold text-slate-500">
-        Total attempts: {{ examStore.records.filter(r => r.userId === currentUserId).length }}
+        Total attempts: {{ userStore.examHistories.length }}
       </span>
     </div>
 
@@ -18,13 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useExamStore } from '@/stores/examStore'
+import { useUserStore } from '@/stores/user'
 import ExamHistory from '@/shared/components/ExamHistory.vue'
 
-const authStore = useAuthStore()
-const examStore = useExamStore()
-
-const currentUserId = computed(() => authStore.currentUser?.id)
+const userStore = useUserStore()
 </script>

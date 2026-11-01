@@ -1,13 +1,11 @@
 import { defineStore } from 'pinia'
 import { computed, readonly, ref, reactive } from 'vue'
-import { users as mockUsers } from '@/data/users'
-import { levels } from '@/data/levels'
 import type { User, RegisterPayload } from '@/types'
 import { AuthService } from '@/services/AuthService'
 import { useUserStore } from './user'
 import apiClient from '@/services/apiClient'
 
-const MAX_LEVEL = levels.length
+const MAX_LEVEL = 4
 
 
 interface UserFilters {
@@ -48,7 +46,7 @@ function getInitialUsers(): User[] {
   } catch {
     // ignore
   }
-  return mockUsers
+  return []
 }
 
 function persistUsers(userList: User[]) {
@@ -221,37 +219,7 @@ export const useAuthStore = defineStore('auth', () => {
       throw err
     }
 
-    const existingUsername = users.value.find(
-      (u) =>
-        (u.username && u.username.toLowerCase() === fields.username.toLowerCase()) ||
-        u.email.split('@')[0]?.toLowerCase() === fields.username.toLowerCase(),
-    )
-    if (existingUsername) {
-      throw new Error('Username is already taken.')
-    }
-
-    const existingEmail = users.value.find(
-      (u) => u.email.toLowerCase() === fields.email.toLowerCase(),
-    )
-    if (existingEmail) {
-      throw new Error('Email is already registered.')
-    }
-
-    const newUser: User = {
-      id: crypto.randomUUID(),
-      username: fields.username,
-      name: fields.firstname,
-      surname: fields.lastname,
-      province: fields.province,
-      email: fields.email,
-      profileImageUrl: fields.profileImageUrl,
-      level: '1',
-      role: 'user',
-      isActive: true,
-      enabled: true,
-    }
-    users.value.push(newUser)
-    return newUser
+    throw new Error('Registration failed. Please check your information and try again.')
   }
 
   function setFilters(next: Partial<UserFilters>) {

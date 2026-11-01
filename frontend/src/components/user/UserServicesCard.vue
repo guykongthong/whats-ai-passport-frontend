@@ -113,7 +113,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useLevelStore } from '@/stores/levelStore'
 import type { Service } from '@/types/Service'
 
 interface ServiceWithDesc extends Service {
@@ -132,8 +131,6 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
 })
 
-const levelStore = useLevelStore()
-
 const serviceDescriptions: Record<string, string> = {
   'AI Literacy Orientation': 'Foundational orientation covering safe AI tools, CMU authentication, and campus digital ethics.',
   'Basic Prompt Writing Clinic': 'Interactive clinic providing prompt engineering templates for writing, coding, and design.',
@@ -142,7 +139,7 @@ const serviceDescriptions: Record<string, string> = {
   'Advanced Project Mentorship': 'Technical guidance and project acceleration with faculty and tech industry veterans.',
   'AI Ethics Review Session': 'Structured compliance and algorithm bias check for student capstones and applications.',
   'Expert Certification Support': 'Exam preparation packages and institutional testing vouchers for industry certifications.',
-  'Community Speaker Placement': 'Platform to showcase your student projects and research at regional CA?T tech conferences.',
+  'Community Speaker Placement': 'Platform to showcase your student projects and research at regional CAMT tech conferences.',
 }
 
 const displayedServices = computed<ServiceWithDesc[]>(() => {
@@ -151,7 +148,7 @@ const displayedServices = computed<ServiceWithDesc[]>(() => {
   // If explicitly passed through props
   const sourceServices: Service[] = props.services && props.services.length > 0
     ? props.services
-    : levelStore.allServices
+    : []
 
   // Filter all services unlocked up to the current level
   const filtered = sourceServices.filter((s) => Number(s.level) <= currentLevelNum)

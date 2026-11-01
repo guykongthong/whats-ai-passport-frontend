@@ -264,7 +264,6 @@ import AdminPageLayout from '@/shared/components/AdminPageLayout.vue'
 import Toast from '@/shared/components/Toast.vue'
 import { useToast } from '@/composables/useToast'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
-import { eLearningVideos } from '@/data/eLearning'
 import ELearningService from '@/services/ELearningService'
 
 interface AdminVideoRecord {
@@ -299,6 +298,72 @@ const errors = reactive({
 })
 
 const STORAGE_KEY = 'admin_elearning_videos_v1'
+
+const DEFAULT_CURRICULUM_VIDEOS: AdminVideoRecord[] = [
+  {
+    id: 1,
+    level: 1,
+    title: 'Introduction to Artificial Intelligence',
+    description: 'Core concepts of AI, prompt crafting, and responsible use.',
+    videoUrl: 'https://example.com/videos/l1-intro-to-ai',
+  },
+  {
+    id: 2,
+    level: 1,
+    title: 'Crafting Your First AI Prompt',
+    description: 'Step-by-step walkthrough of writing effective prompts.',
+    videoUrl: 'https://example.com/videos/l1-first-prompt',
+  },
+  {
+    id: 3,
+    level: 2,
+    title: 'Understanding Machine Learning Basics',
+    description: 'Training data, models and how a machine learns patterns.',
+    videoUrl: 'https://example.com/videos/l2-ml-basics',
+  },
+  {
+    id: 4,
+    level: 2,
+    title: 'Data Privacy and AI Tools',
+    description: 'Navigating institutional data handling policies with AI.',
+    videoUrl: 'https://example.com/videos/l2-data-privacy',
+  },
+  {
+    id: 5,
+    level: 3,
+    title: 'Evaluating AI Model Output',
+    description: 'Detecting hallucinations and verifying technical accuracy.',
+    videoUrl: 'https://example.com/videos/l3-model-evaluation',
+  },
+  {
+    id: 6,
+    level: 3,
+    title: 'Ethics and Bias in Applied AI',
+    description: 'Case studies on algorithmic bias and fairness safeguards.',
+    videoUrl: 'https://example.com/videos/l3-ethics-review',
+  },
+  {
+    id: 7,
+    level: 3,
+    title: 'AI Explainability for Stakeholders',
+    description: 'Communicating AI results effectively to non-technical audiences.',
+    videoUrl: 'https://example.com/videos/l3-explainability',
+  },
+  {
+    id: 8,
+    level: 4,
+    title: 'Governing AI Systems at Scale',
+    description: 'Monitoring, accountability and risk management for large AI systems.',
+    videoUrl: 'https://example.com/videos/l4-ai-governance',
+  },
+  {
+    id: 9,
+    level: 4,
+    title: 'Mentoring the Next Generation of AI Practitioners',
+    description: 'Leadership and advisory best practices in AI-driven projects.',
+    videoUrl: 'https://example.com/videos/l4-mentoring',
+  },
+]
 
 const lessonVideos = ref<AdminVideoRecord[]>([])
 
@@ -335,16 +400,9 @@ async function loadInitialVideos() {
     console.warn('Failed to parse localStorage elearning videos:', err)
   }
 
-  // Fallback to seed data from user side eLearning videos
-  lessonVideos.value = eLearningVideos
-    .filter((v) => Number(v.level) >= 1)
-    .map((v, idx) => ({
-      id: `seed-${idx + 1}`,
-      level: Number(v.level) || 1,
-      title: v.title,
-      description: `Comprehensive video instruction for Level ${v.level} certification curriculum.`,
-      videoUrl: v.url.startsWith('http') ? v.url : `https://www.youtube.com/watch?v=dQw4w9WgXcQ`,
-    }))
+  // Fallback to initial database-seeded curriculum lessons
+  lessonVideos.value = [...DEFAULT_CURRICULUM_VIDEOS]
+  saveToStorage()
 }
 
 function saveToStorage() {

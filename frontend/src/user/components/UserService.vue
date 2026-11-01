@@ -39,10 +39,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
-import { useLevelStore } from '@/stores/levelStore'
 
 const userStore = useUserStore()
-const levelStore = useLevelStore()
 
 const loading = computed(() => userStore.loading)
 
@@ -56,14 +54,11 @@ onMounted(async () => {
 const activeServices = computed(() => {
   const userLevel = userStore.currentUserLevel
   if (userStore.currentLevelDetails?.services && userStore.currentLevelDetails.services.length > 0) {
-    return userStore.currentLevelDetails.services.map((name) => {
-      const match = levelStore.allServices.find((s) => s.name === name)
-      return {
-        name,
-        level: match ? match.level : String(userLevel),
-      }
-    })
+    return userStore.currentLevelDetails.services.map((name) => ({
+      name,
+      level: String(userLevel),
+    }))
   }
-  return levelStore.allServices.filter((s) => Number(s.level) <= userLevel)
+  return []
 })
 </script>
