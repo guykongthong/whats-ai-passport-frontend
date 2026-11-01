@@ -7,9 +7,9 @@ export type UpdateQuestionPayload = Partial<CreateQuestionPayload>
 
 export default {
   getQuestionsByLevel(levelNumber: number): Promise<AxiosResponse<QuestionAdmin[]>> {
-    return apiClient
-      .get('/admin/questions', { params: { levelNumber } })
-      .catch(() => apiClient.get(`/admin/questions/level/${levelNumber}`))
+    return apiClient.get('/admin/questions', {
+      params: { levelNumber },
+    })
   },
 
   createQuestion(data: CreateQuestionPayload): Promise<AxiosResponse<QuestionAdmin>> {

@@ -465,9 +465,36 @@ async function fetchLevelVideos() {
     }))
   }
 
+  // Seamlessly bridge any custom lessons added through Admin E-Learning portal for this level
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const rawLocal = localStorage.getItem('admin_elearning_videos_v1')
+      if (rawLocal) {
+        const parsedLocal = JSON.parse(rawLocal)
+        if (Array.isArray(parsedLocal)) {
+          const extraForLevel = parsedLocal.filter((v) => Number(v.level) === currentLevelNumber.value)
+          for (const extra of extraForLevel) {
+            if (!rawVideos.value.some((existing) => existing.videoUrl === extra.videoUrl || existing.title === extra.title)) {
+              rawVideos.value.push({
+                id: extra.id || `local-${Date.now()}`,
+                title: extra.title,
+                description: extra.description || '',
+                videoUrl: extra.videoUrl,
+              })
+            }
+          }
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+
   // Set default active to Lesson 2 (In Progress) if multiple lessons exist to match the design reference
   if (rawVideos.value.length > 1 && currentVideoIndex.value === 0) {
     currentVideoIndex.value = 1
+  } else if (currentVideoIndex.value >= rawVideos.value.length) {
+    currentVideoIndex.value = 0
   }
 }
 

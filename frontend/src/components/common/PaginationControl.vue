@@ -5,20 +5,31 @@
     aria-label="Pagination Navigation"
   >
     <!-- Summary Text: e.g. "Page 1 of 5" -->
-    <div class="text-xs sm:text-sm text-slate-600 font-medium">
-      Page <span class="font-bold text-slate-800">{{ currentPage }}</span> of
-      <span class="font-bold text-slate-800">{{ totalPages }}</span>
+    <!-- Page Indicator Text (e.g. "Page 1 of 5") -->
+    <div
+      :class="[
+        'text-sm sm:text-base font-medium',
+        theme === 'dark' ? 'text-white/80' : 'text-slate-600',
+      ]"
+    >
+      Page <span :class="['font-bold', theme === 'dark' ? 'text-white' : 'text-slate-800']">{{ currentPage }}</span> of
+      <span :class="['font-bold', theme === 'dark' ? 'text-white' : 'text-slate-800']">{{ totalPages }}</span>
     </div>
 
     <!-- Navigation Buttons Group -->
-    <div class="flex items-center gap-1.5">
+    <div class="flex items-center gap-2">
       <!-- Previous Button (Hidden completely on first page: v-if="showPrev") -->
       <button
         v-if="showPrev"
         type="button"
-        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+        :class="[
+          'inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-xl transition-colors focus:outline-none focus:ring-1 cursor-pointer',
+          theme === 'dark'
+            ? 'text-white bg-white/10 hover:bg-white/20 border border-white/20 focus:ring-white/40'
+            : 'text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 focus:ring-slate-400',
+        ]"
         aria-label="Previous Page"
-        @click="goToPage(currentPage - 1)"
+        @click.prevent="goToPage(currentPage - 1)"
       >
         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -27,19 +38,21 @@
       </button>
 
       <!-- Numeric Page Buttons (Windowed) -->
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-1.5">
         <button
           v-for="page in visiblePages"
           :key="page"
           type="button"
           :class="[
-            'size-8 inline-flex items-center justify-center rounded-lg text-xs font-semibold transition-colors focus:outline-none focus:ring-2 cursor-pointer',
+            'size-9 inline-flex items-center justify-center rounded-xl text-sm font-bold transition-all focus:outline-none focus:ring-1 cursor-pointer',
             page === currentPage
-              ? 'bg-indigo-600 text-white shadow-sm border border-indigo-600 focus:ring-indigo-500'
-              : 'text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 focus:ring-indigo-500',
+              ? 'bg-[#C1D7AE] text-[#00385e] shadow-sm border border-[#C1D7AE] focus:ring-[#C1D7AE]/60'
+              : (theme === 'dark'
+                  ? 'text-white/80 bg-white/10 hover:bg-white/20 border border-white/15 focus:ring-white/40'
+                  : 'text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 focus:ring-slate-400'),
           ]"
           :aria-current="page === currentPage ? 'page' : undefined"
-          @click="goToPage(page)"
+          @click.prevent="goToPage(page)"
         >
           {{ page }}
         </button>
@@ -49,9 +62,14 @@
       <button
         v-if="showNext"
         type="button"
-        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+        :class="[
+          'inline-flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-xl transition-colors focus:outline-none focus:ring-1 cursor-pointer',
+          theme === 'dark'
+            ? 'text-white bg-white/10 hover:bg-white/20 border border-white/20 focus:ring-white/40'
+            : 'text-slate-700 bg-white hover:bg-slate-100 border border-slate-300 focus:ring-slate-400',
+        ]"
         aria-label="Next Page"
-        @click="goToPage(currentPage + 1)"
+        @click.prevent="goToPage(currentPage + 1)"
       >
         <span>Next</span>
         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,9 +86,12 @@ import { computed } from 'vue'
 interface Props {
   currentPage: number
   totalPages: number
+  theme?: 'light' | 'dark'
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  theme: 'dark',
+})
 
 const emit = defineEmits<{
   (e: 'page-change', newPage: number): void

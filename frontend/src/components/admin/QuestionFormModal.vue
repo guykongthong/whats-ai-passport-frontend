@@ -147,15 +147,6 @@
                       :placeholder="`Enter option ${letter}...`"
                       @input="onChoiceInput(idx)"
                     />
-
-                    <!-- Correct Badge Indicator -->
-                    <div
-                      v-if="form.correctAnswer === idx"
-                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 text-[11px] font-bold shrink-0 mr-1 border border-emerald-400/30 select-none"
-                    >
-                      <CheckCircleMiniIcon class="size-3 text-emerald-300" />
-                      <span>Correct</span>
-                    </div>
                   </div>
 
                   <!-- Per-choice error message -->
@@ -226,7 +217,6 @@
 import { computed, reactive, watch, onMounted, onUnmounted, useId } from 'vue'
 import * as yup from 'yup'
 import XMarkIcon from '@/shared/components/icons/XMarkIcon.vue'
-import CheckCircleMiniIcon from '@/shared/components/icons/CheckCircleMiniIcon.vue'
 import type { QuestionAdmin } from '@/types/admin'
 import { getLevelName } from '@/utils/levelDisplay'
 

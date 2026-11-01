@@ -79,20 +79,21 @@
             <button
               type="button"
               :class="[
-                'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer border shadow-sm',
+                'size-10 rounded-xl flex items-center justify-center transition-all cursor-pointer border shadow-sm shrink-0',
                 user.enabled
-                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/30 hover:bg-rose-500/30'
-                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30',
+                  ? 'bg-rose-500/20 text-rose-300 border-rose-500/30 hover:bg-rose-500/30 hover:scale-105'
+                  : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30 hover:scale-105',
               ]"
+              :title="user.enabled ? 'Deactivate User' : 'Reactivate User'"
+              :aria-label="user.enabled ? 'Deactivate User' : 'Reactivate User'"
               @click="openConfirmModal"
             >
-              <svg v-if="user.enabled" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-if="user.enabled" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
               </svg>
-              <svg v-else class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg v-else class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{{ user.enabled ? 'Deactivate User' : 'Reactivate User' }}</span>
             </button>
           </div>
         </div>
@@ -149,13 +150,13 @@
       <!-- User Not Found Fallback -->
       <div
         v-else
-        class="bg-white/10 backdrop-blur-md rounded-2xl p-12 text-center text-white border border-white/20"
+        class="bg-white/10 backdrop-blur-md rounded-2xl p-12 text-center text-white border border-white/20 flex flex-col items-center justify-center gap-3"
       >
-        <p class="text-lg font-semibold">User not found</p>
-        <p class="text-sm text-white/60 mt-1">The requested user ID could not be located.</p>
+        <p class="text-xl font-bold">User not found</p>
+        <p class="text-sm text-white/70">The requested user ID could not be located in the system.</p>
         <RouterLink
           to="/admin"
-          class="mt-4 inline-flex items-center px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-semibold text-sm transition-colors"
+          class="mt-6 inline-flex items-center px-6 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-semibold text-sm transition-all shadow-sm"
         >
           Return to User List
         </RouterLink>

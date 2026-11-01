@@ -27,7 +27,7 @@ const starColor = computed(() => {
     case 3:
       return 'text-yellow-500' // Gold/Amber
     case 4:
-      return 'text-purple-500' // Purple/Violet
+      return 'text-[#DD898E]' // Rose / Level 4 Criteria
     default:
       return 'text-gray-400'
   }

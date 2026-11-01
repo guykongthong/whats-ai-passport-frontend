@@ -24,6 +24,7 @@ This document tracks work progress, branch references, and implementation notes 
 | FE-USER-12 | feat/35-fe-user-11-sub-route-1-user-details-view-and-self-edit-using-reusable-form | Completed | frontend/src/views/user/profile/tabs/ExamHistoryTab.vue, frontend/src/views/user/profile/ProfileLayoutView.vue, frontend/src/views/user/profile/tabs/ProfileBadgesTab.vue, frontend/src/views/user/profile/tabs/ProfileServicesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-13 | feat/37-fe-user-13-sub-route-3-unlocked-badges-gallery-and-level-progression-showcase | Completed | frontend/src/views/user/profile/tabs/BadgesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
 | FE-USER-14 | feat/37-fe-user-13-sub-route-3-unlocked-badges-gallery-and-level-progression-showcase | Completed | frontend/src/views/user/profile/tabs/AvailableServicesTab.vue, frontend/src/router/index.ts | vue-tsc --build, vite build, eslint |
+| FE-ADMIN-25 | feat/74-fe-admin-25refactor-modernize-and-polish-the-admin-portal-interface-across-exam-question-management | Completed | frontend/src/shared/components/NavBar.vue, frontend/src/components/user/UserNavbarProfile.vue, frontend/src/views/admin/AdminUserListView.vue, frontend/src/views/admin/user-detail/UserDetailLayout.vue, frontend/src/views/admin/elearning/AdminElearningView.vue | vue-tsc --build, vite build, eslint |
 
 ---
 
@@ -513,3 +514,60 @@ Testing:
 - Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
 - Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
 - Built production bundle with `npm run build-only` (`vite build`). All passed.
+
+---
+
+### FE-ADMIN-25: Refactor, Modernize, and Polish the Admin Portal Interface Across Navigation, User Management, and Curriculum
+
+- Date: 2026-11-01
+- Branch: `feat/74-fe-admin-25refactor-modernize-and-polish-the-admin-portal-interface-across-exam-question-management`
+- Status: Completed
+- Closes: #74
+
+Summary:
+Addressed complete administrative feedback and UI refactoring:
+- Navigation & Header:
+  - Fixed header to top (`sticky top-0 z-40 backdrop-blur-md`) ensuring menu stays accessible while scrolling.
+  - Inverted menu button styles: inactive links use soft blue button styling (`bg-[#9eb8cd] text-[#002D4F]`), active links use frosted glass outline (`bg-white/15 border-white/40 text-white`).
+  - Styled profile dropdown with dark frosted glass (`bg-[#002742]/95 backdrop-blur-md border border-white/20`).
+  - Aligned level badges with official Criteria colors (Level 1 `#C1D7AE`, Level 2 `#F2D794`, Level 3 `#E5A88B`, Level 4 `#DD898E`) and purged purple/violet highlights.
+- User Management & Directory:
+  - Upgraded search filter toolbar and user directory table to frosted glass cards (`bg-white/10 backdrop-blur-md border border-white/20`).
+  - Formatted user identity into three distinct rows (Full name, `@username`, and email).
+  - Removed pulsing dot animation from status badges.
+  - Replaced text actions ("View Details", "Deactivate User") with tooltip-supported SVG icon buttons.
+  - Centered table headers and cells for Province, Level, Status, and Actions.
+  - Resolved filter event mismatch (`@filter-change` and `@update:filters`) and fixed search reset.
+  - Set default page size to 6 to display pagination within viewport and prevented scroll-jumping.
+- User Details & Edit:
+  - Added fallback in `adminUserStore.fetchUserById` to gracefully resolve local mock data when backend is offline.
+  - Increased spacing around "User not found" return button.
+  - Enlarged User Information typography and label spacing.
+  - Styled User Edit inputs and select with frosted glass, bright white labels, and level 1 green save button.
+- Criteria of Levels & Exam Questions:
+  - Standardized max width to `max-w-[1400px]` across admin pages.
+  - Increased error message and retry button spacing in level criteria view.
+  - Restyled "+ Add Question" button to frosted glass.
+  - Removed redundant "Correct" badge from question choices in `QuestionFormModal.vue` to prevent layout cramping.
+- Admin e-Learning Management:
+  - Created `AdminElearningView.vue` with course video publishing form (Title, Description, Video URL, Live Preview player, and Level 2/3/4 selector).
+  - Built course video catalog cards with preview player, badges, and delete capabilities.
+  - Registered `/admin/elearning` (with `/learning` alias) in router and navigation menu.
+- Dropdown & Form Controls Modernization:
+  - Replaced dark solid background in `UserFilterToolbar.vue` and `UserEditForm.vue` with frosted glass styling (`bg-white/10 hover:bg-white/15 border-white/20 backdrop-blur-md`) matching text inputs.
+  - Added `appearance-none` and integrated clean SVG chevron-down indicators to prevent OS-level shrinking and squished appearance.
+  - Standardized dropdown height to `h-11` in filter toolbar and `h-12` in user edit form.
+  - Removed bright green focus ring / aura (`focus:ring-emerald-400/60 focus:border-emerald-400`) across inputs and dropdowns, replacing with subtle, elegant frosted glass highlights (`focus:ring-1 focus:ring-white/30 focus:border-white/40`).
+- Unified "Try Again" Error Actions:
+  - Standardized error card container padding (`p-8 sm:p-10`), typography, and spacing across `AdminLevelListView.vue`, `AdminQuestionListView.vue`, `AdminUserListView.vue`, and `AdminLevelEditView.vue`.
+  - Harmonized "Try Again" button dimensions (`px-6 py-2.5 text-sm font-bold min-w-[130px] rounded-xl`) to ensure 100% visual parity across all administrative error states.
+- User Directory Table Typography & Sizing Scaling:
+  - Enlarged table headers to `text-sm font-bold tracking-wider` with increased cell vertical padding (`py-4 sm:py-5`).
+  - Enlarged user identity typography: Full name to `text-base sm:text-lg font-bold`, username and email to `text-xs sm:text-sm`, and avatar circle to `size-11 sm:size-12`.
+  - Scaled Province text to `text-base sm:text-lg font-medium`, Level badges to `text-xs sm:text-sm font-bold px-3.5 py-1.5`, Status badges to `text-xs sm:text-sm font-bold px-3.5 py-1`, and Action buttons to `size-10` with `size-5` SVG icons.
+  - Scaled pagination footer buttons to `size-9` and indicator text to `text-sm sm:text-base`.
+
+Testing:
+- Checked types with `npm run type-check` (`vue-tsc --build`). All passed with 0 errors.
+- Linted codebase with `npm run lint` (`oxlint`, `eslint`). All passed with 0 warnings and 0 errors.
+- Built production bundle with `npm run build` (`vite build`). All passed.
