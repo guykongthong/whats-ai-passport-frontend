@@ -1,5 +1,5 @@
 <template>
-  <AdminPageLayout title="Exam Questions" main-padding="!max-w-[1200px] px-4 sm:px-8">
+  <AdminPageLayout title="Exam Questions" main-padding="!max-w-[1400px] px-4 sm:px-8">
     <template #toast>
       <Toast :show="showToast" :message="toastMessage" variant="dark" class="sticky top-[72px] backdrop-blur-sm" />
     </template>
@@ -17,7 +17,7 @@
         </div>
         <button
           type="button"
-          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white text-[#00385e] hover:bg-white/90 shadow-md transition-all cursor-pointer shrink-0 select-none"
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md shadow-md transition-all cursor-pointer shrink-0 select-none active:scale-95"
           @click="openAddModal"
         >
           <span class="text-base font-extrabold leading-none">+</span>

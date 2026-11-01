@@ -25,12 +25,12 @@
       <!-- Error State -->
       <div
         v-else-if="error"
-        class="bg-rose-500/20 border border-rose-500/30 text-rose-200 rounded-2xl p-6 text-center text-sm"
+        class="bg-rose-500/20 border border-rose-500/30 text-rose-200 rounded-2xl p-8 sm:p-10 text-center text-sm flex flex-col items-center justify-center gap-2"
       >
-        <p class="font-semibold">{{ error }}</p>
+        <p class="font-bold text-base">{{ error }}</p>
         <button
           type="button"
-          class="mt-3 px-4 py-1.5 text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-colors cursor-pointer"
+          class="mt-6 px-6 py-2.5 text-xs sm:text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white rounded-xl transition-all shadow-md cursor-pointer active:scale-95"
           @click="fetchLevels"
         >
           Try Again

@@ -4,7 +4,7 @@ export const adminNavLinks: NavLink[] = [
   { label: 'User Management', to: '/admin' },
   { label: 'Criteria of Levels', to: '/admin/levels' },
   { label: 'Exam Management', to: '/admin/exams' },
-  { label: 'e-Learning', to: '/learning' },
+  { label: 'e-Learning', to: '/admin/elearning' },
 ]
 
 export const adminFooterLinks: NavLink[] = [
