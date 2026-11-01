@@ -635,6 +635,16 @@ const activeEmbedUrl = computed<string | null>(() => {
     return `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0`
   }
 
+  if (rawUrl && rawUrl.includes('example.com')) {
+    if (rawUrl.includes('first-prompt')) {
+      return 'https://www.youtube-nocookie.com/embed/aircAruvnKk?autoplay=1&rel=0'
+    }
+    if (rawUrl.includes('intro-to-ai') || rawUrl.includes('l1')) {
+      return 'https://www.youtube-nocookie.com/embed/ukzFI9rgwfU?autoplay=1&rel=0'
+    }
+    return 'https://www.youtube-nocookie.com/embed/HQnC3411xYg?autoplay=1&rel=0'
+  }
+
   return 'https://www.youtube-nocookie.com/embed/JMUxmLyrhSk?autoplay=1&rel=0'
 })
 

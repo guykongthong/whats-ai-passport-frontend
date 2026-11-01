@@ -179,17 +179,7 @@ const search = ref(props.initialFilters?.name || props.initialFilters?.search ||
 const level = ref(props.initialFilters?.level ? String(props.initialFilters.level) : (props.initialLevel ? String(props.initialLevel) : ''))
 const province = ref(props.initialFilters?.province || props.initialProvince || '')
 
-const provinces = [
-  'Bangkok',
-  'Chiang Mai',
-  'Chiang Rai',
-  'Chonburi',
-  'Khon Kaen',
-  'Nakhon Ratchasima',
-  'Nonthaburi',
-  'Phuket',
-  'Songkhla',
-]
+import { provinces } from '@/data/provinces'
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 

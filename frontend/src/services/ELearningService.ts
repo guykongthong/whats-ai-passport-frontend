@@ -25,10 +25,9 @@ export default {
   /**
    * GET /api/me/videos (Baseline API Contract)
    * Fetch e-learning videos for the user's current level.
-   * Gracefully falls back to legacy /v1/elearning/current-level if needed.
    */
   getCurrentLevelVideos(): Promise<AxiosResponse<UserVideosResponse | ELearningVideo[]>> {
-    return apiClient.get('/me/videos').catch(() => apiClient.get('/v1/elearning/current-level'))
+    return apiClient.get('/me/videos')
   },
 
   /**

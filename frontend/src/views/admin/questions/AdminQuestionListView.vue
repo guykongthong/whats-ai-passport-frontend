@@ -43,7 +43,7 @@
             <span
               :class="[
                 'size-2 rounded-full shrink-0',
-                tab.level === 1 ? 'bg-[#C1D7AE]' : tab.level === 2 ? 'bg-[#F2D794]' : 'bg-[#E5A88B]',
+                tab.level === 1 ? 'bg-[#C1D7AE]' : tab.level === 2 ? 'bg-[#F2D794]' : tab.level === 3 ? 'bg-[#E5A88B]' : 'bg-[#DD898E]',
               ]"
             />
             <span>{{ tab.label }}</span>
@@ -250,6 +250,7 @@ const levelTabs: LevelTab[] = [
   { level: 1, label: 'Level 1 Exam', target: 'Explorer' },
   { level: 2, label: 'Level 2 Exam', target: 'Achiever' },
   { level: 3, label: 'Level 3 Exam', target: 'Innovator' },
+  { level: 4, label: 'Level 4 Exam', target: 'Master' },
 ]
 
 const optionLetters = ['A', 'B', 'C', 'D']

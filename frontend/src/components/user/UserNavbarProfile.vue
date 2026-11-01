@@ -217,7 +217,6 @@
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
-import { useUserStore } from '@/stores/user'
 import { getLevelClasses } from '@/utils/levelDisplay'
 
 interface Props {
@@ -234,21 +233,18 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const authStore = useAuthStore()
-const userStore = useUserStore()
 
-const currentUser = computed(() => userStore.userProfile || authStore.currentUser)
+const currentUser = computed(() => authStore.currentUser)
 const isDropdownOpen = ref(false)
 const imageLoadError = ref(false)
 const profileDropdownRef = ref<HTMLElement | null>(null)
 
 watch(
   () => currentUser.value?.profileImageUrl,
-  (newUrl) => {
-    if (newUrl) {
-      imageLoadError.value = false
-    }
+  () => {
+    imageLoadError.value = false
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 const fullName = computed(() => {

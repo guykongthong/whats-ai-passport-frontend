@@ -73,9 +73,9 @@
             ]"
           >
             <img
-              v-if="levelData?.badgeImageUrl || levelData?.badge?.imageUrl"
-              :src="levelData.badgeImageUrl || levelData.badge?.imageUrl"
-              :alt="levelData.name"
+              v-if="hasCustomBadgeImage(levelData?.badgeImageUrl || levelData?.badge?.imageUrl)"
+              :src="levelData?.badgeImageUrl || levelData?.badge?.imageUrl || ''"
+              :alt="levelData?.name || ''"
               class="size-14 rounded-2xl object-cover"
             />
             <template v-else>
@@ -240,6 +240,13 @@ const levelEditSchema = yup.object({
     .of(yup.string().required())
     .min(1, 'At least one campus benefit item is required.'),
 })
+
+function hasCustomBadgeImage(url?: string): boolean {
+  if (!url) return false
+  const trimmed = url.trim()
+  if (!trimmed) return false
+  return !trimmed.includes('placehold.co')
+}
 
 function getLevelTheme(lvl: number) {
   switch (lvl) {

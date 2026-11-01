@@ -54,9 +54,9 @@ const handleNoAccount = () => {
 </script>
 
 <template>
-  <div class="bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] px-8 pt-10 pb-16 sm:px-10 sm:pt-12 sm:pb-40 w-full max-w-[440px] mx-auto text-center border border-gray-100">
-    <PageTitle class="!text-[60px] !font-black text-[#01172e] mb-6 tracking-tight" style="-webkit-text-stroke: 2px currentColor;">Log in</PageTitle>
-    <p class="text-[16px] text-[#4F6C83] mb-12 mx-auto leading-relaxed text-center">
+  <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] px-6 py-8 sm:px-10 sm:py-10 w-full max-w-[440px] mx-auto text-center border border-gray-100 my-auto">
+    <PageTitle class="!text-4xl sm:!text-5xl !font-black text-[#01172e] mb-2 tracking-tight" style="-webkit-text-stroke: 1.5px currentColor;">Log in</PageTitle>
+    <p class="text-sm sm:text-base text-[#4F6C83] mb-6 sm:mb-8 mx-auto leading-relaxed text-center">
       Access your AI Passport Institutional Account.
     </p>
 
@@ -67,37 +67,37 @@ const handleNoAccount = () => {
       class="mb-6 text-left" 
     />
 
-    <form @submit.prevent="handleLogin" class="text-left space-y-10 pt-4">
-      <div class="mt-4">
-        <label for="email" class="block text-[#01172e] text-[17px] font-black mb-3" style="-webkit-text-stroke: 1px currentColor;">
-          username <RequiredField/>
+    <form @submit.prevent="handleLogin" class="text-left flex flex-col gap-5">
+      <div class="flex flex-col gap-2">
+        <label for="email" class="text-[#01172e] text-sm sm:text-[15px] font-bold" style="-webkit-text-stroke: 0.5px currentColor;">
+          Username <RequiredField/>
         </label>
         <input
           id="email"
           v-model="email"
           type="text"
           placeholder="user1"
-          class="w-full rounded-md border px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-button-primary"
+          class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00385e]/20 focus:border-[#00385e] transition-all"
         />
         <ErrorMessage :message="error.email"/>
       </div>
 
-      <div class="mt-10">
-        <label for="password" class="block text-[#01172e] space-y-10 pt-4 text-[17px] font-black mb-3" style="-webkit-text-stroke: 1px currentColor;">
-          password <RequiredField/>
+      <div class="flex flex-col gap-2">
+        <label for="password" class="text-[#01172e] text-sm sm:text-[15px] font-bold" style="-webkit-text-stroke: 0.5px currentColor;">
+          Password <RequiredField/>
         </label>
         <div class="relative">
           <input
             id="password"
             v-model="password"
             :type="showPassword ? 'text' : 'password'"
-            class="w-full rounded-md border px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-button-primary"
+            class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 pr-11 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00385e]/20 focus:border-[#00385e] transition-all"
           />
           <ErrorMessage :message="error.password"/>
           <button
             type="button"
             @click="showPassword = !showPassword"
-            class="absolute right-4 top-1/2 -translate-y-1/2 text-[#4F6C83] hover:text-primary-dark focus:outline-none"
+            class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4F6C83] hover:text-primary-dark focus:outline-none cursor-pointer"
           >
             <EyeOffIcon v-if="!showPassword" class="w-5 h-5" />
             <EyeIcon v-else class="w-5 h-5" />
@@ -105,24 +105,23 @@ const handleNoAccount = () => {
         </div>
       </div>
 
-      <div class="text-left mt-6">
-        <a href="#" class="text-[#4F6C83] hover:text-primary-dark transition-colors text-[15px] font-medium underline underline-offset-4 decoration-[#4F6C83]/50">
-          forgot your password?
+      <div class="flex items-center justify-between text-xs sm:text-sm">
+        <a href="#" class="text-[#4F6C83] hover:text-[#00385e] transition-colors font-medium underline underline-offset-4 decoration-[#4F6C83]/50">
+          Forgot your password?
         </a>
       </div>
 
       <button
         type="submit"
-        class="w-full bg-[#00385e] hover:bg-[#01172e] text-white font-black text-[17px] py-3.5 px-4 rounded-lg transition-colors mt-12"
-        style="-webkit-text-stroke: 1px currentColor;"
+        class="w-full bg-[#00385e] hover:bg-[#01172e] text-white font-bold text-base py-3 px-4 rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.99] mt-2 cursor-pointer"
       >
         Log in
       </button>
     </form>
 
-    <div class="mt-12 text-[15px] text-[#4F6C83] mb-4">
+    <div class="mt-6 text-sm text-[#4F6C83]">
       Don't have an account? 
-      <a href="#" @click="handleNoAccount" class="text-[#01172e] font-black hover:underline" style="-webkit-text-stroke: 0.5px currentColor;">
+      <a href="#" @click.prevent="handleNoAccount" class="text-[#00385e] font-bold hover:underline cursor-pointer">
         Sign up
       </a>
     </div>
