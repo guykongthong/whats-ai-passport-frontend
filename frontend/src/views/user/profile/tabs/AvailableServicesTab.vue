@@ -197,8 +197,19 @@ const serviceCatalog: ServiceItem[] = [
   },
 ]
 
-// Current level allowed services (cumulative from level 1 up to current level)
+// Current level allowed services (dynamic from backend userStore.availableServices, with catalog descriptions)
 const currentActiveServices = computed<ServiceItem[]>(() => {
+  const backendServices = userStore.availableServices
+  if (backendServices && backendServices.length > 0) {
+    return backendServices.map((name) => {
+      const found = serviceCatalog.find((s) => s.name.toLowerCase() === name.toLowerCase())
+      return found || {
+        level: String(currentLevel.value),
+        name,
+        description: 'Authorized campus service benefit associated with your AI Passport certification.',
+      }
+    })
+  }
   const lvl = currentLevel.value
   return serviceCatalog.filter((s) => Number(s.level) <= lvl)
 })
