@@ -20,14 +20,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
-import { useExamStore } from '@/stores/examStore'
 import { useUserStore } from '@/stores/user'
 import { useLevelStore } from '@/stores/levelStore'
 import type { Level } from '@/types/Level'
 
-const authStore = useAuthStore()
-const examStore = useExamStore()
 const levelStore = useLevelStore()
 const userStore = useUserStore()
 
@@ -38,10 +34,9 @@ onMounted(async () => {
 })
 
 const earnedBadges = computed<Level[]>(() => {
-  const userId = authStore.currentUser?.id
-  if (!userId) return []
-  const passedRecords = examStore.records.filter(r => r.userId === userId && r.pass)
-  const passedLevelIds = new Set(passedRecords.map(r => String(r.level)))
+  const passedLevelIds = new Set(
+    userStore.examHistories.filter(h => h.passed).map(h => String(h.levelNumber)),
+  )
   return levelStore.allLevels.filter(l => passedLevelIds.has(String(l.id)))
 })
 </script>
