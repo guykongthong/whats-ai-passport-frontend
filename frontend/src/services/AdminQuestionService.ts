@@ -3,6 +3,7 @@ import apiClient from './apiClient'
 import type { QuestionAdmin } from '@/types/admin'
 
 export type CreateQuestionPayload = Omit<QuestionAdmin, 'id'>
+export type UpdateQuestionPayload = Partial<CreateQuestionPayload>
 
 export default {
   getQuestionsByLevel(levelNumber: number): Promise<AxiosResponse<QuestionAdmin[]>> {
@@ -13,7 +14,7 @@ export default {
     return apiClient.post('/admin/questions', data)
   },
 
-  updateQuestion(id: number, data: Partial<QuestionAdmin>): Promise<AxiosResponse<QuestionAdmin>> {
+  updateQuestion(id: number, data: UpdateQuestionPayload): Promise<AxiosResponse<QuestionAdmin>> {
     return apiClient.put(`/admin/questions/${id}`, data)
   },
 
