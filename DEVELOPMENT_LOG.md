@@ -548,6 +548,7 @@ Addressed complete administrative feedback and UI refactoring:
   - Standardized max width to `max-w-[1400px]` across admin pages.
   - Increased error message and retry button spacing in level criteria view.
   - Restyled "+ Add Question" button to frosted glass.
+  - Removed redundant "Correct" badge from question choices in `QuestionFormModal.vue` to prevent layout cramping.
 - Admin e-Learning Management:
   - Created `AdminElearningView.vue` with course video publishing form (Title, Description, Video URL, Live Preview player, and Level 2/3/4 selector).
   - Built course video catalog cards with preview player, badges, and delete capabilities.
