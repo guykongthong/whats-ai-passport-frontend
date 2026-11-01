@@ -22,7 +22,10 @@
           type="text"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full h-11 sm:h-12 px-4 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-colors backdrop-blur-md',
+            'w-full rounded-xl border transition-colors',
+            theme === 'dark'
+              ? 'h-11 sm:h-12 px-4 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
             firstnameError
               ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
               : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300')
@@ -44,7 +47,10 @@
           type="text"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full h-11 sm:h-12 px-4 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-colors backdrop-blur-md',
+            'w-full rounded-xl border transition-colors',
+            theme === 'dark'
+              ? 'h-11 sm:h-12 px-4 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
             lastnameError
               ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
               : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300')
@@ -68,7 +74,10 @@
         type="email"
         :disabled="disabled || isSaving || disableEmail"
         :class="[
-          'w-full h-11 sm:h-12 px-4 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-colors backdrop-blur-md',
+          'w-full rounded-xl border transition-colors',
+          theme === 'dark'
+            ? 'h-11 sm:h-12 px-4 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+            : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
           emailError
             ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
             : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300'),
@@ -92,7 +101,10 @@
           v-model="province"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full h-11 sm:h-12 pl-4 pr-10 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-all cursor-pointer backdrop-blur-md appearance-none',
+            'w-full rounded-xl border transition-all cursor-pointer appearance-none',
+            theme === 'dark'
+              ? 'h-11 sm:h-12 pl-4 pr-10 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
             provinceError
               ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
               : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300'),
@@ -156,7 +168,7 @@
           'rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 select-none',
           theme === 'dark'
             ? (isSubmitDisabled ? 'bg-[#C1D7AE]/50 text-[#00385e]/70 cursor-not-allowed opacity-60 px-6 py-2.5 text-sm' : 'bg-[#C1D7AE] hover:bg-[#b2cb9d] text-[#00385e] cursor-pointer active:scale-95 px-6 py-2.5 text-sm shadow-md')
-            : (isSubmitDisabled ? 'bg-indigo-600/50 text-white/70 cursor-not-allowed opacity-60 px-5 py-2.5 text-xs sm:text-sm' : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-indigo-500/20 px-5 py-2.5 text-xs sm:text-sm')
+            : (isSubmitDisabled ? 'bg-[#002845]/50 text-white/60 cursor-not-allowed opacity-60 px-5 py-2.5 text-xs sm:text-sm' : 'bg-[#002845] hover:bg-[#001830] text-white cursor-pointer shadow-sm active:scale-95 px-5 py-2.5 text-xs sm:text-sm')
         ]"
       >
         <span
@@ -289,7 +301,7 @@ const onSubmit = handleSubmit((values) => {
     lastname: values.lastname.trim(),
     email: values.email.trim(),
     province: values.province.trim(),
-    profileImageUrl: values.profileImageUrl || '',
+    profileImageUrl: profileImageUrl.value || values.profileImageUrl || '',
   })
 })
 

@@ -29,6 +29,7 @@
 import { computed, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useUserStore } from '@/stores/user'
 import { useToast } from '@/composables/useToast'
 import Toast from '@/shared/components/Toast.vue'
 import NavBar from '@/shared/components/NavBar.vue'
@@ -40,12 +41,16 @@ const router = useRouter()
 const { showToast, toastMessage } = useToast()
 const isInsideLayout = inject('insideUserLayout', false)
 
+const userStore = useUserStore()
 const navLinks = userNavLinks
 const footerLinks = userFooterLinks
 
 const userName = computed(() => {
-  const u = authStore.currentUser
-  return u ? `${u.name} ${u.surname}` : null
+  const u = userStore.userProfile || authStore.currentUser
+  if (!u) return null
+  const first = u.firstname || u.name || ''
+  const last = u.lastname || u.surname || ''
+  return `${first} ${last}`.trim() || u.username || null
 })
 
 const userRole = computed(() => {

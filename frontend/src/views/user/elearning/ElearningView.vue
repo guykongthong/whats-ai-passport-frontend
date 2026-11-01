@@ -146,38 +146,73 @@
                         <path d="M8 5v14l11-7z" />
                       </svg>
                     </button>
-                    <button
-                      type="button"
-                      class="hover:text-white transition-colors"
-                      title="Audio"
-                    >
-                      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M11 5L6 9H2v6h4l5 4V5z" />
-                      </svg>
-                    </button>
                     <span class="text-[11px] font-mono text-slate-400">
-                      {{ playbackTime }} / {{ activeVideoDuration }}
+                      {{ playbackTime }}
                     </span>
                   </div>
-
-                  <div class="flex items-center gap-3">
-                    <span class="text-[11px] font-bold border border-white/30 px-1 rounded text-slate-300">
-                      CC
+                  <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono font-bold text-sky-400">
+                      {{ progressPercentage }}%
                     </span>
-                    <svg class="size-4 hover:text-white cursor-pointer" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                    </svg>
                   </div>
                 </div>
 
                 <!-- Scrubber Progress Bar -->
-                <div class="h-1.5 w-full rounded-full bg-slate-700/80 overflow-hidden cursor-pointer">
+                <div
+                  class="h-1.5 w-full rounded-full bg-slate-700/80 overflow-hidden cursor-pointer"
+                  @click="seekProgress"
+                >
                   <div
                     class="h-full bg-[#005a92] rounded-full transition-all duration-300"
                     :style="{ width: progressPercentage + '%' }"
                   />
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Interactive Playback Progress & Control Bar (Always visible) -->
+          <div class="mt-3 rounded-xl bg-slate-900 px-4 py-3 text-white flex flex-col gap-2.5 shadow-sm">
+            <div class="flex items-center justify-between text-xs text-slate-300">
+              <div class="flex items-center gap-3">
+                <button
+                  type="button"
+                  @click="togglePlayPause"
+                  class="flex items-center justify-center size-8 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                  :title="isPlayingVideo ? 'Pause' : 'Play'"
+                >
+                  <svg v-if="isPlayingVideo" class="size-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                  </svg>
+                  <svg v-else class="size-3.5 fill-current ml-0.5" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </button>
+                <span class="text-xs font-mono font-medium text-slate-200">
+                  {{ playbackTime }}
+                </span>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <span class="text-[11px] font-semibold text-slate-400">
+                  Lesson {{ currentVideoIndex + 1 }} of {{ rawVideos.length }}
+                </span>
+                <span class="text-xs font-mono font-bold text-sky-400">
+                  {{ progressPercentage }}%
+                </span>
+              </div>
+            </div>
+
+            <!-- Interactive Scrubber Progress Bar -->
+            <div
+              class="relative h-2 w-full rounded-full bg-slate-700/80 overflow-hidden cursor-pointer"
+              @click="seekProgress"
+              title="Click to seek playback"
+            >
+              <div
+                class="h-full bg-gradient-to-r from-sky-500 to-[#005a92] rounded-full transition-all duration-150"
+                :style="{ width: progressPercentage + '%' }"
+              />
             </div>
           </div>
 
@@ -207,9 +242,33 @@
 
         <!-- Curriculum Section (Vertical Stack Matching Reference Image) -->
         <section aria-label="Course Curriculum" class="space-y-4 pt-2">
+          <!-- Overall Curriculum Progress Summary -->
+          <div class="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 space-y-2.5 shadow-2xs">
+            <div class="flex items-center justify-between text-xs sm:text-sm">
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-slate-900">
+                  Curriculum Progress
+                </h3>
+                <span class="rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-bold text-[#00385A]">
+                  Level {{ currentLevelNumber }}
+                </span>
+              </div>
+              <span class="font-bold text-[#00385A]">
+                {{ completedIndices.length }} / {{ curriculumLessons.length }} Completed ({{ overallCurriculumPercent }}%)
+              </span>
+            </div>
+            <!-- Overall Curriculum Progress Bar -->
+            <div class="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+              <div
+                class="h-full bg-emerald-600 rounded-full transition-all duration-500"
+                :style="{ width: overallCurriculumPercent + '%' }"
+              />
+            </div>
+          </div>
+
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-bold text-slate-900">
-              Curriculum
+              Curriculum Lessons
             </h3>
             <span class="text-xs font-semibold text-slate-500">
               {{ curriculumLessons.length }} Lessons Total
@@ -221,14 +280,15 @@
             <div
               v-for="(lesson, idx) in curriculumLessons"
               :key="lesson.id ?? idx"
-              class="rounded-xl border transition-all p-4 sm:p-5 flex items-center justify-between gap-4"
+              class="rounded-xl border transition-all p-4 sm:p-5 flex items-center justify-between gap-4 cursor-pointer"
               :class="[
-                lesson.status === 'in-progress'
-                  ? 'bg-white border-slate-300 border-l-4 border-l-[#00385A] shadow-xs'
-                  : lesson.status === 'completed'
-                    ? 'bg-white border-slate-200/90 shadow-2xs hover:border-slate-300'
-                    : 'bg-slate-50/70 border-slate-200/70 opacity-70'
+                idx === currentVideoIndex
+                  ? 'bg-white border-[#00385A] border-l-4 shadow-sm'
+                  : completedIndices.includes(idx)
+                    ? 'bg-white border-slate-200/90 hover:border-slate-300'
+                    : 'bg-white border-slate-200/70 hover:border-slate-300'
               ]"
+              @click="selectVideo(idx)"
             >
               <!-- Left Icon & Lesson Details -->
               <div class="flex items-center gap-3.5 sm:gap-4 min-w-0">
@@ -236,27 +296,27 @@
                 <div
                   class="size-10 sm:size-11 rounded-full flex items-center justify-center shrink-0 transition-colors"
                   :class="[
-                    lesson.status === 'completed'
-                      ? 'bg-[#00385A] text-white shadow-xs'
-                      : lesson.status === 'in-progress'
+                    completedIndices.includes(idx)
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : idx === currentVideoIndex
                         ? 'border-2 border-[#00385A] text-[#00385A] bg-blue-50/50'
-                        : 'bg-slate-200 text-slate-500'
+                        : 'bg-slate-100 text-slate-500'
                   ]"
                 >
                   <!-- Completed Icon -->
                   <CheckCircleIcon
-                    v-if="lesson.status === 'completed'"
+                    v-if="completedIndices.includes(idx)"
                     class="size-6 text-white"
                   />
                   <!-- In Progress Play Icon -->
                   <PlayIcon
-                    v-else-if="lesson.status === 'in-progress'"
+                    v-else-if="idx === currentVideoIndex"
                     class="size-4 ml-0.5 text-[#00385A]"
                   />
-                  <!-- Locked Icon -->
-                  <LockIcon
+                  <!-- Ready Play Icon -->
+                  <PlayIcon
                     v-else
-                    class="size-4 text-slate-500"
+                    class="size-4 ml-0.5 text-slate-400"
                   />
                 </div>
 
@@ -266,54 +326,51 @@
                     LESSON {{ idx + 1 }}
                   </span>
                   <h4
-                    class="text-xs sm:text-sm font-bold truncate mt-0.5"
-                    :class="lesson.status === 'locked' ? 'text-slate-600' : 'text-slate-900'"
+                    class="text-xs sm:text-sm font-bold truncate mt-0.5 text-slate-900"
                   >
                     {{ lesson.title }}
                   </h4>
                   <p class="text-xs text-slate-500 mt-0.5 flex items-center gap-1.5">
-                    <span>{{ lesson.duration || '45 mins' }}</span>
+                    <span>{{ lesson.duration || '30 mins' }}</span>
                     <span>&bull;</span>
                     <span
                       class="font-semibold"
                       :class="[
-                        lesson.status === 'completed'
+                        completedIndices.includes(idx)
                           ? 'text-emerald-700'
-                          : lesson.status === 'in-progress'
+                          : idx === currentVideoIndex
                             ? 'text-[#00385A]'
                             : 'text-slate-500'
                       ]"
                     >
-                      {{ lesson.status === 'completed' ? 'Completed' : lesson.status === 'in-progress' ? 'In Progress' : 'Locked' }}
+                      {{ completedIndices.includes(idx) ? 'Completed' : idx === currentVideoIndex ? (isPlayingVideo ? 'In Progress' : 'Paused') : 'Ready to start' }}
                     </span>
                   </p>
                 </div>
               </div>
 
               <!-- Right Action Button -->
-              <div class="shrink-0">
+              <div class="shrink-0" @click.stop>
                 <button
-                  v-if="lesson.status === 'completed'"
                   type="button"
                   @click="selectVideo(idx)"
-                  class="px-4 py-2 rounded-lg bg-[#00385A] hover:bg-[#002840] text-white text-xs font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  class="px-4 py-2 rounded-lg text-white text-xs font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer flex items-center gap-1.5"
+                  :class="[
+                    completedIndices.includes(idx)
+                      ? 'bg-emerald-700 hover:bg-emerald-800'
+                      : idx === currentVideoIndex
+                        ? 'bg-[#00385A] hover:bg-[#002840] ring-2 ring-[#00385A]/30'
+                        : 'bg-slate-700 hover:bg-slate-800'
+                  ]"
                 >
-                  Watch again
+                  <svg v-if="idx === currentVideoIndex && isPlayingVideo" class="size-3.5 animate-pulse text-sky-300" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                  </svg>
+                  <svg v-else class="size-3.5" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <span>{{ completedIndices.includes(idx) ? 'Watch again' : idx === currentVideoIndex ? (isPlayingVideo ? 'Playing' : 'Resume') : 'Start Lesson' }}</span>
                 </button>
-                <button
-                  v-else-if="lesson.status === 'in-progress'"
-                  type="button"
-                  @click="selectVideo(idx)"
-                  class="px-4 py-2 rounded-lg bg-[#00385A] hover:bg-[#002840] text-white text-xs font-semibold transition-all shadow-2xs active:scale-95 cursor-pointer"
-                >
-                  Resume
-                </button>
-                <span
-                  v-else
-                  class="text-xs font-medium text-slate-400 px-3 py-1.5"
-                >
-                  Locked
-                </span>
               </div>
             </div>
           </div>
@@ -346,25 +403,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useAuthStore } from '@/stores/authStore'
 import ELearningService, { type VideoItem, type UserVideosResponse } from '@/services/ELearningService'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
 import { eLearningVideos } from '@/data/eLearning'
 import TrophyIcon from '@/shared/components/icons/TrophyIcon.vue'
 import CheckCircleIcon from '@/shared/components/icons/CheckCircleIcon.vue'
-import LockIcon from '@/shared/components/icons/LockIcon.vue'
 import PlayIcon from '@/shared/components/icons/PlayIcon.vue'
 import DocumentTextIcon from '@/shared/components/icons/DocumentTextIcon.vue'
 
 interface LessonViewItem extends VideoItem {
   duration?: string
-  status: 'completed' | 'in-progress' | 'locked'
+  status: 'completed' | 'in-progress' | 'ready'
 }
 
 const userStore = useUserStore()
+const authStore = useAuthStore()
 
 const isLoading = ref(false)
 const rawVideos = ref<VideoItem[]>([])
@@ -372,25 +430,92 @@ const currentVideoIndex = ref(0)
 const completedIndices = ref<number[]>([])
 const isPlayingVideo = ref(false)
 const levelTransitionAlert = ref<string | null>(null)
+const currentPlaybackSeconds = ref(0)
+let playbackInterval: ReturnType<typeof setInterval> | null = null
 
 const currentLevelNumber = computed<number>(() => userStore.currentUserLevel || 1)
 
-// Map raw videos into curriculum lessons matching reference states
+// Storage key to persist completed e-learning lessons per user & level
+function getStorageKey(): string {
+  const uid = userStore.userProfile?.id || authStore.currentUser?.id || 'guest'
+  return `elearning_completed_${uid}_lvl${currentLevelNumber.value}`
+}
+
+function loadCompletedLessons() {
+  try {
+    const saved = localStorage.getItem(getStorageKey())
+    if (saved) {
+      completedIndices.value = JSON.parse(saved)
+    } else {
+      completedIndices.value = []
+    }
+  } catch {
+    completedIndices.value = []
+  }
+}
+
+function saveCompletedLessons() {
+  try {
+    localStorage.setItem(getStorageKey(), JSON.stringify(completedIndices.value))
+  } catch {
+    // ignore
+  }
+}
+
+// Fallback high-quality playable YouTube AI educational videos
+const PLAYABLE_AI_VIDEOS: Record<number, string[]> = {
+  1: [
+    'https://www.youtube.com/watch?v=JMUxmLyrhSk', // Intro to AI & LLMs
+    'https://www.youtube.com/watch?v=jC4v5AS4RIM', // Prompt Engineering
+    'https://www.youtube.com/watch?v=bEj301dD2jE', // Responsible AI & Ethics
+    'https://www.youtube.com/watch?v=aircAruvnKk', // How Neural Networks Learn
+    'https://www.youtube.com/watch?v=ukzFI9rgwfU', // Machine Learning Foundations
+  ],
+  2: [
+    'https://www.youtube.com/watch?v=ukzFI9rgwfU', // ML Basics
+    'https://www.youtube.com/watch?v=2eWuYf-aZE4', // Data Privacy
+    'https://www.youtube.com/watch?v=e-gwvmhyU54', // Fine-tuning Models
+    'https://www.youtube.com/watch?v=gV0_raKR2UQ', // Model Reliability & Bias
+    'https://www.youtube.com/watch?v=T-D1OfcDW1M', // Distributed Workflows
+  ],
+  3: [
+    'https://www.youtube.com/watch?v=T-D1OfcDW1M', // Vector Search & RAG
+    'https://www.youtube.com/watch?v=H74tPjA7F8w', // Benchmark Testing
+    'https://www.youtube.com/watch?v=bEj301dD2jE', // AI Governance Audits
+    'https://www.youtube.com/watch?v=ukzFI9rgwfU', // GPU Computing
+    'https://www.youtube.com/watch?v=JMUxmLyrhSk', // Advanced Multimodal
+  ],
+  4: [
+    'https://www.youtube.com/watch?v=T-D1OfcDW1M', // Enterprise Architecture
+    'https://www.youtube.com/watch?v=H74tPjA7F8w', // Model Serving & Scale
+    'https://www.youtube.com/watch?v=aircAruvnKk', // Next-Gen Alignment
+    'https://www.youtube.com/watch?v=jC4v5AS4RIM', // Enterprise Mentoring
+    'https://www.youtube.com/watch?v=bEj301dD2jE', // Global AI Policy
+  ],
+}
+
+function resolvePlayableUrl(url: string | undefined, idx: number, level: number): string {
+  if (url && !url.includes('example.com') && (url.includes('youtube') || url.includes('youtu.be') || /\.(mp4|webm)$/i.test(url))) {
+    return url
+  }
+  const defaultList = PLAYABLE_AI_VIDEOS[1] ?? ['https://www.youtube.com/watch?v=JMUxmLyrhSk']
+  const levelList = PLAYABLE_AI_VIDEOS[level] ?? defaultList
+  return levelList[idx % levelList.length] ?? defaultList[0] ?? 'https://www.youtube.com/watch?v=JMUxmLyrhSk'
+}
+
+// Map raw videos into curriculum lessons - all lessons accessible & unlocked!
 const curriculumLessons = computed<LessonViewItem[]>(() => {
   return rawVideos.value.map((v, idx) => {
-    let status: 'completed' | 'in-progress' | 'locked' = 'locked'
+    let status: 'completed' | 'in-progress' | 'ready' = 'ready'
     if (completedIndices.value.includes(idx)) {
       status = 'completed'
     } else if (idx === currentVideoIndex.value) {
       status = 'in-progress'
-    } else if (idx <= Math.max(...completedIndices.value, -1) + 1 || idx === 0) {
-      // Once previous is completed, next lesson unlocks and is ready in-progress
-      status = 'in-progress'
     } else {
-      status = 'locked'
+      status = 'ready'
     }
 
-    const defaultDurations = ['45 mins', '60 mins', '30 mins', '45 mins']
+    const defaultDurations = ['25 mins', '30 mins', '20 mins', '35 mins', '45 mins']
     const duration = v.description?.match(/(\d+\s*mins)/i)?.[1] || defaultDurations[idx % defaultDurations.length]
 
     return {
@@ -401,76 +526,151 @@ const curriculumLessons = computed<LessonViewItem[]>(() => {
   })
 })
 
-function completeCurrentAndNext() {
-  if (!completedIndices.value.includes(currentVideoIndex.value)) {
-    completedIndices.value.push(currentVideoIndex.value)
-  }
-  if (currentVideoIndex.value < rawVideos.value.length - 1) {
-    currentVideoIndex.value += 1
-    isPlayingVideo.value = true
-  }
-}
+const overallCurriculumPercent = computed<number>(() => {
+  if (curriculumLessons.value.length === 0) return 0
+  return Math.round((completedIndices.value.length / curriculumLessons.value.length) * 100)
+})
 
 const activeVideo = computed<LessonViewItem | null>(() => {
   return curriculumLessons.value[currentVideoIndex.value] ?? null
 })
 
 const activeVideoDuration = computed<string>(() => {
-  return activeVideo.value?.duration || '45 mins'
+  return activeVideo.value?.duration || '30 mins'
 })
 
+function parseDurationSeconds(durationStr: string): number {
+  const match = durationStr.match(/(\d+)\s*mins?/i)
+  if (match && match[1]) {
+    return parseInt(match[1], 10) * 60
+  }
+  return 1800 // default 30 mins
+}
+
+const totalDurationSeconds = computed<number>(() => {
+  return parseDurationSeconds(activeVideoDuration.value)
+})
+
+function formatSeconds(totalSec: number): string {
+  const m = Math.floor(totalSec / 60)
+  const s = Math.floor(totalSec % 60)
+  return `${m}:${s < 10 ? '0' : ''}${s}`
+}
+
 const playbackTime = computed<string>(() => {
-  return isPlayingVideo.value ? activeVideoDuration.value : '0:00'
+  return `${formatSeconds(currentPlaybackSeconds.value)} / ${formatSeconds(totalDurationSeconds.value)}`
 })
 
 const progressPercentage = computed<number>(() => {
-  return isPlayingVideo.value ? 100 : 0
+  if (totalDurationSeconds.value <= 0) return 0
+  return Math.min(100, Math.round((currentPlaybackSeconds.value / totalDurationSeconds.value) * 100))
 })
 
-// YouTube Embed helper
+function startPlaybackTimer() {
+  if (playbackInterval) clearInterval(playbackInterval)
+  playbackInterval = setInterval(() => {
+    if (isPlayingVideo.value) {
+      if (currentPlaybackSeconds.value < totalDurationSeconds.value) {
+        currentPlaybackSeconds.value += 1
+      } else {
+        // Video finished!
+        if (!completedIndices.value.includes(currentVideoIndex.value)) {
+          completedIndices.value.push(currentVideoIndex.value)
+          saveCompletedLessons()
+        }
+      }
+    }
+  }, 1000)
+}
+
+function stopPlaybackTimer() {
+  if (playbackInterval) {
+    clearInterval(playbackInterval)
+    playbackInterval = null
+  }
+}
+
+function togglePlayPause() {
+  if (isPlayingVideo.value) {
+    isPlayingVideo.value = false
+    stopPlaybackTimer()
+  } else {
+    isPlayingVideo.value = true
+    startPlaybackTimer()
+  }
+}
+
+function seekProgress(event: MouseEvent) {
+  const target = event.currentTarget as HTMLElement
+  if (!target) return
+  const rect = target.getBoundingClientRect()
+  const clickX = event.clientX - rect.left
+  const ratio = Math.max(0, Math.min(1, clickX / rect.width))
+  currentPlaybackSeconds.value = Math.round(ratio * totalDurationSeconds.value)
+  isPlayingVideo.value = true
+  startPlaybackTimer()
+}
+
+function completeCurrentAndNext() {
+  if (!completedIndices.value.includes(currentVideoIndex.value)) {
+    completedIndices.value.push(currentVideoIndex.value)
+    saveCompletedLessons()
+  }
+  if (currentVideoIndex.value < rawVideos.value.length - 1) {
+    currentVideoIndex.value += 1
+    currentPlaybackSeconds.value = 0
+    isPlayingVideo.value = true
+    startPlaybackTimer()
+  }
+}
+
+// YouTube Embed helper - Guaranteed working embed URL
 const activeEmbedUrl = computed<string | null>(() => {
-  const url = activeVideo.value?.videoUrl
-  if (!url) return null
+  const rawUrl = activeVideo.value?.videoUrl
+  const resolved = resolvePlayableUrl(rawUrl, currentVideoIndex.value, currentLevelNumber.value)
 
   const ytRegex = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
-  const match = url.match(ytRegex)
-  if (match) {
+  const match = resolved.match(ytRegex)
+  if (match && match[1]) {
     return `https://www.youtube-nocookie.com/embed/${match[1]}?autoplay=1&rel=0`
   }
 
-  // Handle example.com placeholder video URLs from backend seeds with real educational lecture embeds
-  if (url.includes('example.com')) {
-    if (url.includes('first-prompt')) {
+  if (rawUrl && rawUrl.includes('example.com')) {
+    if (rawUrl.includes('first-prompt')) {
       return 'https://www.youtube-nocookie.com/embed/aircAruvnKk?autoplay=1&rel=0'
     }
-    if (url.includes('intro-to-ai') || url.includes('l1')) {
+    if (rawUrl.includes('intro-to-ai') || rawUrl.includes('l1')) {
       return 'https://www.youtube-nocookie.com/embed/ukzFI9rgwfU?autoplay=1&rel=0'
     }
     return 'https://www.youtube-nocookie.com/embed/HQnC3411xYg?autoplay=1&rel=0'
   }
 
-  return null
+  return 'https://www.youtube-nocookie.com/embed/JMUxmLyrhSk?autoplay=1&rel=0'
 })
 
 const isHtml5Video = computed<boolean>(() => {
   const url = activeVideo.value?.videoUrl
-  if (!url) return false
+  if (!url || url.includes('example.com')) return false
   return /\.(mp4|webm|ogg)$/i.test(url)
 })
 
 function selectVideo(index: number) {
   if (index >= 0 && index < rawVideos.value.length) {
     currentVideoIndex.value = index
+    currentPlaybackSeconds.value = 0
     isPlayingVideo.value = true
+    startPlaybackTimer()
   }
 }
 
 function startPlaying() {
   isPlayingVideo.value = true
+  startPlaybackTimer()
 }
 
 async function fetchLevelVideos() {
   isLoading.value = true
+  loadCompletedLessons()
   try {
     const res = await ELearningService.getCurrentLevelVideos()
     if (res?.data) {
@@ -499,28 +699,14 @@ async function fetchLevelVideos() {
       id: idx + 1,
       title: v.title,
       description: v.description || `Core course module for Level ${currentLvlStr}.`,
-      videoUrl: v.url || 'https://www.youtube.com/watch?v=JMUxmLyrhSk',
+      videoUrl: resolvePlayableUrl(v.url, idx, currentLevelNumber.value),
     }))
   } else {
-    // If backend seeded fake example.com URLs, map them to playable YouTube videos from our curriculum
-    const fallbackUrls = [
-      'https://www.youtube.com/watch?v=JMUxmLyrhSk',
-      'https://www.youtube.com/watch?v=jC4v5AS4RIM',
-      'https://www.youtube.com/watch?v=bEj301dD2jE',
-      'https://www.youtube.com/watch?v=aircAruvnKk',
-      'https://www.youtube.com/watch?v=ukzFI9rgwfU',
-    ]
-    rawVideos.value = rawVideos.value.map((v, idx) => {
-      let finalUrl = v.videoUrl
-      if (!finalUrl || finalUrl.includes('example.com')) {
-        const matchedMock = eLearningVideos.find((m) => m.title.toLowerCase() === v.title.toLowerCase())
-        finalUrl = matchedMock?.url || fallbackUrls[idx % fallbackUrls.length] || 'https://www.youtube.com/watch?v=JMUxmLyrhSk'
-      }
-      return {
-        ...v,
-        videoUrl: finalUrl,
-      }
-    })
+    // Map any backend seeded example.com URLs to real playable YouTube videos
+    rawVideos.value = rawVideos.value.map((v, idx) => ({
+      ...v,
+      videoUrl: resolvePlayableUrl(v.videoUrl, idx, currentLevelNumber.value),
+    }))
   }
 
   // Seamlessly bridge any custom lessons added through Admin E-Learning portal for this level
@@ -537,7 +723,7 @@ async function fetchLevelVideos() {
                 id: extra.id || `local-${Date.now()}`,
                 title: extra.title,
                 description: extra.description || '',
-                videoUrl: extra.videoUrl,
+                videoUrl: resolvePlayableUrl(extra.videoUrl, rawVideos.value.length, currentLevelNumber.value),
               })
             }
           }
@@ -548,12 +734,10 @@ async function fetchLevelVideos() {
     // ignore
   }
 
-  // Set default active to Lesson 2 (In Progress) if multiple lessons exist to match the design reference
-  if (rawVideos.value.length > 1 && currentVideoIndex.value === 0) {
-    currentVideoIndex.value = 1
-  } else if (currentVideoIndex.value >= rawVideos.value.length) {
-    currentVideoIndex.value = 0
-  }
+  // Start at the first uncompleted lesson in the list
+  const firstUncompleted = rawVideos.value.findIndex((_, i) => !completedIndices.value.includes(i))
+  currentVideoIndex.value = firstUncompleted >= 0 ? firstUncompleted : 0
+  currentPlaybackSeconds.value = 0
 }
 
 // Watch for level upgrades
@@ -565,6 +749,7 @@ watch(
       levelTransitionAlert.value = `Level updated to Level ${newLevel}: ${levelName}! Curriculum refreshed.`
       currentVideoIndex.value = 0
       isPlayingVideo.value = false
+      stopPlaybackTimer()
       await fetchLevelVideos()
     }
   }
@@ -575,5 +760,9 @@ onMounted(async () => {
     await userStore.fetchUserProfile()
   }
   await fetchLevelVideos()
+})
+
+onUnmounted(() => {
+  stopPlaybackTimer()
 })
 </script>

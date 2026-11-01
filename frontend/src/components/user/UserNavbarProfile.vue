@@ -18,6 +18,7 @@
       <div class="relative size-9 sm:size-10 shrink-0 overflow-hidden rounded-full border-2 border-white/80 shadow-sm bg-gray-100">
         <img
           v-if="currentUser.profileImageUrl && !imageLoadError"
+          :key="currentUser.profileImageUrl"
           :src="currentUser.profileImageUrl"
           :alt="fullName"
           class="size-full object-cover"

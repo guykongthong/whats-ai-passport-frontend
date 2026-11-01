@@ -171,13 +171,14 @@ async function handleSave(formData: UserFormData) {
     }
 
     await userStore.updateUserProfile(payload)
-    if (userStore.userProfile) {
-      Object.assign(userStore.userProfile, payload)
-    }
     successMessage.value = 'Your profile details have been updated successfully.'
   } catch (err: unknown) {
     console.error('Failed to update profile:', err)
-    errorMessage.value = 'Failed to update profile details. Please try again.'
+    successMessage.value = null
+    errorMessage.value =
+      (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+      (err as Error)?.message ||
+      'Failed to update profile details. Please try again.'
   } finally {
     isSaving.value = false
   }
