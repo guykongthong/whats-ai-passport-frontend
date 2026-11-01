@@ -53,35 +53,6 @@ export const useAuthStore = defineStore('auth', () => {
     level: '1',
   })
 
-  function fallbackMockLogin(identifier: string): 'success' | 'deactivated' | 'not_found' {
-    const isEmail = identifier.includes('@')
-
-    const found =
-      users.value.find((u) => {
-        if (isEmail) {
-          return u.email === identifier
-        } else {
-          return u.username === identifier || u.email.split('@')[0] === identifier.split('@')[0]
-        }
-      }) ?? null
-
-    if (found && isUserDeactivated(found)) {
-      currentUser.value = null
-      if (typeof localStorage !== 'undefined') {
-        localStorage.removeItem('currentUser')
-        localStorage.removeItem('token')
-        localStorage.removeItem('access_token')
-      }
-      return 'deactivated'
-    }
-
-    currentUser.value = found
-    if (found && typeof localStorage !== 'undefined') {
-      localStorage.setItem('currentUser', JSON.stringify(found))
-    }
-    return found ? 'success' : 'not_found'
-  }
-
   async function login(
     identifier: string,
     password = '',
@@ -149,11 +120,14 @@ export const useAuthStore = defineStore('auth', () => {
         return 'bad_credentials'
       }
 
-      console.warn('Backend authentication unavailable, trying local fallback:', err)
-      return fallbackMockLogin(identifier)
+      if (axiosErr?.response?.status === 404) {
+        return 'not_found'
+      }
+
+      throw new Error(axiosErr?.response?.data?.message || 'Authentication server error. Please ensure the backend is running.')
     }
 
-    return fallbackMockLogin(identifier)
+    return 'not_found'
   }
 
   function logout() {
@@ -163,6 +137,23 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('token')
       localStorage.removeItem('access_token')
       localStorage.removeItem('custom_admin_avatar')
+    }
+
+    try {
+      // Dynamic import to prevent circular dependency
+      import('./user').then(({ useUserStore }) => {
+        useUserStore().clearUserData()
+      }).catch(() => {})
+    } catch {
+      // ignore
+    }
+
+    try {
+      import('./adminUser').then(({ useAdminUserStore }) => {
+        useAdminUserStore().clearSelectedUser()
+      }).catch(() => {})
+    } catch {
+      // ignore
     }
   }
 

@@ -18,6 +18,9 @@ onMounted(() => {
   if (route.query.registered === 'true') {
     triggerToast('Registration successful! Please log in.', 4000)
   }
+  if (route.query.sessionExpired === 'true') {
+    triggerToast('Your session has expired or account access was changed. Please log in again.', 4500)
+  }
 })
 
 const onLoginSubmit = async (username: string, password = '') => {

@@ -396,7 +396,6 @@ import ExamService, {
 import type { ExamQuestion } from '@/types/ExamContent'
 import UserPageLayout from '@/shared/components/UserPageLayout.vue'
 import { getLevelClasses, getLevelName } from '@/utils/levelDisplay'
-import { questions as mockQuestionsData } from '@/data/questions'
 
 const userStore = useUserStore()
 
