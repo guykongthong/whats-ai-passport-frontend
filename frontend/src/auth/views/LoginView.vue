@@ -47,7 +47,7 @@ const onLoginSubmit = async (username: string, password = '') => {
         await router.push('/dashboard')
       }
     } else {
-      loginError.value = `"${username}" does not exist`
+      loginError.value = `"${username}" does not exist or invalid password`
     }
   } catch (err: unknown) {
     const message =

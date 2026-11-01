@@ -28,7 +28,7 @@
 
         <div class="flex justify-center">
           <div :class="[
-            'px-4 py-1.5 rounded-full text-sm font-bold',
+            'px-2.5 py-1 rounded-md text-xs font-semibold',
             getLevelClasses(user.level)
           ]">
             Level {{ user.level }}: {{ getLevelName(user.level) }}

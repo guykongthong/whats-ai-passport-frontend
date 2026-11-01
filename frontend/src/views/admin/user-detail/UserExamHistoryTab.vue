@@ -16,7 +16,7 @@
         <div class="flex items-center gap-3">
           <span
             :class="[
-              'px-3 py-1 rounded-full text-xs font-bold inline-block shadow-sm',
+              'px-2.5 py-1 rounded-md text-xs font-semibold inline-block',
               getLevelClasses(user.currentLevel),
             ]"
           >

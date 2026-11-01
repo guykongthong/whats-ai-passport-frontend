@@ -150,7 +150,7 @@ const levelDescription = computed(() => {
   }
   switch (numericLevel.value) {
     case 1:
-      return 'Foundational credential covering essential digital skills, CAMT orientation, and entry-level privileges.'
+      return 'Foundational credential covering essential digital skills, CA?T orientation, and entry-level privileges.'
     case 2:
       return 'Intermediate credential demonstrating applied technical proficiency, lab access, and specialized workshops.'
     case 3:

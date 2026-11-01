@@ -17,7 +17,7 @@
             </div>
           </div>
           <div>
-            <div :class="['px-5 py-2 rounded-full text-sm font-black', getLevelClasses(Number(user.level))]">
+            <div :class="['px-3 py-1 rounded-md text-xs font-semibold', getLevelClasses(Number(user.level))]">
               Level {{ user.level }}: {{ getLevelName(Number(user.level)) }}
             </div>
           </div>

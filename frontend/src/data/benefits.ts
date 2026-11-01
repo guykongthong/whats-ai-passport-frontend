@@ -1,30 +1,31 @@
 import type { Benefit } from '@/types/Benefit'
+
 export const benefits: Benefit[] = [
-  // Level 1
-  { level: '1', description: 'Access to borrowing basic digital equipment from the CAMT Equipment Pool' },
-  { level: '1', description: 'Access to high-speed CMU-WiFi 6 and university VPN' },
-  { level: '1', description: 'Receive a Digital Stamp for participating in events' },
-  { level: '1', description: 'Access to basic video courses in the Level 1 system' },
-  { level: '1', description: 'Receive early notifications about Hackathons and special Workshops' },
+  // Level 1: Explorer
+  { level: '1', description: 'Access to CA?T Service Level 1 with 50,000 monthly token quota' },
+  { level: '1', description: 'Access to foundational AI eLearning video curriculum and self-paced modules' },
+  { level: '1', description: 'Access to basic prompt writing clinics and student AI support sessions' },
+  { level: '1', description: 'University high-speed CMU-WiFi 6 and campus AI portal access' },
+  { level: '1', description: 'Eligibility to take Level 2 Advancement Exam at any time' },
 
-  // Level 2
-  { level: '2', description: 'Unlock all benefits from Level 1' },
-  { level: '2', description: 'Free quota for the 3D Printing Lab: 50 hours/semester' },
-  { level: '2', description: 'Reserve Smart Meeting Rooms for project team meetings' },
-  { level: '2', description: 'Receive a Digital Certificate of Achievement (Level 2)' },
-  { level: '2', description: 'Access Exclusive Industry Mentoring with experts in the technology industry' },
-  { level: '2', description: 'Borrow Cinema equipment and professional-grade production equipment' },
+  // Level 2: Achiever
+  { level: '2', description: 'Unlock all benefits and quotas from Level 1' },
+  { level: '2', description: 'Increased AI token quota to 200,000 monthly tokens for coursework & projects' },
+  { level: '2', description: 'Access to intermediate AI developer tools and code-assistant plugins' },
+  { level: '2', description: 'Reservation access to CA?T Smart Collaboration Labs for AI project teams' },
+  { level: '2', description: 'Digital Certificate of Achievement (Level 2 AI Competency)' },
 
-  // Level 3
-  { level: '3', description: 'Unlock all benefits from Level 1 and Level 2' },
-  { level: '3', description: 'Access the High-Performance GPU Cluster (NVIDIA A100/H100) for AI & Deep Learning' },
-  { level: '3', description: 'Fast-track selection for the CAMT Tech Startup Incubation program' },
-  { level: '3', description: 'Priority booking for the Motion Capture Studio & Virtual Production facilities' },
+  // Level 3: Innovator
+  { level: '3', description: 'Unlock all benefits and quotas from Level 1 and Level 2' },
+  { level: '3', description: 'High-Performance GPU Cluster access (NVIDIA A100/H100) for deep learning' },
+  { level: '3', description: '1,000,000 monthly AI token quota with multimodal model support' },
+  { level: '3', description: 'Priority mentorship with faculty advisors on AI capstones and ethics reviews' },
+  { level: '3', description: 'Fast-track selection for CA?T Tech & AI Startup Incubation programs' },
 
-  // Level 4
-  { level: '4', description: 'Unlock all benefits from Level 1 and Level 2' },
-  { level: '4', description: 'Access the High-Performance GPU Cluster (NVIDIA A100/H100) for AI & Deep Learning' },
-  { level: '4', description: 'Project funding support for national-level competitions, up to 10,000 THB' },
-  { level: '4', description: 'Fast-track selection for the CAMT Tech Startup Incubation program' },
-  { level: '4', description: 'Priority booking for the Motion Capture Studio & Virtual Production facilities' }
+  // Level 4: Master
+  { level: '4', description: 'Unlock all benefits and privileges from Levels 1, 2, and 3' },
+  { level: '4', description: 'Uncapped high-priority GPU cluster scheduling for advanced AI research' },
+  { level: '4', description: 'Institutional funding support for national AI competitions (up to 10,000 THB)' },
+  { level: '4', description: 'Official CA?T AI Ambassador certification and community leadership role' },
+  { level: '4', description: 'Commercial API integration access and direct model deployment endpoints' }
 ]

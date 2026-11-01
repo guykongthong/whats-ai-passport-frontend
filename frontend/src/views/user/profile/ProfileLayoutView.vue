@@ -1,7 +1,7 @@
 <template>
   <UserPageLayout>
-    <main class="flex-1 bg-[#EEF2F7] px-4 py-8 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-4xl space-y-6">
+    <main class="flex-1 w-full bg-[#EEF2F7] px-4 py-8 sm:px-6 lg:px-8 flex flex-col items-center">
+      <div class="mx-auto w-full max-w-4xl space-y-6">
 
         <!-- Back Link / Breadcrumb -->
         <div>
@@ -51,11 +51,10 @@
                 <div class="self-center sm:self-start">
                   <span
                     :class="[
-                      'inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-black shadow-2xs',
+                      'inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold',
                       getLevelClasses(userLevel),
                     ]"
                   >
-                    <span class="size-2 rounded-full bg-current opacity-80"></span>
                     Level {{ userLevel }}: {{ getLevelName(userLevel) }}
                   </span>
                 </div>

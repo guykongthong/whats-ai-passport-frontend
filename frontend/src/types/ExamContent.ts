@@ -30,4 +30,6 @@ export interface ELearningVideo {
   level: string
   title: string
   url: string
+  description?: string
+  duration?: string
 }
