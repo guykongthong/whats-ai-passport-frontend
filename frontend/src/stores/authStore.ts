@@ -3,8 +3,9 @@ import { computed, readonly, ref, reactive } from 'vue'
 import { users as mockUsers } from '@/data/users'
 import { levels } from '@/data/levels'
 import type { User, RegisterPayload } from '@/types'
-import { isUserDeactivated } from '@/shared/utils/auth'
 import { AuthService } from '@/services/AuthService'
+import { useUserStore } from './user'
+import apiClient from '@/services/apiClient'
 
 const MAX_LEVEL = levels.length
 
@@ -19,7 +20,14 @@ function getInitialUser(): User | null {
   try {
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem('currentUser')
-      return saved ? JSON.parse(saved) : null
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const customAvatar = localStorage.getItem('custom_admin_avatar')
+        if (customAvatar && !parsed.profileImageUrl) {
+          parsed.profileImageUrl = customAvatar
+        }
+        return parsed
+      }
     }
   } catch {
     // ignore
@@ -71,39 +79,11 @@ export const useAuthStore = defineStore('auth', () => {
     level: '1',
   })
 
-  function fallbackMockLogin(identifier: string): 'success' | 'deactivated' | 'not_found' {
-    const isEmail = identifier.includes('@')
-
-    const found =
-      users.value.find((u) => {
-        if (isEmail) {
-          return u.email === identifier
-        } else {
-          return u.username === identifier || u.email.split('@')[0] === identifier.split('@')[0]
-        }
-      }) ?? null
-
-    if (found && isUserDeactivated(found)) {
-      currentUser.value = null
-      if (typeof localStorage !== 'undefined') {
-        localStorage.removeItem('currentUser')
-        localStorage.removeItem('token')
-        localStorage.removeItem('access_token')
-      }
-      return 'deactivated'
-    }
-
-    currentUser.value = found
-    if (found && typeof localStorage !== 'undefined') {
-      localStorage.setItem('currentUser', JSON.stringify(found))
-    }
-    return found ? 'success' : 'not_found'
-  }
-
   async function login(
     identifier: string,
     password = '',
   ): Promise<'success' | 'deactivated' | 'not_found' | 'bad_credentials'> {
+    useUserStore().resetUserState()
     try {
       const res = await AuthService.login({
         username: identifier.trim(),
@@ -120,6 +100,9 @@ export const useAuthStore = defineStore('auth', () => {
         const roles = Array.isArray(data.roles) ? data.roles : []
         const isAdmin = roles.includes('ROLE_ADMIN')
 
+        const customAvatar = typeof localStorage !== 'undefined' ? localStorage.getItem('custom_admin_avatar') : null
+        const profileImage = data.profileImageUrl || customAvatar || ''
+
         const userObj: User = {
           id: String(data.id),
           username: data.username,
@@ -130,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
           lastname: data.lastname,
           level: String(data.currentLevel || 1),
           province: '',
-          profileImageUrl: data.profileImageUrl,
+          profileImageUrl: profileImage,
           role: isAdmin ? 'admin' : 'user',
           roles,
           isActive: data.enabled !== false,
@@ -155,6 +138,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('currentUser')
           localStorage.removeItem('token')
           localStorage.removeItem('access_token')
+          localStorage.removeItem('custom_admin_avatar')
         }
         return 'deactivated'
       }
@@ -163,23 +147,46 @@ export const useAuthStore = defineStore('auth', () => {
         return 'bad_credentials'
       }
 
-      console.warn('Backend authentication unavailable, trying local fallback:', err)
-      return fallbackMockLogin(identifier)
+      if (axiosErr?.response?.status === 404) {
+        return 'not_found'
+      }
+
+      throw new Error(axiosErr?.response?.data?.message || 'Authentication server error. Please ensure the backend is running.')
     }
 
-    return fallbackMockLogin(identifier)
+    return 'not_found'
   }
 
   function logout() {
     currentUser.value = null
+    useUserStore().resetUserState()
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('currentUser')
       localStorage.removeItem('token')
       localStorage.removeItem('access_token')
+      localStorage.removeItem('custom_admin_avatar')
+    }
+
+    try {
+      // Dynamic import to prevent circular dependency
+      import('./user').then(({ useUserStore }) => {
+        useUserStore().clearUserData()
+      }).catch(() => {})
+    } catch {
+      // ignore
+    }
+
+    try {
+      import('./adminUser').then(({ useAdminUserStore }) => {
+        useAdminUserStore().clearSelectedUser()
+      }).catch(() => {})
+    } catch {
+      // ignore
     }
   }
 
   async function register(fields: RegisterPayload): Promise<User> {
+    useUserStore().resetUserState()
     try {
       const res = await AuthService.register(fields)
       if (res?.data) {
@@ -322,8 +329,8 @@ export const useAuthStore = defineStore('auth', () => {
     userId: string,
     patch: Partial<User>,
   ) {
-    if (currentUser.value && currentUser.value.id === userId) {
-      Object.assign(currentUser.value, patch)
+    if (currentUser.value && String(currentUser.value.id) === String(userId)) {
+      currentUser.value = { ...currentUser.value, ...patch }
       if (typeof localStorage !== 'undefined') {
         try {
           localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
@@ -333,11 +340,13 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
 
-    const user = users.value.find((u) => u.id === userId)
-    if (user) {
-      Object.assign(user, patch)
-      persistUsers(users.value)
-    }
+    users.value = users.value.map((u) => {
+      if (String(u.id) === String(userId)) {
+        return { ...u, ...patch }
+      }
+      return u
+    })
+    persistUsers(users.value)
   }
 
   const filteredUsers = computed(() =>
@@ -357,6 +366,78 @@ export const useAuthStore = defineStore('auth', () => {
     const start = (currentPage.value - 1) * pageSize.value
     return filteredUsers.value.slice(start, start + pageSize.value)
   })
+
+  function updateCurrentUser(patch: Partial<User>) {
+    if (currentUser.value) {
+      currentUser.value = { ...currentUser.value, ...patch }
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
+          if (patch.profileImageUrl) {
+            localStorage.setItem('custom_admin_avatar', patch.profileImageUrl)
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+  }
+
+  async function fetchMe(): Promise<User | null> {
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('token') || localStorage.getItem('access_token')
+        : null
+    if (!token) return null
+
+    try {
+      const res = await apiClient.get('/me')
+      if (res?.data) {
+        const data = res.data
+        const customAvatar = typeof localStorage !== 'undefined' ? localStorage.getItem('custom_admin_avatar') : null
+        const profileImage = data.profileImageUrl || customAvatar || currentUser.value?.profileImageUrl || ''
+
+        const roles = Array.isArray(currentUser.value?.roles) && currentUser.value.roles.length > 0
+          ? currentUser.value.roles
+          : (currentUser.value?.role === 'admin' ? ['ROLE_ADMIN'] : ['ROLE_USER'])
+        const isAdmin = roles.includes('ROLE_ADMIN') || currentUser.value?.role === 'admin'
+
+        const userObj: User = {
+          id: String(data.id),
+          username: currentUser.value?.username || data.email?.split('@')[0] || 'user',
+          email: data.email || `${data.id}@example.com`,
+          name: data.firstname,
+          surname: data.lastname,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          level: String(data.currentLevel || 1),
+          province: data.province || '',
+          profileImageUrl: profileImage,
+          role: isAdmin ? 'admin' : 'user',
+          roles,
+          isActive: true,
+          enabled: true,
+        }
+
+        currentUser.value = userObj
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(userObj))
+        }
+        return userObj
+      }
+    } catch (err: unknown) {
+      console.warn('Failed to fetch /me from backend:', err)
+    }
+    return currentUser.value
+  }
+
+  // Auto-fetch fresh profile from backend if token exists
+  if (typeof localStorage !== 'undefined') {
+    const existingToken = localStorage.getItem('token') || localStorage.getItem('access_token')
+    if (existingToken) {
+      fetchMe().catch(() => {})
+    }
+  }
 
   return {
     currentUser,
@@ -378,5 +459,7 @@ export const useAuthStore = defineStore('auth', () => {
     upgradeUserLevel,
     activateUser,
     updateUser,
+    updateCurrentUser,
+    fetchMe,
   }
 })

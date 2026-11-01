@@ -21,10 +21,12 @@
             <div class="relative shrink-0">
               <div class="size-24 sm:size-28 overflow-hidden rounded-full border-4 border-white shadow-md ring-2 ring-slate-100 bg-slate-100 flex items-center justify-center">
                 <img
-                  v-if="profileImageUrl"
+                  v-if="profileImageUrl && !imageLoadError"
+                  :key="profileImageUrl"
                   :src="profileImageUrl"
                   :alt="fullName"
                   class="size-full object-cover"
+                  @error="imageLoadError = true"
                 />
                 <span
                   v-else
@@ -123,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, RouterLink, RouterView } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useUserStore } from '@/stores/user'
@@ -169,6 +171,17 @@ const thaiName = computed(() => {
 const email = computed(() => user.value?.email || 'N/A')
 const province = computed(() => user.value?.province || '')
 const profileImageUrl = computed(() => user.value?.profileImageUrl || '')
+const imageLoadError = ref(false)
+
+watch(
+  () => profileImageUrl.value,
+  (newUrl) => {
+    if (newUrl) {
+      imageLoadError.value = false
+    }
+  },
+  { immediate: true }
+)
 
 const userInitials = computed(() => {
   const name = user.value?.firstname || user.value?.name || 'U'

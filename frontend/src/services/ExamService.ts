@@ -51,18 +51,16 @@ export default {
   /**
    * GET /api/me/exam (Baseline API Contract)
    * Fetch exam questions for the next level (currentLevel + 1).
-   * Gracefully falls back to legacy /v1/exam/questions.
    */
   getExamQuestions(): Promise<AxiosResponse<ExamPaperResponse | ExamQuestion[]>> {
-    return apiClient.get('/me/exam').catch(() => apiClient.get('/v1/exam/questions'))
+    return apiClient.get('/me/exam')
   },
 
   /**
    * POST /api/me/exam/submit (Baseline API Contract)
    * Submit exam answers and receive grading result.
-   * Gracefully falls back to legacy /v1/exam/submit.
    */
   submitExam(payload: ExamSubmissionPayload): Promise<AxiosResponse<ExamSubmitResponse | ExamRecord>> {
-    return apiClient.post('/me/exam/submit', payload).catch(() => apiClient.post('/v1/exam/submit', payload))
+    return apiClient.post('/me/exam/submit', payload)
   },
 }

@@ -25,4 +25,27 @@ apiClient.interceptors.request.use(
   },
 )
 
+// Intercept 401 Unauthorized globally: clear stale credentials and redirect to login
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('token')
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('currentUser')
+        localStorage.removeItem('custom_admin_avatar')
+      }
+      if (
+        typeof window !== 'undefined' &&
+        !window.location.pathname.startsWith('/login') &&
+        !window.location.pathname.startsWith('/register')
+      ) {
+        window.location.href = '/login?sessionExpired=true'
+      }
+    }
+    return Promise.reject(error)
+  },
+)
+
 export default apiClient

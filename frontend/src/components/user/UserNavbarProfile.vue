@@ -18,6 +18,7 @@
       <div class="relative size-9 sm:size-10 shrink-0 overflow-hidden rounded-full border-2 border-white/80 shadow-sm bg-gray-100">
         <img
           v-if="currentUser.profileImageUrl && !imageLoadError"
+          :key="currentUser.profileImageUrl"
           :src="currentUser.profileImageUrl"
           :alt="fullName"
           class="size-full object-cover"
@@ -213,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
 import { getLevelClasses } from '@/utils/levelDisplay'
@@ -237,6 +238,14 @@ const currentUser = computed(() => authStore.currentUser)
 const isDropdownOpen = ref(false)
 const imageLoadError = ref(false)
 const profileDropdownRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => currentUser.value?.profileImageUrl,
+  () => {
+    imageLoadError.value = false
+  },
+  { immediate: true },
+)
 
 const fullName = computed(() => {
   const u = currentUser.value

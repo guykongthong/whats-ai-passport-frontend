@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import AdminUserService from '@/services/AdminUserService'
 import type { AdminUser, ExamHistoryItem } from '@/types/admin'
-import { users as mockUsers } from '@/data/users'
 
 export const useAdminUserStore = defineStore('adminUser', () => {
   // State
@@ -12,11 +11,11 @@ export const useAdminUserStore = defineStore('adminUser', () => {
 
   // Actions
   /**
-   * Loads user details from backend by id.
-   * Avoids redundant API calls if the user is already loaded in state (Criteria #11).
+   * Loads user details directly from backend by id.
+   * Can force reload with force = true (e.g. after editing or saving).
    */
-  async function fetchUserById(id: number): Promise<AdminUser | null> {
-    if (selectedUser.value && selectedUser.value.id === id) {
+  async function fetchUserById(id: number, force = false): Promise<AdminUser | null> {
+    if (!force && selectedUser.value && selectedUser.value.id === id) {
       return selectedUser.value
     }
 
@@ -27,32 +26,20 @@ export const useAdminUserStore = defineStore('adminUser', () => {
       userExamHistory.value = response.data.examHistories || []
       return selectedUser.value
     } catch (error) {
-      console.warn(`Backend user API unavailable for id (${id}), searching local dataset:`, error)
-      const found = mockUsers.find((u, idx) => Number(u.id) === id || idx + 1 === id)
-      if (found) {
-        const fallbackAdminUser: AdminUser = {
-          id: Number(found.id) || id,
-          username: found.username || found.email.split('@')[0] || `user${id}`,
-          firstname: found.firstname || found.name || '',
-          lastname: found.lastname || found.surname || '',
-          email: found.email,
-          province: found.province || 'Chiang Mai',
-          profileImageUrl: found.profileImageUrl || '',
-          currentLevel: Number(found.level) || 1,
-          enabled: found.enabled !== undefined ? found.enabled : (found.isActive !== undefined ? found.isActive : true),
-          roles: found.roles ? [...found.roles] : (found.role === 'admin' ? ['ROLE_ADMIN'] : ['ROLE_USER']),
-          examHistories: [],
-        }
-        selectedUser.value = fallbackAdminUser
-        userExamHistory.value = []
-        return selectedUser.value
-      }
+      console.error(`Backend user API error for id (${id}):`, error)
       selectedUser.value = null
       userExamHistory.value = []
       return null
     } finally {
       isLoading.value = false
     }
+  }
+
+  /**
+   * Always forces a fresh backend fetch for user details by id.
+   */
+  async function refreshUser(id: number): Promise<AdminUser | null> {
+    return fetchUserById(id, true)
   }
 
   /**
@@ -114,6 +101,7 @@ export const useAdminUserStore = defineStore('adminUser', () => {
     isLoading,
     // Actions
     fetchUserById,
+    refreshUser,
     fetchUserHistory,
     updateSelectedUser,
     toggleUserStatus,

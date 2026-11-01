@@ -43,7 +43,7 @@
             <span
               :class="[
                 'size-2 rounded-full shrink-0',
-                tab.level === 1 ? 'bg-[#C1D7AE]' : tab.level === 2 ? 'bg-[#F2D794]' : 'bg-[#E5A88B]',
+                tab.level === 1 ? 'bg-[#C1D7AE]' : tab.level === 2 ? 'bg-[#F2D794]' : tab.level === 3 ? 'bg-[#E5A88B]' : 'bg-[#DD898E]',
               ]"
             />
             <span>{{ tab.label }}</span>
@@ -188,13 +188,13 @@
                 <span class="break-words">{{ choice }}</span>
               </div>
 
-              <!-- Correct Answer Badge with Checkmark -->
+              <!-- Correct Answer Indicator with Checkmark -->
               <div
                 v-if="cIndex === question.correctAnswer"
-                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-400/20 text-emerald-300 text-[11px] font-bold shrink-0 ml-2 border border-emerald-400/30 select-none"
+                class="size-6 rounded-md bg-emerald-400/20 text-emerald-300 flex items-center justify-center shrink-0 ml-2 border border-emerald-400/30 select-none shadow-xs"
+                title="Correct Answer"
               >
-                <CheckCircleMiniIcon class="size-3.5 text-emerald-300" />
-                <span>Correct</span>
+                <CheckCircleMiniIcon class="size-4 text-emerald-300" />
               </div>
             </div>
           </div>
@@ -250,6 +250,7 @@ const levelTabs: LevelTab[] = [
   { level: 1, label: 'Level 1 Exam', target: 'Explorer' },
   { level: 2, label: 'Level 2 Exam', target: 'Achiever' },
   { level: 3, label: 'Level 3 Exam', target: 'Innovator' },
+  { level: 4, label: 'Level 4 Exam', target: 'Master' },
 ]
 
 const optionLetters = ['A', 'B', 'C', 'D']

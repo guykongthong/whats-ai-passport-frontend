@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useLevelStore } from '@/stores/levelStore'
 import { useUserStore } from '@/stores/user'
@@ -241,9 +241,17 @@ const activeServices = computed(() => {
   return levelStore.allServices.filter((s) => Number(s.level) <= currentLevel.value)
 })
 
-onMounted(() => {
-  if (!userStore.currentLevelDetails) {
-    userStore.fetchLevelDetails()
-  }
+onMounted(async () => {
+  await userStore.fetchUserProfile()
+  await userStore.fetchLevelDetails(userStore.currentUserLevel)
 })
+
+watch(
+  () => userStore.currentUserLevel,
+  (newLevel) => {
+    if (newLevel) {
+      userStore.fetchLevelDetails(newLevel)
+    }
+  }
+)
 </script>

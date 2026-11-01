@@ -1,26 +1,21 @@
 <template>
-  <form class="space-y-6" @submit.prevent="onSubmit">
+  <form class="flex flex-col gap-5 sm:gap-6" @submit.prevent="onSubmit">
     <!-- Profile Image Upload Field -->
-    <div class="space-y-2">
+    <div class="flex flex-col gap-2">
       <ImageUpload
         v-model="profileImageUrl"
         label="Profile Image"
-        :label-class="theme === 'dark' ? 'block text-sm font-bold text-white mb-2.5' : 'block text-xs font-semibold text-slate-700 mb-1.5'"
-        :theme="theme"
+        label-class="text-sm font-bold text-white"
+        theme="dark"
         :disabled="disabled || isSaving"
       />
     </div>
 
     <!-- Personal Names Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      <div>
-        <label
-          :class="[
-            'block mb-1.5',
-            theme === 'dark' ? 'text-sm font-bold text-white' : 'text-xs font-semibold text-slate-700'
-          ]"
-        >
-          First Name <span :class="theme === 'dark' ? 'text-rose-400' : 'text-rose-500'">*</span>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-white">
+          First Name <span class="text-rose-400">*</span>
         </label>
         <input
           v-model="firstname"
@@ -29,8 +24,8 @@
           :class="[
             'w-full rounded-xl border transition-colors',
             theme === 'dark'
-              ? 'px-4 py-3 bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base backdrop-blur-md'
-              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm',
+              ? 'h-11 sm:h-12 px-4 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
             firstnameError
               ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
               : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300')
@@ -38,19 +33,14 @@
           placeholder="Enter first name"
           @blur="validateField('firstname')"
         />
-        <p v-if="firstnameError" :class="['text-xs font-medium mt-1', theme === 'dark' ? 'text-rose-300' : 'text-rose-500']">
+        <p v-if="firstnameError" class="text-xs text-rose-300 font-medium">
           {{ firstnameError }}
         </p>
       </div>
 
-      <div>
-        <label
-          :class="[
-            'block mb-1.5',
-            theme === 'dark' ? 'text-sm font-bold text-white' : 'text-xs font-semibold text-slate-700'
-          ]"
-        >
-          Last Name <span :class="theme === 'dark' ? 'text-rose-400' : 'text-rose-500'">*</span>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-white">
+          Last Name <span class="text-rose-400">*</span>
         </label>
         <input
           v-model="lastname"
@@ -59,8 +49,8 @@
           :class="[
             'w-full rounded-xl border transition-colors',
             theme === 'dark'
-              ? 'px-4 py-3 bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base backdrop-blur-md'
-              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm',
+              ? 'h-11 sm:h-12 px-4 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
             lastnameError
               ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
               : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300')
@@ -68,21 +58,16 @@
           placeholder="Enter last name"
           @blur="validateField('lastname')"
         />
-        <p v-if="lastnameError" :class="['text-xs font-medium mt-1', theme === 'dark' ? 'text-rose-300' : 'text-rose-500']">
+        <p v-if="lastnameError" class="text-xs text-rose-300 font-medium">
           {{ lastnameError }}
         </p>
       </div>
     </div>
 
     <!-- Email Field -->
-    <div>
-      <label
-        :class="[
-          'block mb-1.5',
-          theme === 'dark' ? 'text-sm font-bold text-white' : 'text-xs font-semibold text-slate-700'
-        ]"
-      >
-        Email Address <span :class="theme === 'dark' ? 'text-rose-400' : 'text-rose-500'">*</span>
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-bold text-white">
+        Email Address <span class="text-rose-400">*</span>
       </label>
       <input
         v-model="email"
@@ -91,8 +76,8 @@
         :class="[
           'w-full rounded-xl border transition-colors',
           theme === 'dark'
-            ? 'px-4 py-3 bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base backdrop-blur-md'
-            : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm',
+            ? 'h-11 sm:h-12 px-4 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+            : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
           emailError
             ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
             : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300'),
@@ -101,20 +86,15 @@
         placeholder="Enter email address"
         @blur="validateField('email')"
       />
-      <p v-if="emailError" :class="['text-xs font-medium mt-1', theme === 'dark' ? 'text-rose-300' : 'text-rose-500']">
+      <p v-if="emailError" class="text-xs text-rose-300 font-medium">
         {{ emailError }}
       </p>
     </div>
 
     <!-- Province Field -->
-    <div>
-      <label
-        :class="[
-          'block mb-1.5',
-          theme === 'dark' ? 'text-sm font-bold text-white' : 'text-xs font-semibold text-slate-700'
-        ]"
-      >
-        Province <span :class="theme === 'dark' ? 'text-rose-400' : 'text-rose-500'">*</span>
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-bold text-white">
+        Province <span class="text-rose-400">*</span>
       </label>
       <div class="relative">
         <select
@@ -123,8 +103,8 @@
           :class="[
             'w-full rounded-xl border transition-all cursor-pointer appearance-none',
             theme === 'dark'
-              ? 'h-12 pl-4 pr-10 bg-white/10 hover:bg-white/15 border-white/20 text-white focus:outline-none focus:ring-1 focus:bg-white/15 text-base backdrop-blur-md'
-              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 text-sm',
+              ? 'h-11 sm:h-12 pl-4 pr-10 bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base backdrop-blur-md'
+              : 'px-3.5 py-2.5 bg-white border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#002845]/20 focus:border-[#002845] text-sm',
             provinceError
               ? (theme === 'dark' ? 'border-rose-400 focus:ring-rose-400/50' : 'border-rose-500 focus:ring-rose-500/30')
               : (theme === 'dark' ? 'border-white/20 focus:ring-white/30 focus:border-white/40' : 'border-gray-300'),
@@ -160,18 +140,13 @@
           </svg>
         </div>
       </div>
-      <p v-if="provinceError" :class="['text-xs font-medium mt-1', theme === 'dark' ? 'text-rose-300' : 'text-rose-500']">
+      <p v-if="provinceError" class="text-xs text-rose-300 font-medium">
         {{ provinceError }}
       </p>
     </div>
 
     <!-- Action Buttons (Save Changes & Cancel) -->
-    <div
-      :class="[
-        'pt-4 flex items-center justify-end gap-3 border-t',
-        theme === 'dark' ? 'border-white/10' : 'border-gray-200'
-      ]"
-    >
+    <div class="mt-2 pt-6 flex items-center justify-end gap-3 border-t border-white/10">
       <button
         type="button"
         :disabled="disabled || isSaving"
@@ -193,7 +168,7 @@
           'rounded-xl font-bold transition-all shadow-sm flex items-center gap-2 select-none',
           theme === 'dark'
             ? (isSubmitDisabled ? 'bg-[#C1D7AE]/50 text-[#00385e]/70 cursor-not-allowed opacity-60 px-6 py-2.5 text-sm' : 'bg-[#C1D7AE] hover:bg-[#b2cb9d] text-[#00385e] cursor-pointer active:scale-95 px-6 py-2.5 text-sm shadow-md')
-            : (isSubmitDisabled ? 'bg-indigo-600/50 text-white/70 cursor-not-allowed opacity-60 px-5 py-2.5 text-xs sm:text-sm' : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-indigo-500/20 px-5 py-2.5 text-xs sm:text-sm')
+            : (isSubmitDisabled ? 'bg-[#002845]/50 text-white/60 cursor-not-allowed opacity-60 px-5 py-2.5 text-xs sm:text-sm' : 'bg-[#002845] hover:bg-[#001830] text-white cursor-pointer shadow-sm active:scale-95 px-5 py-2.5 text-xs sm:text-sm')
         ]"
       >
         <span
@@ -223,6 +198,7 @@ import * as yup from 'yup'
 import { toTypedSchema } from '@vee-validate/yup'
 import ImageUpload from '@/components/common/ImageUpload.vue'
 import type { AdminUser } from '@/types/admin'
+import { provinces } from '@/data/provinces'
 
 interface Props {
   initialData?: AdminUser | Partial<AdminUser> | null
@@ -303,30 +279,6 @@ const isSubmitDisabled = computed(() => {
   )
 })
 
-const provinces = [
-  'Bangkok',
-  'Chiang Mai',
-  'Chiang Rai',
-  'Chonburi',
-  'Khon Kaen',
-  'Krabi',
-  'Lampang',
-  'Lamphun',
-  'Mae Hong Son',
-  'Nakhon Pathom',
-  'Nakhon Ratchasima',
-  'Nonthaburi',
-  'Pathum Thani',
-  'Phayao',
-  'Phitsanulok',
-  'Phuket',
-  'Rayong',
-  'Samut Prakan',
-  'Songkhla',
-  'Surat Thani',
-  'Udon Thani',
-]
-
 watch(
   () => props.initialData,
   (newData) => {
@@ -349,7 +301,7 @@ const onSubmit = handleSubmit((values) => {
     lastname: values.lastname.trim(),
     email: values.email.trim(),
     province: values.province.trim(),
-    profileImageUrl: values.profileImageUrl || '',
+    profileImageUrl: profileImageUrl.value || values.profileImageUrl || '',
   })
 })
 
