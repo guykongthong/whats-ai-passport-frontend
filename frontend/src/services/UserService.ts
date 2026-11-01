@@ -59,7 +59,7 @@ export default {
    * Fetch the current authenticated user's profile
    */
   getUserProfile(): Promise<AxiosResponse<UserProfile>> {
-    return apiClient.get('/me').catch(() => apiClient.get('/v1/user/me'))
+    return apiClient.get('/me')
   },
 
   /**
@@ -67,7 +67,7 @@ export default {
    * Update the current authenticated user's profile
    */
   updateUserProfile(data: Partial<UserProfile>): Promise<AxiosResponse<UserProfile>> {
-    return apiClient.put('/me', data).catch(() => apiClient.put('/v1/user/me', data))
+    return apiClient.put('/me', data)
   },
 
   /**
@@ -75,6 +75,6 @@ export default {
    * Fetch the level, benefits, and services for the current user
    */
   getUserLevelDetails(): Promise<AxiosResponse<UserLevelDetails>> {
-    return apiClient.get('/me/level').catch(() => apiClient.get('/v1/user/me/level-details'))
+    return apiClient.get('/me/level')
   },
 }

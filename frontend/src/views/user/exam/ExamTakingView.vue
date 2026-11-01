@@ -510,41 +510,8 @@ async function submitExamPrompt() {
       }
     }
   } catch (err: unknown) {
-    console.info('Backend submitExam offline, calculating mock result:', err)
-
-    // Fallback simulation when backend offline
-    const total = questions.value.length
-    const score = Math.min(total, Object.keys(selectedAnswers.value).length)
-    const passed = score >= passCriteria.value
-
-    examResultModal.value = {
-      score,
-      totalScore: total,
-      passCriteria: passCriteria.value,
-      passed,
-      oldLevel: currentLevelNumber.value,
-      newLevel: passed ? targetLevelNumber.value : currentLevelNumber.value,
-      badgeUnlocked: passed ? { name: `Level ${targetLevelNumber.value} Master`, imageUrl: '' } : null,
-      attemptDateTime: new Date().toISOString(),
-    }
-
-    // Record attempt and badge into exam history for offline fallback (#44)
-    userStore.recordExamAttempt(
-      {
-        id: Date.now(),
-        levelNumber: targetLevelNumber.value,
-        score,
-        totalScore: total,
-        passed,
-        attemptDateTime: examResultModal.value.attemptDateTime,
-        badgeName: examResultModal.value.badgeUnlocked?.name || null,
-      },
-      examResultModal.value.badgeUnlocked,
-    )
-
-    if (passed) {
-      await userStore.upgradeUserLevel(targetLevelNumber.value)
-    }
+    console.error('Backend submitExam failed:', err)
+    validationError.value = 'Failed to submit exam. Please verify your connection or session and try again.'
   } finally {
     isSubmitting.value = false
   }
@@ -580,23 +547,10 @@ async function fetchExamQuestions() {
       }
     }
   } catch (err: unknown) {
-    console.info('Backend getExamQuestions offline, fallback to mock questions:', err)
+    console.error('Backend getExamQuestions failed:', err)
+    questions.value = []
   } finally {
     isLoading.value = false
-  }
-
-  // Fallback to local mock data if questions array is still empty
-  if (questions.value.length === 0) {
-    const targetLvlPrefix = `l${targetLevelNumber.value}-`
-    const filtered = mockQuestionsData.filter((q) => String(q.id).startsWith(targetLvlPrefix))
-    const selected = filtered.length > 0 ? filtered : mockQuestionsData.slice(0, 5)
-
-    questions.value = selected.map((q) => ({
-      id: q.id,
-      questionText: q.question,
-      choices: q.choices,
-    }))
-    passCriteria.value = 3
   }
 }
 
