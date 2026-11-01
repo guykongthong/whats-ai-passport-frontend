@@ -1,20 +1,20 @@
 <template>
-  <form class="flex flex-col gap-9 sm:gap-11" @submit.prevent="onSubmit">
+  <form class="flex flex-col gap-5 sm:gap-6" @submit.prevent="onSubmit">
     <!-- Profile Image Upload Field -->
-    <div>
+    <div class="flex flex-col gap-2">
       <ImageUpload
         v-model="profileImageUrl"
         label="Profile Image"
-        label-class="block text-sm font-bold text-white mb-2.5"
+        label-class="text-sm font-bold text-white"
         theme="dark"
         :disabled="disabled || isSaving"
       />
     </div>
 
     <!-- Personal Names Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-5 sm:pt-6">
-      <div>
-        <label class="block text-sm font-bold text-white mb-2.5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-white">
           First Name <span class="text-rose-400">*</span>
         </label>
         <input
@@ -22,7 +22,7 @@
           type="text"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full px-4 py-3 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base transition-colors backdrop-blur-md',
+            'w-full h-11 sm:h-12 px-4 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-colors backdrop-blur-md',
             firstnameError
               ? 'border-rose-400 focus:ring-rose-400/50'
               : 'border-white/20 focus:ring-white/30 focus:border-white/40',
@@ -30,13 +30,13 @@
           placeholder="Enter first name"
           @blur="validateField('firstname')"
         />
-        <p v-if="firstnameError" class="text-xs text-rose-300 font-medium mt-1.5">
+        <p v-if="firstnameError" class="text-xs text-rose-300 font-medium">
           {{ firstnameError }}
         </p>
       </div>
 
-      <div>
-        <label class="block text-sm font-bold text-white mb-2.5">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-white">
           Last Name <span class="text-rose-400">*</span>
         </label>
         <input
@@ -44,7 +44,7 @@
           type="text"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full px-4 py-3 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base transition-colors backdrop-blur-md',
+            'w-full h-11 sm:h-12 px-4 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-colors backdrop-blur-md',
             lastnameError
               ? 'border-rose-400 focus:ring-rose-400/50'
               : 'border-white/20 focus:ring-white/30 focus:border-white/40',
@@ -52,15 +52,15 @@
           placeholder="Enter last name"
           @blur="validateField('lastname')"
         />
-        <p v-if="lastnameError" class="text-xs text-rose-300 font-medium mt-1.5">
+        <p v-if="lastnameError" class="text-xs text-rose-300 font-medium">
           {{ lastnameError }}
         </p>
       </div>
     </div>
 
     <!-- Email Field -->
-    <div class="pt-4 sm:pt-5">
-      <label class="block text-sm font-bold text-white mb-2.5">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-bold text-white">
         Email Address <span class="text-rose-400">*</span>
       </label>
       <input
@@ -68,7 +68,7 @@
         type="email"
         :disabled="disabled || isSaving || disableEmail"
         :class="[
-          'w-full px-4 py-3 rounded-xl border bg-white/10 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 text-base transition-colors backdrop-blur-md',
+          'w-full h-11 sm:h-12 px-4 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-colors backdrop-blur-md',
           emailError
             ? 'border-rose-400 focus:ring-rose-400/50'
             : 'border-white/20 focus:ring-white/30 focus:border-white/40',
@@ -77,14 +77,14 @@
         placeholder="Enter email address"
         @blur="validateField('email')"
       />
-      <p v-if="emailError" class="text-xs text-rose-300 font-medium mt-1.5">
+      <p v-if="emailError" class="text-xs text-rose-300 font-medium">
         {{ emailError }}
       </p>
     </div>
 
     <!-- Province Field -->
-    <div class="pt-4 sm:pt-5">
-      <label class="block text-sm font-bold text-white mb-2.5">
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-bold text-white">
         Province <span class="text-rose-400">*</span>
       </label>
       <div class="relative">
@@ -92,7 +92,7 @@
           v-model="province"
           :disabled="disabled || isSaving"
           :class="[
-            'w-full h-12 pl-4 pr-10 rounded-xl border bg-white/10 hover:bg-white/15 border-white/20 text-white focus:outline-none focus:ring-1 focus:bg-white/15 text-base transition-all cursor-pointer backdrop-blur-md appearance-none',
+            'w-full h-11 sm:h-12 pl-4 pr-10 rounded-xl border bg-black/25 hover:bg-black/30 focus:bg-black/40 border-white/20 text-white focus:outline-none focus:ring-1 focus:ring-white/40 focus:border-white/40 text-sm sm:text-base transition-all cursor-pointer backdrop-blur-md appearance-none',
             provinceError
               ? 'border-rose-400 focus:ring-rose-400/50'
               : 'border-white/20 focus:ring-white/30 focus:border-white/40',
@@ -123,13 +123,13 @@
           </svg>
         </div>
       </div>
-      <p v-if="provinceError" class="text-xs text-rose-300 font-medium mt-1.5">
+      <p v-if="provinceError" class="text-xs text-rose-300 font-medium">
         {{ provinceError }}
       </p>
     </div>
 
     <!-- Action Buttons (Save Changes & Cancel) -->
-    <div class="pt-5 flex items-center justify-end gap-3 border-t border-white/10">
+    <div class="mt-2 pt-6 flex items-center justify-end gap-3 border-t border-white/10">
       <button
         type="button"
         :disabled="disabled || isSaving"

@@ -8,14 +8,20 @@
       ]"
     >
       {{ label }}
-      <span v-if="required" class="text-red-500">*</span>
+      <span v-if="required" class="text-rose-400">*</span>
     </label>
 
-    <!-- Upload Box -->
+    <!-- Upload Box: Compact Avatar Style (~130-150px) -->
     <div
-      class="relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-4 transition-colors"
+      class="relative flex items-center rounded-2xl border-2 border-dashed p-4 transition-colors"
       :class="[
-        isDragging ? 'border-button-primary bg-blue-50/50' : 'border-gray-300 hover:border-gray-400 bg-gray-50/50',
+        theme === 'dark'
+          ? (isDragging
+              ? 'border-sky-400 bg-white/15'
+              : 'border-white/20 hover:border-white/40 bg-black/25 hover:bg-black/30')
+          : (isDragging
+              ? 'border-button-primary bg-blue-50/50'
+              : 'border-slate-300 hover:border-slate-400 bg-slate-50/70'),
         disabled || isUploading ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer',
       ]"
       @dragover.prevent="onDragOver"
@@ -33,17 +39,31 @@
       />
 
       <!-- Loading Spinner -->
-      <div v-if="isUploading" class="flex flex-col items-center gap-2 py-4">
-        <svg class="size-8 animate-spin text-button-primary" fill="none" viewBox="0 0 24 24">
+      <div v-if="isUploading" class="flex flex-1 items-center justify-center gap-3 py-4">
+        <svg
+          class="size-7 animate-spin"
+          :class="theme === 'dark' ? 'text-white' : 'text-button-primary'"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
         </svg>
-        <span class="text-xs font-medium text-gray-600">Uploading image to cloud storage...</span>
+        <span
+          class="text-xs font-semibold"
+          :class="theme === 'dark' ? 'text-slate-200' : 'text-slate-700'"
+        >
+          Uploading image to cloud storage...
+        </span>
       </div>
 
-      <!-- Preview Mode (when image is uploaded) -->
-      <div v-else-if="modelValue" class="flex flex-col sm:flex-row items-center gap-4 w-full py-1" @click.stop>
-        <div class="relative size-24 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <!-- Preview Mode (when image is uploaded) - Avatar Style -->
+      <div v-else-if="modelValue" class="flex items-center gap-4 sm:gap-5 w-full py-1" @click.stop>
+        <!-- 96px Avatar Circle -->
+        <div
+          class="relative size-20 sm:size-24 shrink-0 overflow-hidden rounded-full border-2 shadow-md"
+          :class="theme === 'dark' ? 'border-white/30 bg-black/40' : 'border-slate-200 bg-white'"
+        >
           <img
             :src="modelValue"
             alt="Profile preview"
@@ -51,58 +71,113 @@
           />
         </div>
 
-        <div class="flex flex-col items-center sm:items-start gap-2 flex-1 min-w-0">
-          <span class="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
-            <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
-            Uploaded to cloud storage
-          </span>
-          <span class="text-xs text-gray-500 truncate max-w-full font-mono">{{ modelValue }}</span>
+        <div class="flex flex-col items-start gap-2 flex-1 min-w-0">
+          <div class="flex flex-wrap items-center gap-2">
+            <span
+              class="text-xs font-semibold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5"
+              :class="
+                theme === 'dark'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+              "
+            >
+              <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+              </svg>
+              Photo uploaded
+            </span>
+          </div>
 
-          <div class="flex items-center gap-2 mt-1">
+          <!-- Buttons -->
+          <div class="flex items-center gap-2.5">
             <button
               type="button"
-              class="rounded-lg bg-white border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              class="rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              :class="
+                theme === 'dark'
+                  ? 'bg-white/15 hover:bg-white/25 text-white border border-white/25'
+                  : 'bg-white hover:bg-slate-50 text-slate-800 border border-slate-300'
+              "
               :disabled="disabled || isUploading"
               @click="triggerFileInput"
             >
-              Replace
+              Change photo
             </button>
             <button
               type="button"
-              class="rounded-lg bg-white border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
+              class="rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+              :class="
+                theme === 'dark'
+                  ? 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30'
+                  : 'bg-white hover:bg-rose-50 text-rose-600 border border-rose-200'
+              "
               :disabled="disabled || isUploading"
               @click="removeImage"
             >
               Remove
             </button>
           </div>
+
+          <!-- Hint (Contrast >= 4.5:1) -->
+          <p
+            class="text-[11px] font-semibold"
+            :class="theme === 'dark' ? 'text-slate-300' : 'text-slate-700'"
+          >
+            PNG, JPG or WEBP (Max {{ maxSizeMb }}MB)
+          </p>
         </div>
       </div>
 
-      <!-- Dropzone / Empty Mode -->
-      <div v-else class="flex flex-col items-center gap-2 py-4 text-center">
-        <div class="flex size-12 items-center justify-center rounded-full bg-blue-50 text-button-primary">
-          <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <!-- Empty / Dropzone Mode - Avatar Placeholder Style (~130-150px) -->
+      <div v-else class="flex items-center gap-4 sm:gap-5 w-full py-1">
+        <!-- 96px Avatar Placeholder -->
+        <div
+          class="flex size-20 sm:size-24 shrink-0 items-center justify-center rounded-full border-2 border-dashed shadow-xs transition-colors"
+          :class="
+            theme === 'dark'
+              ? 'border-white/30 bg-white/5 text-white/70'
+              : 'border-slate-300 bg-slate-100 text-slate-400'
+          "
+        >
+          <svg class="size-8 sm:size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              stroke-width="1.75"
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+              stroke-width="1.5"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
             />
           </svg>
         </div>
-        <div>
-          <span class="text-sm font-semibold text-button-primary hover:underline">Click to upload</span>
-          <span class="text-sm text-gray-600"> or drag and drop</span>
+
+        <div class="flex flex-col items-start gap-1 flex-1 min-w-0">
+          <div class="flex items-center gap-1.5">
+            <span
+              class="text-xs sm:text-sm font-bold hover:underline"
+              :class="theme === 'dark' ? 'text-white' : 'text-button-primary'"
+            >
+              Click to upload
+            </span>
+            <span
+              class="text-xs sm:text-sm font-medium"
+              :class="theme === 'dark' ? 'text-slate-300' : 'text-slate-600'"
+            >
+              or drag and drop
+            </span>
+          </div>
+
+          <!-- Hint (Contrast >= 4.5:1) -->
+          <p
+            class="text-xs font-semibold tracking-wide mt-1"
+            :class="theme === 'dark' ? 'text-slate-300' : 'text-slate-700'"
+          >
+            PNG, JPG or WEBP (Max {{ maxSizeMb }}MB)
+          </p>
         </div>
-        <p class="text-xs text-gray-400">PNG, JPG or WEBP (Max {{ maxSizeMb }}MB)</p>
       </div>
     </div>
 
     <!-- Error Message -->
-    <p v-if="internalError || errorMessage" class="text-xs text-red-500 font-medium">
+    <p v-if="internalError || errorMessage" class="text-xs text-rose-400 font-medium mt-0.5">
       {{ internalError || errorMessage }}
     </p>
   </div>
