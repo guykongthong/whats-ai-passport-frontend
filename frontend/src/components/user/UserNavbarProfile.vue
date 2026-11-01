@@ -215,7 +215,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
 import { getLevelClasses } from '@/utils/levelDisplay'
@@ -239,6 +239,14 @@ const currentUser = computed(() => authStore.currentUser)
 const isDropdownOpen = ref(false)
 const imageLoadError = ref(false)
 const profileDropdownRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => currentUser.value?.profileImageUrl,
+  () => {
+    imageLoadError.value = false
+  },
+  { immediate: true },
+)
 
 const fullName = computed(() => {
   const u = currentUser.value

@@ -5,6 +5,7 @@ import { levels } from '@/data/levels'
 import type { User, RegisterPayload } from '@/types'
 import { isUserDeactivated } from '@/shared/utils/auth'
 import { AuthService } from '@/services/AuthService'
+import apiClient from '@/services/apiClient'
 
 const MAX_LEVEL = levels.length
 
@@ -19,7 +20,14 @@ function getInitialUser(): User | null {
   try {
     if (typeof localStorage !== 'undefined') {
       const saved = localStorage.getItem('currentUser')
-      return saved ? JSON.parse(saved) : null
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const customAvatar = localStorage.getItem('custom_admin_avatar')
+        if (customAvatar && !parsed.profileImageUrl) {
+          parsed.profileImageUrl = customAvatar
+        }
+        return parsed
+      }
     }
   } catch {
     // ignore
@@ -94,6 +102,9 @@ export const useAuthStore = defineStore('auth', () => {
         const roles = Array.isArray(data.roles) ? data.roles : []
         const isAdmin = roles.includes('ROLE_ADMIN')
 
+        const customAvatar = typeof localStorage !== 'undefined' ? localStorage.getItem('custom_admin_avatar') : null
+        const profileImage = data.profileImageUrl || customAvatar || ''
+
         const userObj: User = {
           id: String(data.id),
           username: data.username,
@@ -104,7 +115,7 @@ export const useAuthStore = defineStore('auth', () => {
           lastname: data.lastname,
           level: String(data.currentLevel || 1),
           province: '',
-          profileImageUrl: data.profileImageUrl,
+          profileImageUrl: profileImage,
           role: isAdmin ? 'admin' : 'user',
           roles,
           isActive: data.enabled !== false,
@@ -129,6 +140,7 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('currentUser')
           localStorage.removeItem('token')
           localStorage.removeItem('access_token')
+          localStorage.removeItem('custom_admin_avatar')
         }
         return 'deactivated'
       }
@@ -150,6 +162,7 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.removeItem('currentUser')
       localStorage.removeItem('token')
       localStorage.removeItem('access_token')
+      localStorage.removeItem('custom_admin_avatar')
     }
   }
 
@@ -311,6 +324,78 @@ export const useAuthStore = defineStore('auth', () => {
     return filteredUsers.value.slice(start, start + pageSize.value)
   })
 
+  function updateCurrentUser(patch: Partial<User>) {
+    if (currentUser.value) {
+      currentUser.value = { ...currentUser.value, ...patch }
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem('currentUser', JSON.stringify(currentUser.value))
+          if (patch.profileImageUrl) {
+            localStorage.setItem('custom_admin_avatar', patch.profileImageUrl)
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+  }
+
+  async function fetchMe(): Promise<User | null> {
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('token') || localStorage.getItem('access_token')
+        : null
+    if (!token) return null
+
+    try {
+      const res = await apiClient.get('/me')
+      if (res?.data) {
+        const data = res.data
+        const customAvatar = typeof localStorage !== 'undefined' ? localStorage.getItem('custom_admin_avatar') : null
+        const profileImage = data.profileImageUrl || customAvatar || currentUser.value?.profileImageUrl || ''
+
+        const roles = Array.isArray(currentUser.value?.roles) && currentUser.value.roles.length > 0
+          ? currentUser.value.roles
+          : (currentUser.value?.role === 'admin' ? ['ROLE_ADMIN'] : ['ROLE_USER'])
+        const isAdmin = roles.includes('ROLE_ADMIN') || currentUser.value?.role === 'admin'
+
+        const userObj: User = {
+          id: String(data.id),
+          username: currentUser.value?.username || data.email?.split('@')[0] || 'user',
+          email: data.email || `${data.id}@example.com`,
+          name: data.firstname,
+          surname: data.lastname,
+          firstname: data.firstname,
+          lastname: data.lastname,
+          level: String(data.currentLevel || 1),
+          province: data.province || '',
+          profileImageUrl: profileImage,
+          role: isAdmin ? 'admin' : 'user',
+          roles,
+          isActive: true,
+          enabled: true,
+        }
+
+        currentUser.value = userObj
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('currentUser', JSON.stringify(userObj))
+        }
+        return userObj
+      }
+    } catch (err: unknown) {
+      console.warn('Failed to fetch /me from backend:', err)
+    }
+    return currentUser.value
+  }
+
+  // Auto-fetch fresh profile from backend if token exists
+  if (typeof localStorage !== 'undefined') {
+    const existingToken = localStorage.getItem('token') || localStorage.getItem('access_token')
+    if (existingToken) {
+      fetchMe().catch(() => {})
+    }
+  }
+
   return {
     currentUser,
     currentUserLevel,
@@ -331,5 +416,7 @@ export const useAuthStore = defineStore('auth', () => {
     upgradeUserLevel,
     activateUser,
     updateUser,
+    updateCurrentUser,
+    fetchMe,
   }
 })

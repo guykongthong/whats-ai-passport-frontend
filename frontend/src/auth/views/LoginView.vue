@@ -66,7 +66,7 @@ const noAccount = () => {
 <template>
   <div class="flex min-h-screen flex-col bg-[#EEF2F7]">
     <Toast :show="showToast" :message="toastMessage" />
-    <main class="flex flex-1 items-center justify-center p-4">
+    <main class="flex flex-1 items-center justify-center py-10 sm:py-16 px-4">
       <LoginForm :login-error="loginError" @submit-login="onLoginSubmit" @no-account="noAccount" />
     </main>
     <Footer :links="[]" />

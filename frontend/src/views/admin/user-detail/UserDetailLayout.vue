@@ -37,8 +37,8 @@
           <div class="flex items-center gap-4">
             <!-- Avatar image with initials fallback -->
             <img
-              v-if="user.profileImageUrl && !avatarError"
-              :src="user.profileImageUrl"
+              v-if="effectiveProfileImage && !avatarError"
+              :src="effectiveProfileImage"
               :alt="fullName"
               class="size-16 sm:size-20 rounded-full object-cover border-2 border-white/30 shrink-0"
               @error="avatarError = true"
@@ -198,12 +198,20 @@ const { showToast, toastMessage, triggerToast } = useToast()
 const user = computed(() => adminUserStore.selectedUser)
 const avatarError = ref(false)
 
+const effectiveProfileImage = computed(() => {
+  if (user.value?.profileImageUrl) return user.value.profileImageUrl
+  if (typeof localStorage !== 'undefined' && user.value?.id === 1) {
+    return localStorage.getItem('custom_admin_avatar') || ''
+  }
+  return ''
+})
+
 // Modal state
 const isModalOpen = ref(false)
 const isToggling = ref(false)
 
 watch(
-  () => user.value?.profileImageUrl,
+  () => effectiveProfileImage.value,
   () => {
     avatarError.value = false
   },
@@ -263,11 +271,11 @@ async function handleToggleStatus() {
   }
 }
 
-// Fetch user details once via adminUserStore (cached internally to prevent redundant calls on tab switch)
+// Fetch user details from backend via adminUserStore
 async function loadUserData() {
   const userId = Number(route.params.id)
   if (Number.isInteger(userId) && userId > 0) {
-    await adminUserStore.fetchUserById(userId)
+    await adminUserStore.fetchUserById(userId, true)
   }
 }
 

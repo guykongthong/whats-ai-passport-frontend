@@ -119,7 +119,6 @@ import ConfirmActionModal from '@/components/common/ConfirmActionModal.vue'
 import AdminUserService from '@/services/AdminUserService'
 import type { AdminUser } from '@/types/admin'
 import { useToast } from '@/composables/useToast'
-import { users as mockUsers } from '@/data/users'
 
 const route = useRoute()
 const router = useRouter()
@@ -158,42 +157,6 @@ const pageSize = computed(() => {
   return Number.isInteger(s) && s > 0 ? s : 6
 })
 
-function loadFallbackUsers() {
-  let list: AdminUser[] = mockUsers.map((u, idx) => ({
-    id: Number(u.id) || idx + 1,
-    username: u.username || u.email.split('@')[0] || `user${u.id}`,
-    firstname: u.firstname || u.name || '',
-    lastname: u.lastname || u.surname || '',
-    email: u.email,
-    province: u.province || 'Chiang Mai',
-    profileImageUrl: u.profileImageUrl || '',
-    currentLevel: Number(u.level) || 1,
-    enabled: u.enabled !== undefined ? u.enabled : (u.isActive !== undefined ? u.isActive : true),
-    roles: u.roles ? [...u.roles] : (u.role === 'admin' ? ['ROLE_ADMIN'] : ['ROLE_USER']),
-  }))
-
-  if (activeFilters.value.name) {
-    const q = activeFilters.value.name.toLowerCase()
-    list = list.filter(
-      (u) =>
-        u.firstname.toLowerCase().includes(q) ||
-        u.lastname.toLowerCase().includes(q) ||
-        u.username.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q),
-    )
-  }
-  if (activeFilters.value.level !== undefined && activeFilters.value.level !== null) {
-    list = list.filter((u) => u.currentLevel === activeFilters.value.level)
-  }
-  if (activeFilters.value.province) {
-    list = list.filter((u) => u.province === activeFilters.value.province)
-  }
-
-  const start = (currentPage.value - 1) * pageSize.value
-  totalPages.value = Math.max(1, Math.ceil(list.length / pageSize.value))
-  users.value = list.slice(start, start + pageSize.value)
-}
-
 async function fetchUsers() {
   loading.value = true
   error.value = null
@@ -206,24 +169,21 @@ async function fetchUsers() {
     }
 
     const response = await AdminUserService.getUsers(currentPage.value, pageSize.value, filters)
-    if (response.data && response.data.length > 0) {
-      users.value = response.data
+    users.value = response.data || []
 
-      const totalHeader = response.headers?.['x-total-count']
-      if (totalHeader) {
-        const parsedTotal = parseInt(totalHeader, 10)
-        if (!isNaN(parsedTotal)) {
-          totalPages.value = Math.max(1, Math.ceil(parsedTotal / pageSize.value))
-        }
-      } else {
-        totalPages.value = users.value.length === pageSize.value ? currentPage.value + 1 : currentPage.value
+    const totalHeader = response.headers?.['x-total-count']
+    if (totalHeader) {
+      const parsedTotal = parseInt(totalHeader, 10)
+      if (!isNaN(parsedTotal)) {
+        totalPages.value = Math.max(1, Math.ceil(parsedTotal / pageSize.value))
       }
     } else {
-      loadFallbackUsers()
+      totalPages.value = users.value.length === pageSize.value ? currentPage.value + 1 : currentPage.value
     }
   } catch (err: unknown) {
-    console.warn('Backend users API unavailable, falling back to local dataset:', err)
-    loadFallbackUsers()
+    console.error('Failed to fetch users from backend API:', err)
+    error.value = 'Failed to load users from server.'
+    users.value = []
   } finally {
     loading.value = false
   }
