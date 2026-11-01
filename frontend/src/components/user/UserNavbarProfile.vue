@@ -84,14 +84,24 @@
     >
       <div
         v-if="isDropdownOpen"
-        class="absolute right-0 top-full mt-2 w-56 rounded-xl border border-gray-200 bg-white py-1.5 shadow-xl z-50 text-gray-800"
+        :class="[
+          'absolute right-0 top-full mt-2 w-56 rounded-xl py-1.5 shadow-2xl z-50 transition-all',
+          theme === 'dark'
+            ? 'bg-[#002742]/95 backdrop-blur-md border border-white/20 text-white'
+            : 'border border-gray-200 bg-white text-gray-800 shadow-xl'
+        ]"
         role="menu"
       >
         <!-- Header in dropdown -->
-        <div class="px-4 py-2.5 border-b border-gray-100">
-          <p class="text-xs text-gray-500 font-medium">Signed in as</p>
-          <p class="text-sm font-bold text-gray-900 truncate">{{ fullName }}</p>
-          <p class="text-xs text-gray-500 truncate">{{ currentUser.email }}</p>
+        <div
+          :class="[
+            'px-4 py-2.5 border-b',
+            theme === 'dark' ? 'border-white/10' : 'border-gray-100'
+          ]"
+        >
+          <p :class="['text-xs font-medium', theme === 'dark' ? 'text-white/60' : 'text-gray-500']">Signed in as</p>
+          <p :class="['text-sm font-bold truncate', theme === 'dark' ? 'text-white' : 'text-gray-900']">{{ fullName }}</p>
+          <p :class="['text-xs truncate', theme === 'dark' ? 'text-white/60' : 'text-gray-500']">{{ currentUser.email }}</p>
           <div class="mt-1.5">
             <span
               class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold shadow-xs"
@@ -109,11 +119,16 @@
           <RouterLink
             v-if="currentUser.role === 'admin'"
             to="/admin"
-            class="flex items-center gap-3 px-4 py-2 text-sm font-medium text-purple-700 hover:bg-purple-50 transition-colors"
+            :class="[
+              'flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors',
+              theme === 'dark'
+                ? 'text-cyan-300 hover:bg-white/10 hover:text-cyan-200'
+                : 'text-cyan-700 hover:bg-cyan-50'
+            ]"
             role="menuitem"
             @click="isDropdownOpen = false"
           >
-            <svg class="size-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="size-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -123,11 +138,16 @@
           <!-- My Profile -->
           <RouterLink
             to="/profile"
-            class="flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 hover:text-button-primary transition-colors"
+            :class="[
+              'flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors',
+              theme === 'dark'
+                ? 'text-white/80 hover:bg-white/10 hover:text-white'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-button-primary'
+            ]"
             role="menuitem"
             @click="isDropdownOpen = false"
           >
-            <svg class="size-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="size-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             My Profile
@@ -136,11 +156,16 @@
           <!-- eLearning -->
           <RouterLink
             to="/elearning"
-            class="flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 hover:text-button-primary transition-colors"
+            :class="[
+              'flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors',
+              theme === 'dark'
+                ? 'text-white/80 hover:bg-white/10 hover:text-white'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-button-primary'
+            ]"
             role="menuitem"
             @click="isDropdownOpen = false"
           >
-            <svg class="size-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="size-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
             eLearning
@@ -149,11 +174,16 @@
           <!-- Take Exam -->
           <RouterLink
             to="/exam"
-            class="flex items-center gap-3 px-4 py-2 text-sm font-medium hover:bg-gray-50 hover:text-button-primary transition-colors"
+            :class="[
+              'flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors',
+              theme === 'dark'
+                ? 'text-white/80 hover:bg-white/10 hover:text-white'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-button-primary'
+            ]"
             role="menuitem"
             @click="isDropdownOpen = false"
           >
-            <svg class="size-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg class="size-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
             Take Exam
@@ -161,10 +191,15 @@
         </div>
 
         <!-- Logout Action -->
-        <div class="border-t border-gray-100 pt-1">
+        <div :class="['pt-1 border-t', theme === 'dark' ? 'border-white/10' : 'border-gray-100']">
           <button
             type="button"
-            class="flex w-full items-center gap-3 px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
+            :class="[
+              'flex w-full items-center gap-3 px-4 py-2 text-left text-sm font-medium transition-colors cursor-pointer',
+              theme === 'dark'
+                ? 'text-rose-300 hover:bg-white/10 hover:text-rose-200'
+                : 'text-red-600 hover:bg-red-50'
+            ]"
             role="menuitem"
             @click="handleLogout"
           >
@@ -183,6 +218,7 @@
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores'
+import { getLevelClasses } from '@/utils/levelDisplay'
 
 interface Props {
   theme?: 'light' | 'dark'
@@ -229,19 +265,8 @@ const currentLevel = computed(() => {
 })
 
 const levelBadgeClasses = computed(() => {
-  const lvl = String(currentLevel.value)
-  switch (lvl) {
-    case '1':
-      return 'bg-gray-100 text-gray-700 border border-gray-200'
-    case '2':
-      return 'bg-blue-100 text-blue-800 border border-blue-200'
-    case '3':
-      return 'bg-amber-100 text-amber-800 border border-amber-200'
-    case '4':
-      return 'bg-purple-100 text-purple-800 border border-purple-200'
-    default:
-      return 'bg-blue-50 text-button-primary border border-blue-200'
-  }
+  const lvl = Number(currentLevel.value) || 1
+  return getLevelClasses(lvl)
 })
 
 function toggleDropdown() {
