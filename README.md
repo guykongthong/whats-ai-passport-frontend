@@ -1,109 +1,71 @@
-# What's AI Passport - Frontend (Group 14)
+# What's AI Passport - Frontend
 
-Course: 953331 Component-Based Software Development  
-Semester: Project 2 (Academic Year 2026)  
-College of Arts, Media and Technology (CAMT), Chiang Mai University
+Vue 3 single page app for **AI Passport**, a platform where students build AI skills step by step. Users watch e-learning videos and take an exam at each level to move up four tiers (Explorer, Achiever, Innovator, Master). Every tier unlocks badges and campus services. Admins manage users, level criteria and exam questions.
 
----
+Built as a group project for Component-Based Software Development at CAMT, Chiang Mai University. The API it talks to is in [whats-ai-passport-backend](https://github.com/guykongthong/whats-ai-passport-backend).
 
-## Team Members
+## Features
 
-- **** Contributor
-- **** Contributor
-- **** Contributor
+**Student portal**
+- Register with a profile photo, log in, and edit your profile
+- Dashboard showing your current level, badges and unlocked services
+- E-learning video viewer
+- Level exam with progress tracking and a result screen, plus exam history
+- Your level and benefits update straight after passing, without logging in again
 
----
+**Admin portal**
+- Paginated user list with search, level and province filters, and an enable or disable toggle
+- Tabbed user detail page for info, exam history and editing
+- Level criteria editing and exam question management (create, edit, delete)
 
-## Repositories & URLs
+**Across the app**
+- Route guards for guests, logged-in users and admins
+- An Axios client that attaches the JWT to each request and handles expired sessions globally
+- Offline, 404 and server error pages, plus toast messages for feedback
 
-- **Frontend Repository (Group 14):**  
-  https://github.com/chartchai-class/953331-2026-component-based-software-dev-project2-frontend-group-14
-- **Backend Repository (Group 3):**  
-  https://github.com/chartchai-class/953331-2026-component-based-software-dev-project-2-group-3
-- **Frontend Local Dev:** `http://localhost:5173`
-- **Backend API Base URL:** `http://localhost:8080/api`
+## Tech stack
 
----
+Vue 3 (Composition API, `<script setup>`), TypeScript, Vite, Pinia, Vue Router, Axios, Tailwind CSS v4, VeeValidate with Yup for forms, ESLint, Oxlint and Prettier.
 
-## Test Accounts & Credentials
+## Running locally
 
-The system connects to the Spring Boot backend with seeded test users and full JWT authentication:
+You need Node.js 22 or newer and the backend running on `http://localhost:8080`.
 
-| Role | Username | Password | Level | Description |
-| :--- | :--- | :--- | :---: | :--- |
-| **Admin** | `admin` | `admin123` | Level 4 | Access to both admin portal (`/admin`) and user portal |
-| **User 1** | `user1` | `user123` | Level 1 | Explorer tier; eligible for Level 1 -> 2 certification exam |
-| **User 2** | `user2` | `user123` | Level 2 | Achiever tier; eligible for Level 2 -> 3 certification exam |
-| **User 3** | `user3` | `user123` | Level 3 | Innovator tier; eligible for Level 3 -> 4 certification exam |
-| **User 4** | `user4` | `user123` | Level 4 | Master tier; highest level achieved |
-
-*Note: Seeded student accounts `user1` through `user32` all use password `user123`.*  
-*You can also register a new user on `/register`, which starts at Level 1.*
-
----
-
-## Tech Stack
-
-- **Frontend Framework:** Vue 3 (Composition API, `<script setup lang="ts">`)
-- **Build Tool:** Vite
-- **Language:** TypeScript
-- **State Management:** Pinia
-- **Styling:** Tailwind CSS v4
-- **Routing:** Vue Router (with auth and role guards)
-- **HTTP Client:** Axios (configured with JWT interceptors in `src/services/apiClient.ts`)
-
----
-
-## Project Setup & Running
-
-### Prerequisites
-- Node.js 22.x or 24.x
-- npm 10.x+
-- Running Spring Boot backend on `http://localhost:8080`
-
-### 1. Clone & Install
 ```bash
-git clone https://github.com/chartchai-class/953331-2026-component-based-software-dev-project2-frontend-group-14.git
-cd 953331-2026-component-based-software-dev-project2-frontend-group-14/frontend
+cd frontend
 npm install
-```
-
-### 2. Run Development Server
-```bash
 npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
-### 3. Build & Type Check
-```bash
-# Type check TypeScript
-npm run type-check
+Open http://localhost:5173. Requests to `/api` are sent to the backend, and you can point to a different one with `VITE_API_URL`.
 
-# Production build
-npm run build
+Other scripts: `npm run type-check`, `npm run lint`, `npm run build` and `npm run preview`.
 
-# Preview build locally
-npm run preview
+## Demo accounts
+
+These exist once the backend has seeded its database.
+
+| Role  | Username            | Password   |
+| ----- | ------------------- | ---------- |
+| Admin | `admin`             | `admin123` |
+| User  | `user1` to `user32` | `user123`  |
+
+`user1` to `user4` sit at levels 1 to 4, which is handy for trying each exam. New registrations start at level 1.
+
+## Project structure
+
+```
+frontend/src/
+  auth/        login and register forms, validation schemas
+  components/  shared UI such as the image upload and profile header
+  views/       user and admin pages
+  stores/      Pinia stores for auth, user and exam state
+  services/    Axios client and one service per API area
+  router/      routes and navigation guards
 ```
 
----
+## CI and deployment
 
-## System Overview & Key Features
+GitHub Actions type-checks, lints and builds on pull requests. A push to `prod` builds the Docker image (nginx serving the built app) and redeploys it with Docker Compose. That workflow needs Docker Hub and VM secrets, so it only runs in the original setup.
 
-### 1. User Portal (`/dashboard`)
-- **Authentication:** Real backend JWT login and registration with validation and error feedback.
-- **Profile & Passport:** View current level, earned badges, exam history, and eligible campus services.
-- **Profile Edit:** Update first name, last name, province, and profile picture.
-- **Examination Engine (`/exam`):**
-  - Fetches level-specific questions and pass criteria directly from backend (`GET /api/me/exam`).
-  - Real-time question progress, answer selection, and submission (`POST /api/me/exam/submit`).
-  - Automatic level upgrade and exam history logging on pass.
-- **e-Learning (`/dashboard/elearning`):** Video course viewer linked to curriculum topics.
-- **Campus Services (`/dashboard/services`):** Dynamic display of active campus privileges and facilities unlocked for the user's tier.
-- **Badges Gallery (`/dashboard/badges`):** Visual display of progression badges (Explorer, Achiever, Innovator, Master).
-
-### 2. Admin Portal (`/admin`)
-- **User Directory:** Paginated user list with live search, level filtering, and province filtering. Toggle user active/deactivated state in real time.
-- **User Detail & Edit (`/admin/users/:id`):** View user details, inspection of exam attempts, and editing user profiles with avatar upload.
-- **Criteria of Levels (`/admin/levels`):** Overview of all 4 certification tiers, pass criteria, and campus privileges.
-- **Exam Management (`/admin/questions`):** Manage exam questions across all 4 levels (Level 1, 2, 3, and 4) with create, edit, and delete support.
+`DEVELOPMENT_LOG.md` tracks the issues the team worked through and how each was verified.
