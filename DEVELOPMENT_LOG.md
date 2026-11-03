@@ -1,6 +1,6 @@
 # Frontend Development Log
 Project: The CA?T Passport (SE331 Project 2)
-Repository: chartchai-class/953331-2026-component-based-software-dev-project2-frontend-group-14
+Repository: whats-ai-passport-frontend
 
 This document tracks work progress, branch references, and implementation notes across project issues.
 

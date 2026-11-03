@@ -1,8 +1,8 @@
 # AIPass - Frontend Application
 
-This directory contains the Vue 3 + TypeScript frontend application for **AIPass (What's AI Passport)**, developed for **953331 Component-Based Software Development (Project 2 - Group 14)** at CAMT, Chiang Mai University.
+This directory contains the Vue 3 + TypeScript frontend application for **AIPass (What's AI Passport)**, built for a Component-Based Software Development course at CAMT, Chiang Mai University.
 
-For the full project overview, features, team information, and architecture, please refer to the main [Root README.md](../README.md).
+For the full project overview, features and architecture, please refer to the main [Root README.md](../README.md).
 
 ---
 
